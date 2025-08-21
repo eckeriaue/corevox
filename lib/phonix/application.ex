@@ -8,8 +8,6 @@ defmodule Phonix.Application do
   @impl true
   def start(_type, _args) do
 
-    Dotenv.load()
-
     children = [
       PhonixWeb.Telemetry,
       Phonix.Repo,
