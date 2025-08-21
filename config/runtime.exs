@@ -1,5 +1,13 @@
 import Config
 
+
+config :phonix, Phonix.Repo,
+  username: System.get_env("POSTGRES_USER") || "default_postgres_user",
+  password: System.get_env("POSTGRES_PASSWORD") || "default_postgres_password",
+  database: System.get_env("POSTGRES_DB") || "phoenix_todo_app_dev",
+  hostname: System.get_env("POSTGRES_HOST") || "localhost",
+  pool_size: 10
+
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration
