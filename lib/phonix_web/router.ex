@@ -17,7 +17,8 @@ defmodule PhonixWeb.Router do
   scope "/", PhonixWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    # get "/", PageController, :home
+    live "/", LivePageHome
   end
 
   # Other scopes may use custom stacks.
