@@ -25,4 +25,8 @@ defmodule PhonixWeb.LivePageHome do
     """
   end
 
+  def handle_event("go", _unsigned_params, socket) do
+    {:noreply, socket}
+  end
+
 end
