@@ -20,7 +20,7 @@ defmodule PhonixWeb.RoomLive.Form do
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <.form
         :let={f}
-        for={@changeset.changes}
+        for={@changeset}
         phx-submit="save"
         phx-change="validate"
       >
@@ -28,13 +28,11 @@ defmodule PhonixWeb.RoomLive.Form do
         <.input
           label="Название комнаты"
           field={f[:name]}
-          value={@changeset.changes[:name] || ~c""}
         />
 
         <.input
           label="Пароль для входа в комнату (необязательно)"
           field={f[:password]}
-          value={@changeset.changes[:password] || ~c""}
         />
         <.button type="submit" disabled={@disabled}>Создать</.button>
       </.form>
@@ -48,14 +46,15 @@ defmodule PhonixWeb.RoomLive.Form do
   end
 
   @impl true
-  def handle_event("validate", room_params, socket) do
+  def handle_event("validate", %{"room" => room_params}, socket) do
     changeset =
       %Room{}
       |> Calls.change_room(room_params)
+      |> Map.put(:action, :validate)
 
     {:noreply,
      socket
      |> assign(:changeset, changeset)
-     |> assign(:disabled, !Enum.empty?(changeset.errors))}
+     |> assign(:disabled, !changeset.valid?)}
   end
 end
