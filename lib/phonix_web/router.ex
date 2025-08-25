@@ -22,9 +22,12 @@ defmodule PhonixWeb.Router do
 
     # get "/", PageController, :home
     # live "/", LivePageHome
-    live "/", RoomLive.Index, :index
-    live "/rooms/new", RoomLive.Form, :new
-    live "/rooms/:id", RoomLive.Show, :show
+    live_session :default,
+      on_mount: [PhonixWeb.CurrentUser] do
+        live "/", RoomLive.Index, :index
+        live "/rooms/new", RoomLive.Form, :new
+        live "/rooms/:id", RoomLive.Show, :show
+      end
     # live "/rooms/:id/edit", RoomLive.Form, :edit
   end
 
