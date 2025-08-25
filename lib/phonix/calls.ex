@@ -15,8 +15,19 @@ defmodule Phonix.Calls do
   end
 
   def create_room(attrs \\ %{}, user) do
+    password_hash =
+      case Map.get(attrs, "password") do
+        nil -> nil
+        "" -> nil
+        password -> Bcrypt.hash_pwd_salt(password)
+      end
+
+    with_hashed_password_attrs = attrs
+      |> Map.take(["name"])
+      |> Map.merge(if password_hash, do: %{"password_hash" => password_hash}, else: %{})
+
     %Room{}
-    |> Room.changeset(attrs, user)
+    |> Room.changeset(with_hashed_password_attrs, user)
     |> Repo.insert()
   end
 
