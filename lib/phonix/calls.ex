@@ -23,7 +23,7 @@ defmodule Phonix.Calls do
       end
 
     with_hashed_password_attrs = attrs
-      |> Map.take(["name"])
+      |> Map.take(["name", "description"])
       |> Map.merge(if password_hash, do: %{"password_hash" => password_hash}, else: %{})
 
     %Room{}

@@ -5,6 +5,7 @@ defmodule Phonix.Calls.Room do
   schema "rooms" do
     field :name, :string
     field :password, :string, virtual: true
+    field :description, :string
     field :password_hash, :string
     belongs_to :owner, Phonix.Accounts.User
     has_many :room_members, Phonix.Calls.RoomMember
@@ -15,7 +16,7 @@ defmodule Phonix.Calls.Room do
 
   def changeset(room, attrs) do
     room
-    |> cast(attrs, [:name, :password])
+    |> cast(attrs, [:name, :description, :password])
     |> validate_required([:name])
     |> validate_length(:name, min: 3, max: 100)
   end
@@ -23,7 +24,7 @@ defmodule Phonix.Calls.Room do
   @doc false
   def changeset(room, attrs, user_scope) do
     room
-    |> cast(attrs, [:name, :password_hash])
+    |> cast(attrs, [:name, :description, :password_hash])
     |> validate_required([:name])
     |> put_change(:owner_id, user_scope.user.id)
   end

@@ -34,6 +34,9 @@ defmodule PhonixWeb.RoomLive.Form do
           label="Пароль для входа в комнату (необязательно)"
           field={f[:password]}
         />
+
+        <.input type="textarea" label="Описание комнаты (необязательно)" field={f[:description]} />
+
         <.button type="submit" disabled={@disabled}>Создать</.button>
       </.form>
     </Layouts.app>
@@ -41,8 +44,8 @@ defmodule PhonixWeb.RoomLive.Form do
   end
 
   @impl true
-  def handle_event("save", %{"room" => %{ "name" => name, "password" => password }}, socket) do
-    case Calls.create_room(%{ "name" => name, "password" => password }, socket.assigns.current_scope) do
+  def handle_event("save", %{"room" => %{ "name" => name, "password" => password, "description" => description }}, socket) do
+    case Calls.create_room(%{ "name" => name, "password" => password, "description" => description }, socket.assigns.current_scope) do
       {:ok, room} ->
         {:noreply, socket |> put_flash(:info, "Комната создана") |> push_redirect(to: ~p"/rooms/#{room.id}")}
       {:error, _} ->
