@@ -47,7 +47,7 @@ defmodule PhonixWeb.RoomLive.Form do
   def handle_event("save", %{"room" => %{ "name" => name, "password" => password, "description" => description }}, socket) do
     case Calls.create_room(%{ "name" => name, "password" => password, "description" => description }, socket.assigns.current_scope) do
       {:ok, room} ->
-        {:noreply, socket |> put_flash(:info, "Комната создана") |> push_redirect(to: ~p"/rooms/#{room.id}")}
+        {:noreply, socket |> put_flash(:info, "Комната создана") |> push_navigate(to: ~p"/rooms/#{room.id}")}
       {:error, _} ->
         {:noreply, socket |> put_flash(:error, "При создании комнаты произошла ошибка")}
     end
