@@ -44,20 +44,32 @@ defmodule PhonixWeb.Layouts do
       </div>
       <div class="flex-none">
         <ul class="flex flex-column px-1 space-x-4 items-center">
-          <li>
-            <a href="https://phoenixframework.org/" class="btn btn-ghost">Website</a>
-          </li>
-          <li>
-            <a href="https://github.com/phoenixframework/phoenix" class="btn btn-ghost">GitHub</a>
-          </li>
+          <%= if @current_scope do %>
+            <li>
+              {@current_scope.user.email}
+            </li>
+            <li>
+              <.link href={~p"/users/settings"} class="btn btn-ghost">Settings</.link>
+            </li>
+            <li>
+              <.link href={~p"/users/log-out"} method="delete" class="btn btn-ghost">Log out</.link>
+            </li>
+          <% else %>
+            <li>
+              <.link href={~p"/users/register"} class="btn btn-ghost">Register</.link>
+            </li>
+            <li>
+              <.link href={~p"/users/log-in"} class="btn btn-ghost">Log in</.link>
+            </li>
+          <% end %>
           <li>
             <.theme_toggle />
           </li>
-          <li>
+          <%!-- <li>
             <a href="https://hexdocs.pm/phoenix/overview.html" class="btn btn-primary">
               Get Started <span aria-hidden="true">&rarr;</span>
             </a>
-          </li>
+          </li> --%>
         </ul>
       </div>
     </header>

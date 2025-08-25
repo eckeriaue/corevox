@@ -21,7 +21,11 @@ defmodule PhonixWeb.Router do
     pipe_through :browser
 
     # get "/", PageController, :home
-    live "/", LivePageHome
+    # live "/", LivePageHome
+    live "/", RoomLive.Index, :index
+    live "/rooms/new", RoomLive.Form, :new
+    live "/rooms/:id", RoomLive.Show, :show
+    # live "/rooms/:id/edit", RoomLive.Form, :edit
   end
 
   # Other scopes may use custom stacks.
