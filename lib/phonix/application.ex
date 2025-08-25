@@ -7,7 +7,6 @@ defmodule Phonix.Application do
 
   @impl true
   def start(_type, _args) do
-
     children = [
       PhonixWeb.Telemetry,
       Phonix.Repo,

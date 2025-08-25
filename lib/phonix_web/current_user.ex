@@ -2,11 +2,12 @@ defmodule PhonixWeb.CurrentUser do
   use PhonixWeb, :live_view
   alias Phonix.Accounts
 
-  @impl true
+  # @impl true
   def on_mount(:default, _params, session, socket) do
     current_scope =
       case session["user_token"] do
-        nil -> nil
+        nil ->
+          nil
 
         token ->
           case Accounts.get_user_by_session_token(token) do

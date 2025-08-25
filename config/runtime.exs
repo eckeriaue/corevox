@@ -1,7 +1,6 @@
 import Config
 import Dotenvy
 
-
 source!(System.get_env("RELEASE_ROOT") || Path.expand(".env"))
 
 config :phonix, Phonix.Repo,

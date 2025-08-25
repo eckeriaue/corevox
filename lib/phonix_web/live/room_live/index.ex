@@ -1,10 +1,8 @@
 defmodule PhonixWeb.RoomLive.Index do
   use PhonixWeb, :live_view
-  alias Phonix.Accounts
-
-  # on_mount {PhonixWeb.UserAuth, :require_sudo_mode}
-
+  # alias Phonix.Accounts
   # alias Phonix.Calls
+  # on_mount {PhonixWeb.UserAuth, :require_sudo_mode}
 
   @impl true
   def render(assigns) do
@@ -21,7 +19,7 @@ defmodule PhonixWeb.RoomLive.Index do
 
       <%= if Enum.empty?(@rooms) do %>
         <p>Доступных комнат пока нет</p>
-      <%= else %>
+      <% else %>
         <p>доступные комнаты есть, но я их не покажу</p>
       <% end %>
     </Layouts.app>
@@ -29,9 +27,7 @@ defmodule PhonixWeb.RoomLive.Index do
   end
 
   @impl true
-  def mount(_params, session, socket) do
+  def mount(_params, _session, socket) do
     {:ok, socket |> assign(:rooms, [])}
   end
-
-
 end

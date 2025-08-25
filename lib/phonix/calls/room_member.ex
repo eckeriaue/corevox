@@ -10,7 +10,6 @@ defmodule Phonix.Calls.RoomMember do
     timestamps(type: :utc_datetime)
   end
 
-
   @doc false
   def changeset(room_member, attrs) do
     room_member

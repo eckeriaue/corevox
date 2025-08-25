@@ -130,8 +130,6 @@ defmodule Phonix.Accounts.User do
     false
   end
 
-
-
   @doc """
   Changeset для создания/обновления пользователя
   """

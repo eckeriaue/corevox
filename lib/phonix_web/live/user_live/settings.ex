@@ -12,7 +12,9 @@ defmodule PhonixWeb.UserLive.Settings do
       <div class="text-center">
         <.header>
           Настройки аккаунта
-          <:subtitle>Управляйте настройками адреса электронной почты и пароля вашей учетной записи</:subtitle>
+          <:subtitle>
+            Управляйте настройками адреса электронной почты и пароля вашей учетной записи
+          </:subtitle>
         </.header>
       </div>
 

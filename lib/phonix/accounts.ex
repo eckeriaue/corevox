@@ -140,7 +140,6 @@ defmodule Phonix.Accounts do
     if User.valid_password?(user, password), do: user
   end
 
-
   ## User registration
 
   @doc """
