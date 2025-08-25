@@ -19,26 +19,28 @@ defmodule PhonixWeb.RoomLive.Prepare do
         <div id="video-container" class="bg-base-200 rounded-2xl overflow-hidden" style="width: 400px;height:300px">
           <video id="localVideo" autoplay muted playsinline style="width: 400px; height:300px"></video>
         </div>
-        <div id="controls" class="mt-4">
-        <div class="tooltip" data-tip="Включить микрофон">
-          <.button
-            class="btn btn-ghost"
-            id="micro"
-          >
-            🎤
-          </.button>
-        </div>
+        <.form id="controls" class="mt-4">
+          <div class="tooltip" data-tip="Включить микрофон">
+            <.button
+              class="btn btn-ghost"
+              id="micro"
+              type="button"
+            >
+              🎤
+            </.button>
+          </div>
 
-        <div class="tooltip" data-tip="Включить видео">
-          <.button
-            class="btn btn-ghost"
-            id="camera"
-          >
-            📹
-          </.button>
-        </div>
-        <.button href={~p"/rooms/#{@room_id}"}> Войти</.button>
-        </div>
+          <div class="tooltip" data-tip="Включить видео">
+            <.button
+              class="btn btn-ghost"
+              id="camera"
+              type="button"
+            >
+              📹
+            </.button>
+          </div>
+          <.button href={~p"/rooms/#{@room_id}"}> Войти</.button>
+        </.form>
 
         <script type="module">
           let microStream, cameraStream
