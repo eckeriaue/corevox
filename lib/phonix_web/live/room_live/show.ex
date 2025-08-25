@@ -6,6 +6,9 @@ defmodule PhonixWeb.RoomLive.Show do
   @impl true
   def render(assigns) do
     ~H"""
+    <Layouts.app flash={@flash} current_scope={@current_scope}>
+      room
+    </Layouts.app>
     """
   end
 
