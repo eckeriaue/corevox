@@ -3,18 +3,19 @@ defmodule Phonix.Calls.RoomMember do
   import Ecto.Changeset
 
   schema "room_members" do
+    belongs_to :room, Phonix.Calls.Room
+    belongs_to :user, Phonix.Accounts.User
     field :role, :string
-    field :room_id, :id
-    field :user_id, :id
 
     timestamps(type: :utc_datetime)
   end
 
+
   @doc false
-  def changeset(room_member, attrs, user_scope) do
+  def changeset(room_member, attrs) do
     room_member
-    |> cast(attrs, [:role])
-    |> validate_required([:role])
-    |> put_change(:user_id, user_scope.user.id)
+    |> cast(attrs, [:room_id, :user_id, :role])
+    |> validate_required([:room_id, :user_id])
+    |> unique_constraint(:user_id, name: :room_members_room_id_user_id_index)
   end
 end

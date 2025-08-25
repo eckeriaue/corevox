@@ -5,8 +5,10 @@ defmodule Phonix.Calls.Room do
   schema "rooms" do
     field :name, :string
     field :password_hash, :string
-    field :owner_id, :id
     field :user_id, :id
+    belongs_to :owner, Phonix.Accounts.User
+    has_many :room_members, Phonix.Calls.RoomMember
+    many_to_many :members, Phonix.Accounts.User, join_through: Phonix.Calls.RoomMember
 
     timestamps(type: :utc_datetime)
   end
