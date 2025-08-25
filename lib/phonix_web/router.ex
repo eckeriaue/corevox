@@ -26,6 +26,7 @@ defmodule PhonixWeb.Router do
       live "/", RoomLive.Index, :index
       live "/rooms/new", RoomLive.Form, :new
       live "/rooms/:id", RoomLive.Show, :show
+      live "/rooms/:id/prepare", RoomLive.Prepare, :prepare
     end
   end
 
