@@ -7,13 +7,16 @@ defmodule PhonixWeb.RoomLive.Show do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
-      room
+      room_id: {@room_id}
     </Layouts.app>
     """
   end
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket}
+  def mount(params, _session, socket) do
+    {:ok,
+      socket
+      |> assign(:room_id, params["id"])
+    }
   end
 end
