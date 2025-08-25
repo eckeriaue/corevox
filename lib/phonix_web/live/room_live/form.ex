@@ -42,10 +42,6 @@ defmodule PhonixWeb.RoomLive.Form do
 
   @impl true
   def handle_event("save", %{"room" => %{ "name" => name, "password" => password }}, socket) do
-    IO.inspect(socket)
-    IO.inspect(socket)
-    IO.inspect(socket)
-    IO.inspect(socket)
     case Calls.create_room(%{ "name" => name, "password" => password }, socket.assigns.current_scope) do
       {:ok, room} ->
         {:noreply, socket |> put_flash(:info, "Комната создана") |> push_redirect(to: ~p"/rooms/#{room.id}")}
