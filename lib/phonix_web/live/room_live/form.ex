@@ -21,6 +21,7 @@ defmodule PhonixWeb.RoomLive.Form do
       <.form
         :let={f}
         for={@changeset}
+        phx-mounted={JS.focus_first()}
         phx-submit="save"
         phx-change="validate"
       >
