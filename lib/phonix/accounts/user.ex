@@ -129,4 +129,16 @@ defmodule Phonix.Accounts.User do
     Bcrypt.no_user_verify()
     false
   end
+
+
+
+  @doc """
+  Changeset для создания/обновления пользователя
+  """
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, [:name, :email, :password])
+    |> validate_required([:name, :email])
+    |> unique_constraint(:email)
+  end
 end
