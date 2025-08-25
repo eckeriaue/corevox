@@ -35,7 +35,11 @@ defmodule PhonixWeb.RoomLive.Form do
           field={f[:password]}
         />
 
-        <.input type="textarea" label="Описание комнаты (необязательно)" field={f[:description]} />
+        <.input
+          type="textarea"
+          label="Описание комнаты (необязательно)"
+          field={f[:description]}
+        />
 
         <.button type="submit" disabled={@disabled}>Создать</.button>
       </.form>
