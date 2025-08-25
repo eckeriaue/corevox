@@ -26,7 +26,7 @@ defmodule PhonixWeb.RoomLive.Index do
             <div><img class="size-10 rounded-box" src={"https://robohash.org/room-#{room.id}-generated"}/></div>
             <div>
               <div>{room.name}</div>
-              <div class="text-xs font-semibold opacity-60">Без описания</div>
+              <div class="text-xs font-semibold opacity-60">{room.description || "Без описания"}</div>
             </div>
             <div class="tooltip" data-tip="Войти в комнату">
               <.button href={~p"/rooms/#{room.id}"} class="btn btn-square btn-ghost" >
