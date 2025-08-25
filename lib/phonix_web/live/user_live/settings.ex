@@ -11,8 +11,8 @@ defmodule PhonixWeb.UserLive.Settings do
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="text-center">
         <.header>
-          Account Settings
-          <:subtitle>Manage your account email address and password settings</:subtitle>
+          Настройки аккаунта
+          <:subtitle>Управляйте настройками адреса электронной почты и пароля вашей учетной записи</:subtitle>
         </.header>
       </div>
 
@@ -24,7 +24,7 @@ defmodule PhonixWeb.UserLive.Settings do
           autocomplete="username"
           required
         />
-        <.button variant="primary" phx-disable-with="Changing...">Change Email</.button>
+        <.button variant="primary" phx-disable-with="Changing...">Изменить email</.button>
       </.form>
 
       <div class="divider" />
@@ -48,18 +48,18 @@ defmodule PhonixWeb.UserLive.Settings do
         <.input
           field={@password_form[:password]}
           type="password"
-          label="New password"
+          label="Новый пароль"
           autocomplete="new-password"
           required
         />
         <.input
           field={@password_form[:password_confirmation]}
           type="password"
-          label="Confirm new password"
+          label="Потдвердите новый пароль"
           autocomplete="new-password"
         />
         <.button variant="primary" phx-disable-with="Saving...">
-          Save Password
+          Сохранить
         </.button>
       </.form>
     </Layouts.app>

@@ -33,7 +33,10 @@ defmodule PhonixWeb.RoomLive.Index do
           end
       end
 
-    {:ok, assign(socket, :current_scope, current_scope)}
+    {:ok, socket
+      |> assign(:current_scope, current_scope)
+      |> assign(:rooms, [])
+    }
   end
 
 

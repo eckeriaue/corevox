@@ -49,17 +49,17 @@ defmodule PhonixWeb.Layouts do
               {@current_scope.user.email}
             </li>
             <li>
-              <.link href={~p"/users/settings"} class="btn btn-ghost">Settings</.link>
+              <.link href={~p"/users/settings"} class="btn btn-ghost">Настройки</.link>
             </li>
             <li>
-              <.link href={~p"/users/log-out"} method="delete" class="btn btn-ghost">Log out</.link>
+              <.link href={~p"/users/log-out"} method="delete" class="btn btn-ghost">Выйти</.link>
             </li>
           <% else %>
             <li>
-              <.link href={~p"/users/register"} class="btn btn-ghost">Register</.link>
+              <.link href={~p"/users/register"} class="btn btn-ghost">Зарегестрироваться</.link>
             </li>
             <li>
-              <.link href={~p"/users/log-in"} class="btn btn-ghost">Log in</.link>
+              <.link href={~p"/users/log-in"} class="btn btn-ghost">Войти</.link>
             </li>
           <% end %>
           <li>
