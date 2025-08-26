@@ -13,13 +13,18 @@ defmodule PhonixWeb.RoomLive.Prepare do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <%!-- <script src="//unpkg.com/alpinejs" defer></script> --%>
+      <.button type="button" href={~p"/"} class="btn btn-ghost">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+        </svg>
+        <span>Обратно</span>
+      </.button>
       <.header> Подготовьтесь к входу в комнату </.header>
       <section>
         <div id="video-container" class="bg-base-200 rounded-2xl overflow-hidden" style="width: 400px;height:300px">
           <video id="localVideo" autoplay muted playsinline style="width: 400px; height:300px"></video>
         </div>
-        <.form id="controls" class="mt-4">
+        <form id="controls" class="mt-4">
           <div class="tooltip" data-tip="Включить микрофон">
             <.button
               class="btn btn-ghost"
@@ -40,7 +45,7 @@ defmodule PhonixWeb.RoomLive.Prepare do
             </.button>
           </div>
           <.button href={~p"/rooms/#{@room_id}"}> Войти</.button>
-        </.form>
+        </form>
 
         <script type="module">
           let microStream, cameraStream
