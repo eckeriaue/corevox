@@ -31,9 +31,11 @@ defmodule Phonix.Calls do
     |> Repo.insert()
   end
 
-  def join_room(user, room) do
+
+  def join_room(user, %Room{id: room_id}), do: join_room(user, room_id)
+  def join_room(user, room_id) when is_integer(room_id) do
     %RoomMember{}
-    |> RoomMember.changeset(%{user_id: user.id, room_id: room.id})
+    |> RoomMember.changeset(%{user_id: user.id, role: "member", room_id: room_id})
     |> Repo.insert(on_conflict: :nothing, conflict_target: [:room_id, :user_id])
   end
 

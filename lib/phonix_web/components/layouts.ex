@@ -79,6 +79,20 @@ defmodule PhonixWeb.Layouts do
     """
   end
 
+  def call(assigns) do
+    ~H"""
+    <header class="navbar px-4 sm:px-6 lg:px-8 flex justify-end">
+      <.theme_toggle />
+    </header>
+    <main class="px-4 py-20 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-2xl space-y-4">
+        {render_slot(@inner_block)}
+      </div>
+    </main>
+    <.flash_group flash={@flash} />
+    """
+  end
+
   @doc """
   Shows the flash group with standard titles and content.
 
