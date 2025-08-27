@@ -60,10 +60,14 @@ defmodule PhonixWeb.RoomLive.Show do
               <ul class="list contents">
                 <%!-- <%= for {id, member} <- @streams.members do %> --%>
                 <%= for member <- @members do %>
-                  <li class="list-row">
+                  <li class="list-row items-center">
                     <span class="loading loading-ball loading-sm"></span>
-                    <span>{member.name}</span>
-                    <span class="text-xs opacity-40">{member.email}</span>
+                    <span class="text-xs truncate">{member.name}</span>
+                    <.button class="btn btn-ghost btn-square">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                      </svg>
+                    </.button>
                   </li>
                 <% end %>
               </ul>
