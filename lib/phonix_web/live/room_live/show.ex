@@ -9,23 +9,25 @@ defmodule PhonixWeb.RoomLive.Show do
     ~H"""
     <Layouts.call flash={@flash} current_scope={@current_scope}>
       <section class="grid grid-cols-5 h-full">
-        <div class=" h-full bg-base-200 h-dvh -mt-16">
-          <ul
-            class="shadow-md list text-sm text-base-content h-dvh overflow-y-scroll"
-          >
-            <li id="me" class="list-row">
-              {@current_scope.user.email}
-            </li>
-
-            <ul id="members" phx-update="stream" class="list contents">
-            <%= for {id, member} <- @streams.members do %>
-              <li class="list-row" id={id}>
-                <span class="loading loading-dots loading-sm"></span>
-                {member.email}
+        <div class="bg-base-200 -mt-16" style="height: calc(100% + var(--spacing) * 16)">
+          <div class="pt-16 h-full">
+            <ul
+              class="list text-sm text-base-content h-full overflow-y-scroll"
+            >
+              <li id="me" class="list-row">
+                {@current_scope.user.email}
               </li>
-            <% end %>
+
+              <ul id="members" phx-update="stream" class="list contents">
+              <%= for {id, member} <- @streams.members do %>
+                <li class="list-row" id={id}>
+                  <span class="loading loading-dots loading-sm"></span>
+                  {member.email}
+                </li>
+              <% end %>
+              </ul>
             </ul>
-          </ul>
+          </div>
         </div>
 
         <div class="col-span-4 h-full bg-base-300">
