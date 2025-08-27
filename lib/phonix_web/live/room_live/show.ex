@@ -1,9 +1,8 @@
 defmodule PhonixWeb.RoomLive.Show do
   use PhonixWeb, :live_view
-  alias Phonix.Calls.Room
+  # alias Phonix.Calls.Room
   alias Phonix.Calls
 
-  # alias Phonix.Calls
 
   @impl true
   def render(assigns) do
@@ -34,7 +33,12 @@ defmodule PhonixWeb.RoomLive.Show do
   @impl true
   def mount(params, _session, socket) do
 
+
     room_id = String.to_integer(params["id"])
+
+    if connected?(socket) do
+      Phonix.PubSub |> Phoenix.PubSub.subscribe("room:#{Integer.to_string(room_id)}")
+    end
 
     case user = get_in(socket.assigns, [:current_scope, :user]) do
       nil ->
@@ -55,6 +59,7 @@ defmodule PhonixWeb.RoomLive.Show do
                 |> redirect(to: ~p"/rooms/#{room_id}/prepare")}
 
           {:ok, room_member} ->
+            Phonix.PubSub |> Phoenix.PubSub.broadcast("room:#{room_id}", {:member_joined, room_id})
             {:ok,
               socket
                 |> assign(:room_id, room_id)
@@ -63,5 +68,13 @@ defmodule PhonixWeb.RoomLive.Show do
 
         end
     end
+  end
+
+  @impl true
+  def handle_info({:member_joined, room_id}, socket) do
+    user = get_in(socket.assigns, [:current_scope, :user])
+    members = Calls.get_room_members(room_id)
+      |> Enum.reject(fn member -> member.id == user.id end)
+    {:noreply, assign(socket, :members, members)}
   end
 end
