@@ -12,10 +12,13 @@ defmodule Phonix.Calls do
   def get_room!(id), do: Room |> Repo.get!(id)
 
   def get_room_members(id) do
-    query = from room_members in RoomMember,
-      join: user in User, on: user.id == room_members.user_id,
-      where: room_members.room_id == ^id,
-      select: user
+    query =
+      from room_members in RoomMember,
+        join: user in User,
+        on: user.id == room_members.user_id,
+        where: room_members.room_id == ^id,
+        select: user
+
     Repo.all(query)
   end
 
@@ -31,7 +34,8 @@ defmodule Phonix.Calls do
         password -> Bcrypt.hash_pwd_salt(password)
       end
 
-    with_hashed_password_attrs = attrs
+    with_hashed_password_attrs =
+      attrs
       |> Map.take(["name", "description"])
       |> Map.merge(if password_hash, do: %{"password_hash" => password_hash}, else: %{})
 
@@ -40,8 +44,8 @@ defmodule Phonix.Calls do
     |> Repo.insert()
   end
 
-
   def join_room(user, %Room{id: room_id}), do: join_room(user, room_id)
+
   def join_room(user, room_id) when is_integer(room_id) do
     %RoomMember{}
     |> RoomMember.changeset(%{user_id: user.id, role: "member", room_id: room_id})
