@@ -68,7 +68,9 @@ defmodule PhonixWeb.RoomLive.Show do
          socket
          |> assign(:room_id, room_id)
          |> assign(:room_member, room_member)
-         |> stream(:members, members)}
+         |> assign(:members, members)}
+         # todo: use stream
+         # |> stream(:members, members)}
     end
   end
 
