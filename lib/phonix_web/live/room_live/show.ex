@@ -9,7 +9,7 @@ defmodule PhonixWeb.RoomLive.Show do
     {:ok,
      socket
      |> put_flash(:info, "Чтобы войти в комнату вы должны быть авторизованы")
-     |> redirect(to: ~p"/users/register")}
+     |> redirect(to: PhonixWeb.UserAuth.signed_in_path(socket))}
   end
 
   def mount(params, _session, socket) do
@@ -42,6 +42,12 @@ defmodule PhonixWeb.RoomLive.Show do
          # todo: use stream
          # |> stream(:members, members)}
     end
+  end
+
+  @impl true
+  def terminate(_reason, %{assigns: %{current_scope: current_scope}} = socket) when not is_nil(current_scope) do
+    current_scope.user |> Calls.leave_room(socket.assigns.room_id)
+    :ok
   end
 
   @impl true
@@ -122,6 +128,8 @@ defmodule PhonixWeb.RoomLive.Show do
             my_video_spinner.hidden = true
             my_video.hidden = false
           }, { once: true })
+        } else {
+          // ...
         }
       </script>
     """

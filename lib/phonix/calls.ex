@@ -52,8 +52,9 @@ defmodule Phonix.Calls do
     |> Repo.insert(on_conflict: :nothing, conflict_target: [:room_id, :user_id])
   end
 
-  def leave_room(user, room) do
-    from(rm in RoomMember, where: rm.user_id == ^user.id and rm.room_id == ^room.id)
+
+  def leave_room(user, room_id) do
+    from(rm in RoomMember, where: rm.user_id == ^user.id and rm.room_id == ^room_id)
     |> Repo.delete_all()
   end
 end
