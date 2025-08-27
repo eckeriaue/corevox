@@ -37,7 +37,7 @@ defmodule PhonixWeb.RoomLive.Show do
     room_id = String.to_integer(params["id"])
 
     if connected?(socket) do
-      Phonix.PubSub |> Phoenix.PubSub.subscribe("room:#{Integer.to_string(room_id)}")
+      Phonix.PubSub |> Phoenix.PubSub.subscribe("call:#{Integer.to_string(room_id)}")
     end
 
     case user = get_in(socket.assigns, [:current_scope, :user]) do
@@ -59,7 +59,7 @@ defmodule PhonixWeb.RoomLive.Show do
                 |> redirect(to: ~p"/rooms/#{room_id}/prepare")}
 
           {:ok, room_member} ->
-            Phonix.PubSub |> Phoenix.PubSub.broadcast("room:#{room_id}", {:member_joined, room_id})
+            Phonix.PubSub |> Phoenix.PubSub.broadcast("call:#{room_id}", {:member_joined, room_id})
             {:ok,
               socket
                 |> assign(:room_id, room_id)
