@@ -10,16 +10,20 @@ defmodule PhonixWeb.RoomLive.Show do
     <Layouts.call flash={@flash} current_scope={@current_scope}>
       <section class="grid grid-cols-5 h-full">
         <div class="border-r h-full border-base-100">
-          <ul class="list text-sm text-base-content">
-            <li class="list-row">
+          <ul
+          class="list text-sm text-base-content">
+            <li id="me" class="list-row">
               {@current_scope.user.email}
             </li>
 
-            <%= for member <- @members do %>
-              <li class="list-row">
+            <div id="members" phx-update="stream" class="list contents">
+            <%= for {id, member} <- @streams.members do %>
+              <li class="list-row" id={id}>
+                <span class="loading loading-dots loading-sm"></span>
                 {member.email}
               </li>
             <% end %>
+            </div>
           </ul>
         </div>
 
@@ -64,7 +68,7 @@ defmodule PhonixWeb.RoomLive.Show do
               socket
                 |> assign(:room_id, room_id)
                 |> assign(:room_member, room_member)
-                |> assign(:members, members)}
+                |> stream(:members, members)}
 
         end
     end
