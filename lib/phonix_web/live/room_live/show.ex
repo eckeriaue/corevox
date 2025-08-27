@@ -2,6 +2,8 @@ defmodule PhonixWeb.RoomLive.Show do
   use PhonixWeb, :live_view
   # alias Phonix.Calls.Room
   alias Phonix.Calls
+  import String, only: [to_integer: 1]
+  import Integer, only: [to_string: 1]
 
 
   @impl true
@@ -34,10 +36,10 @@ defmodule PhonixWeb.RoomLive.Show do
   def mount(params, _session, socket) do
 
 
-    room_id = String.to_integer(params["id"])
+    room_id = to_integer(params["id"])
 
     if connected?(socket) do
-      Phonix.PubSub |> Phoenix.PubSub.subscribe("call:#{Integer.to_string(room_id)}")
+      Phonix.PubSub |> Phoenix.PubSub.subscribe("call:#{to_string(room_id)}")
     end
 
     case user = get_in(socket.assigns, [:current_scope, :user]) do
