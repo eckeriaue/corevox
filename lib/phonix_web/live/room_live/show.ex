@@ -15,9 +15,11 @@ defmodule PhonixWeb.RoomLive.Show do
                 {@current_scope.user.name}
               </li>
 
-              <ul id="members" phx-update="stream" class="list contents">
-                <%= for {id, member} <- @streams.members do %>
-                  <li class="list-row opacity-40" id={id}>
+              <%!-- <ul id="members" phx-update="stream" class="list contents"> --%>
+              <ul class="list contents">
+                <%!-- <%= for {id, member} <- @streams.members do %> --%>
+                <%= for member <- @members do %>
+                  <li class="list-row opacity-40">
                     <span class="">{member.name}</span>
                     <span class="text-xs">{member.email}</span>
                   </li>
