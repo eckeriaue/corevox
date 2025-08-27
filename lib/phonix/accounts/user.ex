@@ -4,6 +4,9 @@ defmodule Phonix.Accounts.User do
 
   schema "users" do
     field :email, :string
+
+    field :name, :string
+
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :utc_datetime
@@ -25,14 +28,14 @@ defmodule Phonix.Accounts.User do
   """
   def email_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email])
+    |> cast(attrs, [:email, :name])
     |> validate_email(opts)
   end
 
   defp validate_email(changeset, opts) do
     changeset =
       changeset
-      |> validate_required([:email])
+      |> validate_required([:email, :name])
       |> validate_format(:email, ~r/^[^@,;\s]+@[^@,;\s]+$/,
         message: "must have the @ sign and no spaces"
       )

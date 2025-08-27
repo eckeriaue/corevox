@@ -23,13 +23,21 @@ defmodule PhonixWeb.UserLive.Registration do
         </div>
 
         <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
+
+          <.input
+            field={@form[:name]}
+            type="text"
+            label="Ваше имя"
+            required
+            phx-mounted={JS.focus()}
+          />
+
           <.input
             field={@form[:email]}
             type="email"
             label="Email"
             autocomplete="username"
             required
-            phx-mounted={JS.focus()}
           />
 
           <.button phx-disable-with="Creating account..." class="btn btn-primary w-full">
@@ -67,7 +75,7 @@ defmodule PhonixWeb.UserLive.Registration do
          socket
          |> put_flash(
            :info,
-           "An email was sent to #{user.email}, please access it to confirm your account."
+           "На адрес #{user.email} было отправлено письмо, пожалуйста, откройте его, чтобы подтвердить свою учетную запись."
          )
          |> push_navigate(to: ~p"/users/log-in")}
 

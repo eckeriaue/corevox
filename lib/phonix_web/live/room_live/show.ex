@@ -15,14 +15,14 @@ defmodule PhonixWeb.RoomLive.Show do
               class="list text-sm text-base-content h-full overflow-y-scroll"
             >
               <li id="me" class="list-row">
-                {@current_scope.user.email}
+                {@current_scope.user.name}
               </li>
 
               <ul id="members" phx-update="stream" class="list contents">
               <%= for {id, member} <- @streams.members do %>
-                <li class="list-row" id={id}>
-                  <span class="loading loading-dots loading-sm"></span>
-                  {member.email}
+                <li class="list-row opacity-40" id={id}>
+                  <span class="">{member.name}</span>
+                  <span class="text-xs">{member.email}</span>
                 </li>
               <% end %>
               </ul>
@@ -80,6 +80,7 @@ defmodule PhonixWeb.RoomLive.Show do
     user = get_in(socket.assigns, [:current_scope, :user])
     members = Calls.get_room_members(room_id)
       |> Enum.reject(fn member -> member.id == user.id end)
+
 
     {:noreply, assign(socket, :members, members)}
   end
