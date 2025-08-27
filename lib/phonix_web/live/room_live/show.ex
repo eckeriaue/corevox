@@ -39,8 +39,6 @@ defmodule PhonixWeb.RoomLive.Show do
 
   @impl true
   def mount(params, _session, socket) do
-
-
     room_id = String.to_integer(params["id"])
 
     if connected?(socket) do
@@ -82,6 +80,7 @@ defmodule PhonixWeb.RoomLive.Show do
     user = get_in(socket.assigns, [:current_scope, :user])
     members = Calls.get_room_members(room_id)
       |> Enum.reject(fn member -> member.id == user.id end)
+
     {:noreply, assign(socket, :members, members)}
   end
 end
