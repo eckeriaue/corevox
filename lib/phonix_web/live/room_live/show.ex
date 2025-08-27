@@ -9,9 +9,9 @@ defmodule PhonixWeb.RoomLive.Show do
     ~H"""
     <Layouts.call flash={@flash} current_scope={@current_scope}>
       <section class="grid grid-cols-5 h-full">
-        <div class="border-r h-full border-base-100 bg-base-200 h-dvh -mt-16">
+        <div class=" h-full bg-base-200 h-dvh -mt-16">
           <ul
-            class="list text-sm text-base-content h-dvh overflow-y-scroll"
+            class="shadow-md list text-sm text-base-content h-dvh overflow-y-scroll"
           >
             <li id="me" class="list-row">
               {@current_scope.user.email}
