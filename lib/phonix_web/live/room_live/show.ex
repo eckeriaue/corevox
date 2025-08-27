@@ -4,38 +4,6 @@ defmodule PhonixWeb.RoomLive.Show do
   alias Phonix.Calls
 
   @impl true
-  def render(assigns) do
-    ~H"""
-    <Layouts.call flash={@flash} current_scope={@current_scope}>
-      <section class="grid grid-cols-5 h-full">
-        <div class="bg-base-200 -mt-16" style="height: calc(100% + var(--spacing) * 16)">
-          <div class="pt-16 h-full">
-            <ul class="list text-sm text-base-content h-full overflow-y-scroll">
-              <li id="me" class="list-row">
-                {@current_scope.user.name}
-              </li>
-
-              <%!-- <ul id="members" phx-update="stream" class="list contents"> --%>
-              <ul class="list contents">
-                <%!-- <%= for {id, member} <- @streams.members do %> --%>
-                <%= for member <- @members do %>
-                  <li class="list-row opacity-40">
-                    <span class="">{member.name}</span>
-                    <span class="text-xs">{member.email}</span>
-                  </li>
-                <% end %>
-              </ul>
-            </ul>
-          </div>
-        </div>
-
-        <div class="col-span-4 h-full bg-base-300"></div>
-      </section>
-    </Layouts.call>
-    """
-  end
-
-  @impl true
   def mount(_params, _session, %{assigns: %{current_scope: current_scope}} = socket)
       when is_nil(current_scope) do
     {:ok,
@@ -77,6 +45,44 @@ defmodule PhonixWeb.RoomLive.Show do
   end
 
   @impl true
+  def render(assigns) do
+    ~H"""
+    <Layouts.call flash={@flash} current_scope={@current_scope}>
+      <section class="grid grid-cols-5 h-full">
+        <div class="bg-base-200 -mt-16" style="height: calc(100% + var(--spacing) * 16)">
+          <div class="pt-16 h-full">
+            <ul class="list text-sm text-base-content h-full overflow-y-scroll">
+              <li id="me" class="list-row">
+                {@current_scope.user.name}
+              </li>
+
+              <%!-- <ul id="members" phx-update="stream" class="list contents"> --%>
+              <ul class="list contents">
+                <%!-- <%= for {id, member} <- @streams.members do %> --%>
+                <%= for member <- @members do %>
+                  <li class="list-row">
+                    <span class="loading loading-ball loading-sm"></span>
+                    <span>{member.name}</span>
+                    <span class="text-xs opacity-40">{member.email}</span>
+                  </li>
+                <% end %>
+              </ul>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-span-4 grid grid-cols-3 p-4 gap-4 h-full bg-base-300">
+          <.my_video />
+          <%= for member <- @members do %>
+            <.remote_video whoami={member.name || member.email} id={member.id} />
+          <% end %>
+        </div>
+      </section>
+    </Layouts.call>
+    """
+  end
+
+  @impl true
   def handle_info({:member_joined, room_id}, socket) do
     user = get_in(socket.assigns, [:current_scope, :user])
 
@@ -86,4 +92,53 @@ defmodule PhonixWeb.RoomLive.Show do
 
     {:noreply, assign(socket, :members, members)}
   end
+
+  def my_video(assigns) do
+    ~H"""
+    <div style="width:300px;height:200px;" class="bg-base-200 relative rounded-2xl flex items-center justify-center overflow-hidden">
+      <div class="absolute inset-0 size-full p-2">
+        <span class="badge">Вы</span>
+      </div>
+      <span id="my_video_spinner" class="loading loading-spinner loading-lg"></span>
+      <video
+        id="my_video"
+        hidden
+        autoplay
+        playsinline
+        muted
+      />
+    </div>
+
+      <script type="module">
+        let cameraStream
+        const cameraStatus = await navigator.permissions.query({ name: "camera" })
+        if (cameraStatus.state === 'granted') {
+          my_video.srcObject = await navigator.mediaDevices.getUserMedia({ video: true })
+          my_video.addEventListener("loadeddata", () => {
+            my_video_spinner.hidden = true
+            my_video.hidden = false
+          }, { once: true })
+        }
+      </script>
+    """
+  end
+
+  def remote_video(assigns) do
+    ~H"""
+      <div style="width:300px;height:200px;" class="bg-base-200 relative rounded-2xl flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 size-full p-2">
+          <span class="badge">{@whoami}</span>
+        </div>
+        <span class="loading loading-spinner loading-lg"></span>
+        <video
+          id={"remote_video-#{@id}"}
+          hidden
+          autoplay
+          playsinline
+          muted
+        />
+      </div>
+    """
+  end
+
 end
