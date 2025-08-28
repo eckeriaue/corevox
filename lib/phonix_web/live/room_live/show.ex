@@ -151,7 +151,10 @@ defmodule PhonixWeb.RoomLive.Show do
 
   def my_video(assigns) do
     ~H"""
-    <div style="width:300px;height:200px;" class="bg-base-200 relative rounded-2xl flex items-center justify-center overflow-hidden">
+    <div
+      style="width:300px;height:200px;"
+      class="ring ring-base-100 bg-base-200 relative rounded-2xl flex items-center justify-center overflow-hidden"
+    >
       <div class="absolute inset-0 size-full p-2">
         <span class="badge">Вы</span>
       </div>
