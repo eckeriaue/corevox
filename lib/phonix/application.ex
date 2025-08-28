@@ -12,6 +12,7 @@ defmodule Phonix.Application do
       Phonix.Repo,
       {DNSCluster, query: Application.get_env(:phonix, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Phonix.PubSub},
+      PhonixWeb.Presence,
       # Start a worker by calling: Phonix.Worker.start_link(arg)
       # {Phonix.Worker, arg},
       # Start to serve requests, typically the last entry

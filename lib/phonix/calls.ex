@@ -2,7 +2,7 @@ defmodule Phonix.Calls do
   import Ecto.Query, warn: false
   alias Phonix.Repo
   alias Phonix.Calls.Room
-  alias Phonix.Accounts.User
+  # alias Phonix.Accounts.User
   alias Phonix.Calls.RoomMember
 
   def list_rooms do

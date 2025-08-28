@@ -13,46 +13,33 @@ alias Phonix.Calls.Room
      |> redirect(to: PhonixWeb.UserAuth.signed_in_path(socket))}
   end
 
-  def mount(params, _session, socket) do
-    room_id = String.to_integer(params["id"])
-    user = get_in(socket.assigns, [:current_scope, :user])
+  def mount(%{"id" => room_id}, _session, socket) do
 
     if connected?(socket) do
-      Phonix.PubSub |> Phoenix.PubSub.subscribe("call:#{Integer.to_string(room_id)}")
+      user = socket.assigns.current_scope.user
+      topic = "room:" <> room_id
+      PhonixWeb.Endpoint.subscribe(topic)
+
+      {:ok, _} = PhonixWeb.Presence.track(
+        self(),
+        topic,
+        user.id,
+        %{
+          name: user.name,
+          id: user.id,
+          email: user.email,
+          joined_at: System.system_time(:second),
+        }
+      )
     end
 
-    members =
-      RoomMembers.get_room_members(Integer.to_string(room_id))
-        |> Enum.reject(fn member -> member.user.id == user.id end)
-
-    case Calls.join_room(user, room_id) do
-      {:error, _} ->
-        {:ok,
-         socket
-         |> put_flash(:error, "При входе в комнату произошла ошибка")
-         |> redirect(to: ~p"/rooms/#{room_id}/prepare")}
-
-      {:ok, room_member} ->
-        Phonix.PubSub |> Phoenix.PubSub.broadcast("call:#{room_id}", {:member_joined, room_id})
-
-        {:ok,
-         socket
-         |> assign(:room_id, room_id)
-         |> assign(:room_member, room_member)
-         |> assign(:enable_micro, false)
-         |> assign(:enable_camera, false)
-         |> assign(:enable_audio, false)
-         |> stream(:members, members)}
-    end
+    {:ok, socket
+      |> assign(:room_id, room_id)
+      |> assign(:enable_micro, false)
+      |> assign(:enable_camera, false)
+      |> assign(:enable_audio, false)
+      |> assign(:members, presence_members(room_id))}
   end
-
-  @impl true
-  def terminate(_reason, %{assigns: %{current_scope: current_scope}} = socket) when not is_nil(current_scope) do
-    current_scope.user |> Calls.leave_room(socket.assigns.room_id)
-    :ok
-  end
-
-
 
   @impl true
   def render(assigns) do
@@ -66,14 +53,14 @@ alias Phonix.Calls.Room
                 {@current_scope.user.name}
               </li>
 
-              <ul id="members" phx-update="stream"  class="list contents">
+              <ul class="list contents">
                   <li
-                    :for={{id, member} <- @streams.members}
+                    :for={member <- @members}
+                    id={"info-list-members-#{member.id}"}
                     class="list-row items-center"
-                    id={"#{id}"}
                   >
                     <span class="loading loading-ball loading-sm"></span>
-                    <span class="text-xs truncate">{member.user.name}</span>
+                    <span class="text-xs truncate">{member.name}</span>
                     <.button class="btn btn-ghost btn-square">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
@@ -117,12 +104,12 @@ alias Phonix.Calls.Room
         <div class="col-span-4 grid grid-cols-3 p-4 gap-4 h-full bg-base-300">
           <.my_video enable_camera={@enable_camera} />
             <div
-              :for={{_, member} <- @streams.members}
+              :for={member <- @members}
               id={"remote-video-members-#{member.id}"}
               class="contents"
             >
             <.remote_video
-              whoami={member.user.name || member.user.email}
+              whoami={member.name || member.email}
               video_id={member.id}
             />
             </div>
@@ -144,31 +131,28 @@ alias Phonix.Calls.Room
      end
   end
 
-  def handle_event("leave_room", _unsigned_params, socket) do
-    room_member = RoomMembers.get_by_user_id!(socket.assigns.current_scope.user.id)
-    socket.assigns.current_scope.user |> Calls.leave_room(socket.assigns.room_id)
-    socket = socket |> stream_delete(:members, room_member)
-    for remote_video_dom_id <- socket.assigns.streams.members.deletes |> Enum.map(fn member_dom_id -> "remote-video-#{member_dom_id}" end) do
-      socket = socket |> stream_delete_by_dom_id(:members, remote_video_dom_id)
-    end
+  def handle_event("leave_room", _params, socket) do
+    topic = "room:" <> socket.assigns.room_id
+    PhonixWeb.Presence.untrack(self(), topic, socket.assigns.current_scope.user.id)
     {:noreply, socket}
   end
+
+
+  defp presence_members(room_id) do
+    PhonixWeb.Presence.list("room:" <> room_id)
+    |> Enum.map(fn {_key, %{metas: metas}} ->
+      List.first(metas)
+    end)
+  end
+
 
   @impl true
-  def handle_info({:member_joined, room_id}, socket) do
-    user = get_in(socket.assigns, [:current_scope, :user])
-
-    members =
-      RoomMembers.get_room_members(room_id)
-      |> Enum.reject(fn member -> member.user.id == user.id end)
-
-    socket =
-      Enum.reduce(members, socket, fn member, acc ->
-        stream_insert(acc, :members, member)
-      end)
-
-    {:noreply, socket}
+  def handle_info(%{event: "presence_diff", payload: _diff}, socket) do
+    {:noreply, socket
+    |> assign(:members, presence_members(socket.assigns.room_id))}
   end
+
+
 
   def my_video(assigns) do
     ~H"""
