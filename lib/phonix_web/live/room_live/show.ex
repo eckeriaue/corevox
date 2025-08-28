@@ -56,6 +56,7 @@ alias Phonix.Calls.Room
               <ul class="list contents">
                   <li
                     :for={member <- @members}
+                    :if={member.id != @current_scope.user.id}
                     id={"info-list-members-#{member.id}"}
                     class="list-row items-center"
                   >
@@ -105,6 +106,7 @@ alias Phonix.Calls.Room
           <.my_video enable_camera={@enable_camera} />
             <div
               :for={member <- @members}
+              :if={member.id != @current_scope.user.id}
               id={"remote-video-members-#{member.id}"}
               class="contents"
             >
