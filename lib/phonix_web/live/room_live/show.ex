@@ -38,6 +38,9 @@ defmodule PhonixWeb.RoomLive.Show do
          socket
          |> assign(:room_id, room_id)
          |> assign(:room_member, room_member)
+         |> assign(:enable_micro, false)
+         |> assign(:enable_camera, false)
+         |> assign(:enable_audio, false)
          |> assign(:members, members)}
          # todo: use stream
          # |> stream(:members, members)}
@@ -56,8 +59,8 @@ defmodule PhonixWeb.RoomLive.Show do
     <Layouts.call flash={@flash} current_scope={@current_scope}>
       <section class="grid grid-cols-5 h-full">
         <div class="bg-base-200 -mt-16" style="height: calc(100% + var(--spacing) * 16)">
-          <div class="pt-16 h-full">
-            <ul class="list text-sm text-base-content h-full overflow-y-scroll">
+          <div class="flex flex-col pt-16 h-full">
+            <ul class="list grow text-sm text-base-content h-full overflow-y-scroll">
               <li id="me" class="list-row">
                 {@current_scope.user.name}
               </li>
@@ -78,6 +81,37 @@ defmodule PhonixWeb.RoomLive.Show do
                 <% end %>
               </ul>
             </ul>
+
+            <div class="mx-2 border-t-2 p-4 border-base-100">
+
+              <.button
+                phx-click="toggle_micro"
+                class={[
+                  "btn btn-circle ph",
+                  if(@enable_micro, do: "ph-microphone", else: "ph-microphone-slash")
+                ]}
+                ></.button>
+              <.button
+                phx-click="toggle_camera"
+                class={[
+                  "btn btn-circle ph",
+                  if(@enable_camera, do: "ph-camera", else: "ph-camera-slash")
+                ]}
+                ></.button>
+              <.button
+                phx-click="toggle_audio"
+                class={[
+                  "btn btn-circle ph",
+                  if(@enable_audio, do: "ph-ear", else: "ph-ear-slash")
+                ]}
+                ></.button>
+              <.button
+                class={[
+                  "btn btn-circle ph ph-monitor",
+                ]}
+              ></.button>
+
+            </div>
           </div>
         </div>
 
@@ -90,6 +124,18 @@ defmodule PhonixWeb.RoomLive.Show do
       </section>
     </Layouts.call>
     """
+  end
+
+  @impl true
+  def handle_event(toggle_state_media, unsigned_params, socket)
+    when toggle_state_media == "toggle_micro" or
+   toggle_state_media == "toggle_camera" or
+   toggle_state_media == "toggle_audio" do
+     case toggle_state_media do
+       "toggle_micro" -> {:noreply, assign(socket, :enable_micro, !socket.assigns.enable_micro)}
+       "toggle_camera" -> {:noreply, assign(socket, :enable_camera, !socket.assigns.enable_camera)}
+       "toggle_audio" -> {:noreply, assign(socket, :enable_audio, !socket.assigns.enable_audio)}
+     end
   end
 
   @impl true
