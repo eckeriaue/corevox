@@ -8,7 +8,10 @@ export class LocalVideo {
         .then(stream => {
           this.el.srcObject = stream
           this.el.addEventListener('loadeddata', () => {
-            document.querySelector(this.el.dataset.loadingIndicator).hidden = true
+            const loadingIndicator = document.querySelector(this.el.dataset.loadingIndicator)
+            if (loadingIndicator) {
+              loadingIndicator.hidden = true
+            }
             this.el.hidden = false
           }, { once: true })
         })
