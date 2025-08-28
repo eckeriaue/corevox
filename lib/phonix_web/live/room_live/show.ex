@@ -1,7 +1,8 @@
 defmodule PhonixWeb.RoomLive.Show do
+alias Phonix.Calls.Room
   use PhonixWeb, :live_view
-  # alias Phonix.Calls.Room
   alias Phonix.Calls
+  alias Phonix.RoomMembers
 
   @impl true
   def mount(_params, _session, %{assigns: %{current_scope: current_scope}} = socket)
@@ -21,8 +22,8 @@ defmodule PhonixWeb.RoomLive.Show do
     end
 
     members =
-      Calls.get_room_members(room_id)
-      |> Enum.reject(fn member -> member.id == user.id end)
+      RoomMembers.get_room_members(Integer.to_string(room_id))
+        |> Enum.reject(fn member -> member.user.id == user.id end)
 
     case Calls.join_room(user, room_id) do
       {:error, _} ->
@@ -41,9 +42,7 @@ defmodule PhonixWeb.RoomLive.Show do
          |> assign(:enable_micro, false)
          |> assign(:enable_camera, false)
          |> assign(:enable_audio, false)
-         |> assign(:members, members)}
-         # todo: use stream
-         # |> stream(:members, members)}
+         |> stream(:members, members)}
     end
   end
 
@@ -52,6 +51,8 @@ defmodule PhonixWeb.RoomLive.Show do
     current_scope.user |> Calls.leave_room(socket.assigns.room_id)
     :ok
   end
+
+
 
   @impl true
   def render(assigns) do
@@ -65,20 +66,20 @@ defmodule PhonixWeb.RoomLive.Show do
                 {@current_scope.user.name}
               </li>
 
-              <%!-- <ul id="members" phx-update="stream" class="list contents"> --%>
-              <ul class="list contents">
-                <%!-- <%= for {id, member} <- @streams.members do %> --%>
-                <%= for member <- @members do %>
-                  <li class="list-row items-center">
+              <ul id="members" phx-update="stream"  class="list contents">
+                  <li
+                    :for={{id, member} <- @streams.members}
+                    class="list-row items-center"
+                    id={"#{id}"}
+                  >
                     <span class="loading loading-ball loading-sm"></span>
-                    <span class="text-xs truncate">{member.name}</span>
+                    <span class="text-xs truncate">{member.user.name}</span>
                     <.button class="btn btn-ghost btn-square">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
                       </svg>
                     </.button>
                   </li>
-                <% end %>
               </ul>
             </ul>
 
@@ -106,9 +107,7 @@ defmodule PhonixWeb.RoomLive.Show do
                 ]}
                 ></.button>
               <.button
-                class={[
-                  "btn btn-circle ph ph-monitor",
-                ]}
+                class="btn btn-circle ph ph-monitor"
               ></.button>
 
             </div>
@@ -117,9 +116,16 @@ defmodule PhonixWeb.RoomLive.Show do
 
         <div class="col-span-4 grid grid-cols-3 p-4 gap-4 h-full bg-base-300">
           <.my_video enable_camera={@enable_camera} />
-          <%= for member <- @members do %>
-            <.remote_video whoami={member.name || member.email} id={member.id} />
-          <% end %>
+            <div
+              :for={{_, member} <- @streams.members}
+              id={"remote-video-members-#{member.id}"}
+              class="contents"
+            >
+            <.remote_video
+              whoami={member.user.name || member.user.email}
+              video_id={member.id}
+            />
+            </div>
         </div>
       </section>
     </Layouts.call>
@@ -127,7 +133,7 @@ defmodule PhonixWeb.RoomLive.Show do
   end
 
   @impl true
-  def handle_event(toggle_state_media, unsigned_params, socket)
+  def handle_event(toggle_state_media, _unsigned_params, socket)
     when toggle_state_media == "toggle_micro" or
    toggle_state_media == "toggle_camera" or
    toggle_state_media == "toggle_audio" do
@@ -138,15 +144,30 @@ defmodule PhonixWeb.RoomLive.Show do
      end
   end
 
+  def handle_event("leave_room", _unsigned_params, socket) do
+    room_member = RoomMembers.get_by_user_id!(socket.assigns.current_scope.user.id)
+    socket.assigns.current_scope.user |> Calls.leave_room(socket.assigns.room_id)
+    socket = socket |> stream_delete(:members, room_member)
+    for remote_video_dom_id <- socket.assigns.streams.members.deletes |> Enum.map(fn member_dom_id -> "remote-video-#{member_dom_id}" end) do
+      socket = socket |> stream_delete_by_dom_id(:members, remote_video_dom_id)
+    end
+    {:noreply, socket}
+  end
+
   @impl true
   def handle_info({:member_joined, room_id}, socket) do
     user = get_in(socket.assigns, [:current_scope, :user])
 
     members =
-      Calls.get_room_members(room_id)
-      |> Enum.reject(fn member -> member.id == user.id end)
+      RoomMembers.get_room_members(room_id)
+      |> Enum.reject(fn member -> member.user.id == user.id end)
 
-    {:noreply, assign(socket, :members, members)}
+    socket =
+      Enum.reduce(members, socket, fn member, acc ->
+        stream_insert(acc, :members, member)
+      end)
+
+    {:noreply, socket}
   end
 
   def my_video(assigns) do
@@ -184,7 +205,6 @@ defmodule PhonixWeb.RoomLive.Show do
         </div>
         <span class="loading loading-spinner loading-lg"></span>
         <video
-          id={"remote_video-#{@id}"}
           hidden
           autoplay
           playsinline

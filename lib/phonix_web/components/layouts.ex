@@ -90,7 +90,12 @@ defmodule PhonixWeb.Layouts do
       </div>
       <.theme_toggle />
     </header>
-    <main class="bg-base-200" style="height: calc(100dvh - var(--spacing) * 16)">
+    <main
+      class="bg-base-200"
+      style="height: calc(100dvh - var(--spacing) * 16)"
+      phx-hook="LeaveRoom"
+      id="main-content"
+    >
       {render_slot(@inner_block)}
     </main>
     <.flash_group flash={@flash} />

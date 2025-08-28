@@ -11,17 +11,6 @@ defmodule Phonix.Calls do
 
   def get_room!(id), do: Room |> Repo.get!(id)
 
-  def get_room_members(id) do
-    query =
-      from room_members in RoomMember,
-        join: user in User,
-        on: user.id == room_members.user_id,
-        where: room_members.room_id == ^id,
-        select: user
-
-    Repo.all(query)
-  end
-
   def change_room(room, attrs \\ %{}) do
     Room.changeset(room, attrs)
   end
@@ -49,11 +38,15 @@ defmodule Phonix.Calls do
   def join_room(user, room_id) when is_integer(room_id) do
     %RoomMember{}
     |> RoomMember.changeset(%{user_id: user.id, role: "member", room_id: room_id})
-    |> Repo.insert(on_conflict: :nothing, conflict_target: [:room_id, :user_id])
+    |> Repo.insert(on_conflict: :nothing, conflict_target: [:room_id, :user_id], returning: [:id, :user_id])
   end
 
 
-  def leave_room(user, room_id) do
+  def leave_room(user, room) when is_struct(room) do
+    leave_room(user, room.id)
+  end
+
+  def leave_room(user, room_id) when is_integer(room_id) do
     from(rm in RoomMember, where: rm.user_id == ^user.id and rm.room_id == ^room_id)
     |> Repo.delete_all()
   end

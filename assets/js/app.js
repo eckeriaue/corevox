@@ -25,6 +25,7 @@ import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/phonix"
 import topbar from "../vendor/topbar"
 import { LocalVideo } from "./LocalVideo"
+import { LeaveRoom } from "./LeaveRoom"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
@@ -32,7 +33,8 @@ const liveSocket = new LiveSocket("/live", Socket, {
   params: {_csrf_token: csrfToken},
   hooks: {
     ...colocatedHooks,
-    LocalVideo: new LocalVideo()
+    LocalVideo: new LocalVideo(),
+    LeaveRoom: new LeaveRoom()
   },
 })
 
