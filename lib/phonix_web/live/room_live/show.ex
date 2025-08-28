@@ -116,7 +116,7 @@ defmodule PhonixWeb.RoomLive.Show do
         </div>
 
         <div class="col-span-4 grid grid-cols-3 p-4 gap-4 h-full bg-base-300">
-          <.my_video />
+          <.my_video enable_camera={@enable_camera} />
           <%= for member <- @members do %>
             <.remote_video whoami={member.name || member.email} id={member.id} />
           <% end %>
@@ -155,29 +155,21 @@ defmodule PhonixWeb.RoomLive.Show do
       <div class="absolute inset-0 size-full p-2">
         <span class="badge">Вы</span>
       </div>
+      <%= if @enable_camera do %>
       <span id="my_video_spinner" class="loading loading-spinner loading-lg"></span>
       <video
         id="my_video"
+        data-loading-indicator="#my_video_spinner"
         hidden
         autoplay
         playsinline
         muted
+        phx-hook="LocalVideo"
       />
+      <% else %>
+      <span class="ph ph-user text-4xl text-secondary" />
+      <% end %>
     </div>
-
-      <script type="module">
-        let cameraStream
-        const cameraStatus = await navigator.permissions.query({ name: "camera" })
-        if (cameraStatus.state === 'granted') {
-          my_video.srcObject = await navigator.mediaDevices.getUserMedia({ video: true })
-          my_video.addEventListener("loadeddata", () => {
-            my_video_spinner.hidden = true
-            my_video.hidden = false
-          }, { once: true })
-        } else {
-          // ...
-        }
-      </script>
     """
   end
 
