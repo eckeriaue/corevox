@@ -54,6 +54,10 @@ defmodule PhonixWeb.RoomLive.Show do
                   <li
                     :for={member <- @members}
                     :if={member.id != @current_scope.user.id}
+                    phx-hook="JoinRtc"
+                    data-remote-user-id={member.id}
+                    data-local-user-id={@current_scope.user.id}
+                    data-room-id={@room_id}
                     id={"info-list-members-#{member.id}"}
                     class="list-row items-center"
                   >
@@ -136,6 +140,14 @@ defmodule PhonixWeb.RoomLive.Show do
     {:noreply, socket}
   end
 
+  def handle_event("offer", %{"offer" => offer, "localUserId" => localUserId, "remoteUserId" => remoteUserId}, socket) do
+    IO.inspect(offer)
+    IO.inspect(localUserId)
+    IO.inspect(remoteUserId)
+
+    {:noreply, socket}
+  end
+
 
   defp presence_members(room_id) do
     PhonixWeb.Presence.list("room:" <> room_id)
@@ -182,7 +194,7 @@ defmodule PhonixWeb.RoomLive.Show do
 
   def remote_video(assigns) do
     ~H"""
-      <div style="width:300px;height:200px;" class="bg-base-200 relative rounded-2xl flex items-center justify-center overflow-hidden">
+      <div style="width:300px;height:200px;" class="ring ring-base-100 bg-base-200 relative rounded-2xl flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 size-full p-2">
           <span class="badge">{@whoami}</span>
         </div>

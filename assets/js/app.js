@@ -26,6 +26,7 @@ import {hooks as colocatedHooks} from "phoenix-colocated/phonix"
 import topbar from "../vendor/topbar"
 import { LocalVideo } from "./LocalVideo"
 import { LeaveRoom } from "./LeaveRoom"
+import { JoinRtc } from "./JoinRtc"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
@@ -34,7 +35,8 @@ const liveSocket = new LiveSocket("/live", Socket, {
   hooks: {
     ...colocatedHooks,
     LocalVideo: new LocalVideo(),
-    LeaveRoom: new LeaveRoom()
+    LeaveRoom: new LeaveRoom(),
+    JoinRtc: new JoinRtc()
   },
 })
 
