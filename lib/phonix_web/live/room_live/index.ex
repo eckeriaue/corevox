@@ -1,8 +1,6 @@
 defmodule PhonixWeb.RoomLive.Index do
+  alias Phonix.Rooms
   use PhonixWeb, :live_view
-  alias Phonix.Calls
-  # alias Phonix.Accounts
-  # on_mount {PhonixWeb.UserAuth, :require_sudo_mode}
 
   @impl true
   def render(assigns) do
@@ -67,7 +65,7 @@ defmodule PhonixWeb.RoomLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    rooms = Calls.list_rooms()
+    rooms = Rooms.list_rooms()
     {:ok, socket |> assign(:rooms, rooms)}
   end
 end

@@ -1,8 +1,5 @@
 defmodule PhonixWeb.RoomLive.Show do
-alias Phonix.Calls.Room
   use PhonixWeb, :live_view
-  alias Phonix.Calls
-  alias Phonix.RoomMembers
 
   @impl true
   def mount(_params, _session, %{assigns: %{current_scope: current_scope}} = socket)

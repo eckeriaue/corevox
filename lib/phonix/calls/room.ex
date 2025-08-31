@@ -8,8 +8,6 @@ defmodule Phonix.Calls.Room do
     field :description, :string
     field :password_hash, :string
     belongs_to :owner, Phonix.Accounts.User
-    has_many :room_members, Phonix.Calls.RoomMember
-    many_to_many :members, Phonix.Accounts.User, join_through: Phonix.Calls.RoomMember
 
     timestamps(type: :utc_datetime)
   end

@@ -1,12 +1,11 @@
 defmodule PhonixWeb.RoomLive.Form do
-  use PhonixWeb, :live_view
-  # alias Phonix.Accounts
-  alias Phonix.Calls
+  alias Phonix.Rooms
   alias Phonix.Calls.Room
+  use PhonixWeb, :live_view
 
   @impl true
   def mount(_params, _session, socket) do
-    changeset = Calls.change_room(%Room{})
+    changeset = Rooms.change_room(%Room{})
 
     {:ok,
      socket
@@ -54,7 +53,7 @@ defmodule PhonixWeb.RoomLive.Form do
         %{"room" => %{"name" => name, "password" => password, "description" => description}},
         socket
       ) do
-    case Calls.create_room(
+    case Rooms.create_room(
            %{"name" => name, "password" => password, "description" => description},
            socket.assigns.current_scope
          ) do
@@ -73,7 +72,7 @@ defmodule PhonixWeb.RoomLive.Form do
   def handle_event("validate", %{"room" => room_params}, socket) do
     changeset =
       %Room{}
-      |> Calls.change_room(room_params)
+      |> Rooms.change_room(room_params)
       |> Map.put(:action, :validate)
 
     {:noreply,
