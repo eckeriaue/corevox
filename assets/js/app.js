@@ -48,6 +48,7 @@ liveSocket.connect()
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
+liveSocket.disableDebug()
 window.liveSocket = liveSocket
 
 // The lines below enable quality of life phoenix_live_reload

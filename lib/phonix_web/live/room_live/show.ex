@@ -49,13 +49,30 @@ defmodule PhonixWeb.RoomLive.Show do
       >
         export default {
           async mounted() {
+            const config = {
+              iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+            }
             let members = JSON.parse(this.el.dataset.members)
             const fromUserId = parseInt(this.el.dataset.fromUserId)
             const pcsMembers = members.map((member) => {
+              const pc = new RTCPeerConnection(config)
+              pc.addEventListener('icecandidate', console.info)
+              pc.addEventListener('track', console.info)
+              pc.onicegatheringstatechange = console.info
               return {
-                pc: new RTCPeerConnection(),
+                pc,
                 member
               }
+            })
+
+
+            document.addEventListener('local-video:enable', event => {
+              const stream = event.detail.stream
+              pcsMembers.forEach(pcm => {
+                stream.getTracks().forEach(track => {
+                  pcm.pc.addTrack(track, stream)
+                })
+              })
             })
 
             await Promise.all(
@@ -68,27 +85,36 @@ defmodule PhonixWeb.RoomLive.Show do
             )
 
             this.handleEvent('answer_delivery', event => {
+              console.info('answer_delivery', event)
               if (event.toUserId === fromUserId) {
                 const pcm = pcsMembers.find(pcsm => pcsm.member.id === event.fromUserId)
                 if (pcm.pc.signalingState === 'have-local-offer') {
+                  console.info(pcm)
                   pcm.pc.setRemoteDescription(new RTCSessionDescription(event.answer))
                 }
               }
             })
 
             this.handleEvent('offer_delivery', async event => {
+              console.info('offer_delivery', event)
               if (event.toUserId === fromUserId) {
                 members = JSON.parse(this.el.dataset.members)
                 if (members.length > pcsMembers.length) {
                   members.filter(member => pcsMembers.findIndex(pcsm => pcsm.id === member.id) === -1)
                     .forEach(async member => {
-                      const pc = new RTCPeerConnection()
+                      const pc = new RTCPeerConnection(config)
                       await pc.setRemoteDescription(event.offer)
                       const answer = await pc.createAnswer()
                       await pc.setLocalDescription(new RTCSessionDescription(answer))
                       pcsMembers.push({ member, pc })
                       this.pushEvent('answer', { fromUserId: event.toUserId, answer, toUserId: event.fromUserId })
                     })
+                } else {
+                 const pcm = pcsMembers.find(pcsm => pcsm.member.id === event.fromUserId)
+                 pcm.pc.setRemoteDescription(new RTCSessionDescription(event.offer))
+                 const answer = await pcm.pc.createAnswer()
+                 await pcm.pc.setLocalDescription(new RTCSessionDescription(answer))
+                 this.pushEvent('answer', { fromUserId: event.toUserId, answer, toUserId: event.fromUserId })
                 }
               }
             })
@@ -233,6 +259,22 @@ defmodule PhonixWeb.RoomLive.Show do
 
   def my_video(assigns) do
     ~H"""
+    <script :type={Phoenix.LiveView.ColocatedHook} name=".MyVideo">
+      export default {
+        async mounted() {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true })
+          this.el.srcObject = stream
+          this.el.addEventListener('loadedmetadata', (event) => {
+            const loadingIndicator = document.querySelector(event.target.dataset.loadingIndicator)
+            if (loadingIndicator) {
+              loadingIndicator.hidden = true
+            }
+            this.el.hidden = false
+            document.dispatchEvent(new CustomEvent('local-video:enable', { detail: { stream } }))
+          }, { once: true })
+        }
+      }
+    </script>
     <div
       style="width:300px;height:200px;"
       class="ring ring-base-100 bg-base-200 relative rounded-2xl flex items-center justify-center overflow-hidden"
@@ -245,6 +287,7 @@ defmodule PhonixWeb.RoomLive.Show do
       <video
         id="my_video"
         data-loading-indicator="#my_video_spinner"
+        phx-hook=".MyVideo"
         hidden
         autoplay
         playsinline
