@@ -51,9 +51,9 @@ defmodule PhonixWeb.RoomLive.Show do
           async mounted() {
             const config = {
               iceServers: [
-                { urls: "stun:127.0.0.1:3478" },
+                { urls: "stun:192.168.0.21:3478" },
                 {
-                  urls: "turn:127.0.0.1:3478",
+                  urls: "turn:192.168.0.21:3478",
                   username: 'webrtcuser',
                   credential: 'webrtccred'
                 }
@@ -63,16 +63,34 @@ defmodule PhonixWeb.RoomLive.Show do
             const fromUserId = parseInt(this.el.dataset.fromUserId)
             const pcsMembers = members.map((member) => {
               const pc = new RTCPeerConnection(config)
-              pc.addEventListener('icecandidate', console.info)
-              pc.addEventListener('track', console.info)
-              pc.onicegatheringstatechange = console.info
-              pc.createDataChannel("test")
+              pc.addEventListener('icecandidate', event => {
+                if (event.candidate) {
+                  this.pushEvent('icecandidate', { candidate: event.candidate, toUserId: member.id, fromUserId })
+                }
+              })
+              pc.addEventListener('track', event => {
+                document.dispatchEvent(new CustomEvent('remote-video:track', {
+                  detail: { toUserId: event.fromUserId, track: event.track, streams: event.streams }
+                }))
+              })
               return {
                 pc,
                 member
               }
             })
 
+
+            document.addEventListener('local-video:enable', event => {
+              const stream = event.detail.stream
+              pcsMembers.forEach(pcm => {
+                stream.getTracks().forEach(async track => {
+                  await pcm.pc.addTrack(track, stream)
+                  const offer = await pcm.pc.createOffer()
+                  await pcm.pc.setLocalDescription(offer)
+                  this.pushEvent('offer', { fromUserId, toUserId: pcm.member.id, offer })
+                })
+              })
+            })
 
             await Promise.all(
               pcsMembers.map(async ({ member, pc }) => {
@@ -83,37 +101,47 @@ defmodule PhonixWeb.RoomLive.Show do
               })
             )
 
+            this.handleEvent('icecandidate_delivery', event => {
+              console.info('icecandidate_delivery', event)
+            })
+
             this.handleEvent('answer_delivery', event => {
               console.info('answer_delivery', event)
               if (event.toUserId === fromUserId) {
                 const pcm = pcsMembers.find(pcsm => pcsm.member.id === event.fromUserId)
                 if (pcm.pc.signalingState === 'have-local-offer') {
-                  console.info(pcm)
                   pcm.pc.setRemoteDescription(new RTCSessionDescription(event.answer))
                 }
               }
             })
 
             this.handleEvent('offer_delivery', async event => {
-              console.info('offer_delivery', event)
               if (event.toUserId === fromUserId) {
                 members = JSON.parse(this.el.dataset.members)
                 if (members.length > pcsMembers.length) {
                   members.filter(member => pcsMembers.findIndex(pcsm => pcsm.id === member.id) === -1)
                     .forEach(async member => {
                       const pc = new RTCPeerConnection(config)
-                      pc.addEventListener('icecandidate', console.info)
-                      pc.addEventListener('track', console.info)
-                      pc.onicegatheringstatechange = console.info
+                      pc.addEventListener('icecandidate', event => {
+                        if (event.candidate) {
+                          this.pushEvent('icecandidate', { candidate: event.candidate, toUserId: member.id, fromUserId })
+                        }
+                      })
+                      pc.addEventListener('track', event => {
+                        console.info('track event', event)
+                        document.dispatchEvent(new CustomEvent('remote-video:track', {
+                          detail: { toUserId: event.fromUserId, track: event.track, streams: event.streams }
+                        }))
+                      })
                       await pc.setRemoteDescription(event.offer)
                       const answer = await pc.createAnswer()
-                      pc.createDataChannel("test")
                       await pc.setLocalDescription(new RTCSessionDescription(answer))
                       pcsMembers.push({ member, pc })
                       this.pushEvent('answer', { fromUserId: event.toUserId, answer, toUserId: event.fromUserId })
                     })
                 } else {
                   const pcm = pcsMembers.find(pcm => pcm.member.id === event.fromUserId)
+                  console.info(pcm)
                   await pcm.pc.setRemoteDescription(new RTCSessionDescription(event.offer))
                   const answer = await pcm.pc.createAnswer()
                   await pcm.pc.setLocalDescription(new RTCSessionDescription(answer))
@@ -226,6 +254,7 @@ defmodule PhonixWeb.RoomLive.Show do
     {:noreply, socket}
   end
 
+
   def handle_event("offer", %{"offer" => offer, "fromUserId" => fromUserId, "toUserId" => toUserId} = payload, socket) do
     Phonix.PubSub |> Phoenix.PubSub.broadcast("room-call:#{socket.assigns.room_id}", {:offer_delivery, payload})
     {:noreply, socket}
@@ -233,6 +262,15 @@ defmodule PhonixWeb.RoomLive.Show do
 
   def handle_info({:offer_delivery, payload}, socket) do
     {:noreply, push_event(socket, "offer_delivery", payload)}
+  end
+
+  def handle_event("icecandidate", payload, socket) do
+    Phonix.PubSub |> Phoenix.PubSub.broadcast("room-call:#{socket.assigns.room_id}", {:icecandidate_delivery, payload})
+    {:noreply, socket}
+  end
+
+  def handle_info({:icecandidate_delivery, payload}, socket) do
+    {:noreply, push_event(socket, "icecandidate_delivery", payload)}
   end
 
   def handle_event("answer", %{"answer" => answer, "fromUserId" => fromUserId, "toUserId" => toUserId} = payload, socket) do
@@ -295,7 +333,6 @@ defmodule PhonixWeb.RoomLive.Show do
         autoplay
         playsinline
         muted
-        phx-hook="LocalVideo"
       />
       <% else %>
       <span class="ph ph-user text-4xl text-secondary" />
@@ -306,16 +343,25 @@ defmodule PhonixWeb.RoomLive.Show do
 
   def remote_video(assigns) do
     ~H"""
+      <script :type={Phoenix.LiveView.ColocatedHook} name=".RemoteVideo">
+        export default {
+          mounted() {
+            document.addEventListener('remote-video:track', event => {
+              this.el.srcObject = event.detail.streams.at(0)
+            })
+          }
+        }
+      </script>
       <div style="width:300px;height:200px;" class="ring ring-base-100 bg-base-200 relative rounded-2xl flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 size-full p-2">
           <span class="badge">{@whoami}</span>
         </div>
-        <span class="loading loading-spinner loading-lg"></span>
         <video
-          hidden
+          id={"remote-video-id-#{@whoami}"}
           autoplay
           playsinline
           muted
+          phx-hook=".RemoteVideo"
         />
       </div>
     """
