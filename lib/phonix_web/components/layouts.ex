@@ -93,8 +93,6 @@ defmodule PhonixWeb.Layouts do
     <main
       class="bg-base-200"
       style="height: calc(100dvh - var(--spacing) * 16)"
-      phx-hook="LeaveRoom"
-      id="main-content"
     >
       {render_slot(@inner_block)}
     </main>

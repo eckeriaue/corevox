@@ -14,8 +14,9 @@ defmodule PhonixWeb.RoomLive.Show do
 
     if connected?(socket) do
       user = socket.assigns.current_scope.user
-      topic = "room:" <> room_id
+      topic = "room:#{room_id}"
       PhonixWeb.Endpoint.subscribe(topic)
+      Phoenix.PubSub.subscribe(Phonix.PubSub, "room-call:#{room_id}")
 
       {:ok, _} = PhonixWeb.Presence.track(
         self(),
@@ -42,10 +43,71 @@ defmodule PhonixWeb.RoomLive.Show do
   def render(assigns) do
     ~H"""
     <Layouts.call flash={@flash} current_scope={@current_scope}>
-      <section class="grid grid-cols-5 h-full">
+      <script
+        :type={Phoenix.LiveView.ColocatedHook}
+        name=".Join"
+      >
+        export default {
+          async mounted() {
+            let members = JSON.parse(this.el.dataset.members)
+            const fromUserId = parseInt(this.el.dataset.fromUserId)
+            const pcsMembers = members.map((member) => {
+              return {
+                pc: new RTCPeerConnection(),
+                member
+              }
+            })
+
+            await Promise.all(
+              pcsMembers.map(async ({ member, pc }) => {
+                const offer = await pc.createOffer()
+                await pc.setLocalDescription(offer)
+                this.pushEvent('offer', { fromUserId, toUserId: member.id, offer })
+                return Promise.resolve()
+              })
+            )
+
+
+            this.handleEvent('answer_delivery', event => {
+              if (event.toUserId !== fromUserId) return
+              const {pc} = pcsMembers.find(pcsm => pcsm.member.id === event.fromUserId)
+              if (pc.signalingState === 'stable') {
+                return
+              }
+              // todo..
+            })
+
+            this.handleEvent('offer_delivery', async event => {
+              if (event.toUserId === fromUserId) {
+                members = JSON.parse(this.el.dataset.members)
+                if (members.length > pcsMembers.length) {
+                  members.filter(member => pcsMembers.findIndex(pcsm => pcsm.id === member.id) === -1)
+                    .forEach(async member => {
+                      const pc = new RTCPeerConnection()
+                      await pc.setRemoteDescription(event.offer)
+                      const answer = await pc.createAnswer()
+                      await pc.setLocalDescription(new RTCSessionDescription(answer))
+                      pcsMembers.push({ member, pc })
+                      this.pushEvent('answer', { fromUserId: event.fromUserId, answer, toUserId: event.toUserId })
+                    })
+                }
+              }
+            })
+
+          }
+        }
+      </script>
+      <section
+        class="grid grid-cols-5 h-full"
+        id="room-container"
+        phx-hook=".Join"
+        data-members={Jason.encode!(@members |> Enum.filter(fn member -> member.id !== @current_scope.user.id end))}
+        data-from-user-id={@current_scope.user.id}
+      >
         <div class="bg-base-200 -mt-16" style="height: calc(100% + var(--spacing) * 16)">
           <div class="flex flex-col pt-16 h-full">
             <ul class="list grow text-sm text-base-content h-full overflow-y-scroll">
+
               <li id="me" class="list-row">
                 {@current_scope.user.name}
               </li>
@@ -54,10 +116,6 @@ defmodule PhonixWeb.RoomLive.Show do
                   <li
                     :for={member <- @members}
                     :if={member.id != @current_scope.user.id}
-                    phx-hook="JoinRtc"
-                    data-remote-user-id={member.id}
-                    data-local-user-id={@current_scope.user.id}
-                    data-room-id={@room_id}
                     id={"info-list-members-#{member.id}"}
                     class="list-row items-center"
                   >
@@ -140,12 +198,22 @@ defmodule PhonixWeb.RoomLive.Show do
     {:noreply, socket}
   end
 
-  def handle_event("offer", %{"offer" => offer, "localUserId" => localUserId, "remoteUserId" => remoteUserId}, socket) do
-    IO.inspect(offer)
-    IO.inspect(localUserId)
-    IO.inspect(remoteUserId)
-
+  def handle_event("offer", %{"offer" => offer, "fromUserId" => fromUserId, "toUserId" => toUserId} = payload, socket) do
+    Phonix.PubSub |> Phoenix.PubSub.broadcast("room-call:#{socket.assigns.room_id}", {:offer_delivery, payload})
     {:noreply, socket}
+  end
+
+  def handle_info({:offer_delivery, payload}, socket) do
+    {:noreply, push_event(socket, "offer_delivery", payload)}
+  end
+
+  def handle_event("answer", %{"answer" => answer, "fromUserId" => fromUserId, "toUserId" => toUserId} = payload, socket) do
+    Phonix.PubSub |> Phoenix.PubSub.broadcast("room-call:#{socket.assigns.room_id}", {:answer_delivery, payload})
+    {:noreply, socket}
+  end
+
+  def handle_info({:answer_delivery, payload}, socket) do
+    {:noreply, push_event(socket, "answer_delivery", payload)}
   end
 
 
@@ -162,7 +230,6 @@ defmodule PhonixWeb.RoomLive.Show do
     {:noreply, socket
     |> assign(:members, presence_members(socket.assigns.room_id))}
   end
-
 
 
   def my_video(assigns) do
