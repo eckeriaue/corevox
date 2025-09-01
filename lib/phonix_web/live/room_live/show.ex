@@ -51,9 +51,9 @@ defmodule PhonixWeb.RoomLive.Show do
           async mounted() {
             const config = {
               iceServers: [
-                { urls: "stun:0.0.0.0:19302" },
+                { urls: "stun:127.0.0.1:3478" },
                 {
-                  urls: "turn:0.0.0.0:3478",
+                  urls: "turn:127.0.0.1:3478",
                   username: 'webrtcuser',
                   credential: 'webrtccred'
                 }
@@ -66,6 +66,7 @@ defmodule PhonixWeb.RoomLive.Show do
               pc.addEventListener('icecandidate', console.info)
               pc.addEventListener('track', console.info)
               pc.onicegatheringstatechange = console.info
+              pc.createDataChannel("test")
               return {
                 pc,
                 member
@@ -76,7 +77,7 @@ defmodule PhonixWeb.RoomLive.Show do
             document.addEventListener('local-video:enable', event => {
               const stream = event.detail.stream
               pcsMembers.forEach(pcm => {
-              console.info(pcm)
+                console.info(pcm.pc.iceGatheringState)
                 stream.getTracks().forEach(track => {
                   pcm.pc.addTrack(track, stream)
                 })
@@ -111,8 +112,12 @@ defmodule PhonixWeb.RoomLive.Show do
                   members.filter(member => pcsMembers.findIndex(pcsm => pcsm.id === member.id) === -1)
                     .forEach(async member => {
                       const pc = new RTCPeerConnection(config)
+                      pc.addEventListener('icecandidate', console.info)
+                      pc.addEventListener('track', console.info)
+                      pc.onicegatheringstatechange = console.info
                       await pc.setRemoteDescription(event.offer)
                       const answer = await pc.createAnswer()
+                      pc.createDataChannel("test")
                       await pc.setLocalDescription(new RTCSessionDescription(answer))
                       pcsMembers.push({ member, pc })
                       this.pushEvent('answer', { fromUserId: event.toUserId, answer, toUserId: event.fromUserId })
