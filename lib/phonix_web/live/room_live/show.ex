@@ -74,16 +74,6 @@ defmodule PhonixWeb.RoomLive.Show do
             })
 
 
-            document.addEventListener('local-video:enable', event => {
-              const stream = event.detail.stream
-              pcsMembers.forEach(pcm => {
-                console.info(pcm.pc.iceGatheringState)
-                stream.getTracks().forEach(track => {
-                  pcm.pc.addTrack(track, stream)
-                })
-              })
-            })
-
             await Promise.all(
               pcsMembers.map(async ({ member, pc }) => {
                 const offer = await pc.createOffer()
