@@ -67,14 +67,13 @@ defmodule PhonixWeb.RoomLive.Show do
               })
             )
 
-
             this.handleEvent('answer_delivery', event => {
-              if (event.toUserId !== fromUserId) return
-              const {pc} = pcsMembers.find(pcsm => pcsm.member.id === event.fromUserId)
-              if (pc.signalingState === 'stable') {
-                return
+              if (event.toUserId === fromUserId) {
+                const pcm = pcsMembers.find(pcsm => pcsm.member.id === event.fromUserId)
+                if (pcm.pc.signalingState === 'have-local-offer') {
+                  pcm.pc.setRemoteDescription(new RTCSessionDescription(event.answer))
+                }
               }
-              // todo..
             })
 
             this.handleEvent('offer_delivery', async event => {
@@ -88,7 +87,7 @@ defmodule PhonixWeb.RoomLive.Show do
                       const answer = await pc.createAnswer()
                       await pc.setLocalDescription(new RTCSessionDescription(answer))
                       pcsMembers.push({ member, pc })
-                      this.pushEvent('answer', { fromUserId: event.fromUserId, answer, toUserId: event.toUserId })
+                      this.pushEvent('answer', { fromUserId: event.toUserId, answer, toUserId: event.fromUserId })
                     })
                 }
               }
