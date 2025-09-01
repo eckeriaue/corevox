@@ -50,7 +50,14 @@ defmodule PhonixWeb.RoomLive.Show do
         export default {
           async mounted() {
             const config = {
-              iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+              iceServers: [
+                { urls: "stun:0.0.0.0:19302" },
+                {
+                  urls: "turn:0.0.0.0:3478",
+                  username: 'webrtcuser',
+                  credential: 'webrtccred'
+                }
+              ]
             }
             let members = JSON.parse(this.el.dataset.members)
             const fromUserId = parseInt(this.el.dataset.fromUserId)
@@ -69,6 +76,7 @@ defmodule PhonixWeb.RoomLive.Show do
             document.addEventListener('local-video:enable', event => {
               const stream = event.detail.stream
               pcsMembers.forEach(pcm => {
+              console.info(pcm)
                 stream.getTracks().forEach(track => {
                   pcm.pc.addTrack(track, stream)
                 })
@@ -110,11 +118,11 @@ defmodule PhonixWeb.RoomLive.Show do
                       this.pushEvent('answer', { fromUserId: event.toUserId, answer, toUserId: event.fromUserId })
                     })
                 } else {
-                 const pcm = pcsMembers.find(pcsm => pcsm.member.id === event.fromUserId)
-                 pcm.pc.setRemoteDescription(new RTCSessionDescription(event.offer))
-                 const answer = await pcm.pc.createAnswer()
-                 await pcm.pc.setLocalDescription(new RTCSessionDescription(answer))
-                 this.pushEvent('answer', { fromUserId: event.toUserId, answer, toUserId: event.fromUserId })
+                  const pcm = pcsMembers.find(pcm => pcm.member.id === event.fromUserId)
+                  await pcm.pc.setRemoteDescription(new RTCSessionDescription(event.offer))
+                  const answer = await pcm.pc.createAnswer()
+                  await pcm.pc.setLocalDescription(new RTCSessionDescription(answer))
+                  this.pushEvent('answer', { fromUserId: event.toUserId, answer, toUserId: event.fromUserId })
                 }
               }
             })
