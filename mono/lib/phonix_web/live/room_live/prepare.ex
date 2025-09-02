@@ -1,5 +1,5 @@
-defmodule PhonixWeb.RoomLive.Prepare do
-  use PhonixWeb, :live_view
+defmodule orvoxWeb.RoomLive.Prepare do
+  use orvoxWeb, :live_view
 
   @impl true
   def mount(params, _session, socket) do

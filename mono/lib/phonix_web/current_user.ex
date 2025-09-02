@@ -1,6 +1,6 @@
-defmodule PhonixWeb.CurrentUser do
-  use PhonixWeb, :live_view
-  alias Phonix.Accounts
+defmodule orvoxWeb.CurrentUser do
+  use orvoxWeb, :live_view
+  alias orvox.Accounts
 
   # @impl true
   def on_mount(:default, _params, session, socket) do

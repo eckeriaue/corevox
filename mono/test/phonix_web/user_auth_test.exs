@@ -1,20 +1,20 @@
-defmodule PhonixWeb.UserAuthTest do
-  use PhonixWeb.ConnCase, async: true
+defmodule orvoxWeb.UserAuthTest do
+  use orvoxWeb.ConnCase, async: true
 
   alias Phoenix.LiveView
-  alias Phonix.Accounts
-  alias Phonix.Accounts.Scope
-  alias PhonixWeb.UserAuth
+  alias orvox.Accounts
+  alias orvox.Accounts.Scope
+  alias orvoxWeb.UserAuth
 
-  import Phonix.AccountsFixtures
+  import orvox.AccountsFixtures
 
-  @remember_me_cookie "_phonix_web_user_remember_me"
+  @remember_me_cookie "_orvox_web_user_remember_me"
   @remember_me_cookie_max_age 60 * 60 * 24 * 14
 
   setup %{conn: conn} do
     conn =
       conn
-      |> Map.replace!(:secret_key_base, PhonixWeb.Endpoint.config(:secret_key_base))
+      |> Map.replace!(:secret_key_base, orvoxWeb.Endpoint.config(:secret_key_base))
       |> init_test_session(%{})
 
     %{user: %{user_fixture() | authenticated_at: DateTime.utc_now(:second)}, conn: conn}
@@ -91,7 +91,7 @@ defmodule PhonixWeb.UserAuthTest do
       conn =
         conn
         |> recycle()
-        |> Map.replace!(:secret_key_base, PhonixWeb.Endpoint.config(:secret_key_base))
+        |> Map.replace!(:secret_key_base, orvoxWeb.Endpoint.config(:secret_key_base))
         |> fetch_cookies()
         |> init_test_session(%{user_remember_me: true})
 
@@ -126,7 +126,7 @@ defmodule PhonixWeb.UserAuthTest do
 
     test "broadcasts to the given live_socket_id", %{conn: conn} do
       live_socket_id = "users_sessions:abcdef-token"
-      PhonixWeb.Endpoint.subscribe(live_socket_id)
+      orvoxWeb.Endpoint.subscribe(live_socket_id)
 
       conn
       |> put_session(:live_socket_id, live_socket_id)
@@ -261,7 +261,7 @@ defmodule PhonixWeb.UserAuthTest do
       session = conn |> put_session(:user_token, user_token) |> get_session()
 
       socket = %LiveView.Socket{
-        endpoint: PhonixWeb.Endpoint,
+        endpoint: orvoxWeb.Endpoint,
         assigns: %{__changed__: %{}, flash: %{}}
       }
 
@@ -273,7 +273,7 @@ defmodule PhonixWeb.UserAuthTest do
       session = conn |> get_session()
 
       socket = %LiveView.Socket{
-        endpoint: PhonixWeb.Endpoint,
+        endpoint: orvoxWeb.Endpoint,
         assigns: %{__changed__: %{}, flash: %{}}
       }
 
@@ -288,7 +288,7 @@ defmodule PhonixWeb.UserAuthTest do
       session = conn |> put_session(:user_token, user_token) |> get_session()
 
       socket = %LiveView.Socket{
-        endpoint: PhonixWeb.Endpoint,
+        endpoint: orvoxWeb.Endpoint,
         assigns: %{__changed__: %{}, flash: %{}}
       }
 
@@ -305,7 +305,7 @@ defmodule PhonixWeb.UserAuthTest do
       session = conn |> put_session(:user_token, user_token) |> get_session()
 
       socket = %LiveView.Socket{
-        endpoint: PhonixWeb.Endpoint,
+        endpoint: orvoxWeb.Endpoint,
         assigns: %{__changed__: %{}, flash: %{}}
       }
 
@@ -371,7 +371,7 @@ defmodule PhonixWeb.UserAuthTest do
       tokens = [%{token: "token1"}, %{token: "token2"}]
 
       for %{token: token} <- tokens do
-        PhonixWeb.Endpoint.subscribe("users_sessions:#{Base.url_encode64(token)}")
+        orvoxWeb.Endpoint.subscribe("users_sessions:#{Base.url_encode64(token)}")
       end
 
       UserAuth.disconnect_sessions(tokens)

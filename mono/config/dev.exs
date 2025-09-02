@@ -6,7 +6,7 @@ import Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :phonix, PhonixWeb.Endpoint,
+config :orvox, orvoxWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   # http: [ip: {127, 0, 0, 1}, port: String.to_integer(System.get_env("PORT") || "4000")],
@@ -16,8 +16,8 @@ config :phonix, PhonixWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "pvTQbOQoa3rKrpgB/ukDwE6qDgFJvrwLcVCELms133/kV0ndKwq1AzkBFZrYJMwf",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:phonix, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:phonix, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:orvox, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:orvox, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -44,18 +44,18 @@ config :phonix, PhonixWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :phonix, PhonixWeb.Endpoint,
+config :orvox, orvoxWeb.Endpoint,
   live_reload: [
     web_console_logger: true,
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/phonix_web/(?:controllers|live|components|router)/?.*\.(ex|heex)$"
+      ~r"lib/orvox_web/(?:controllers|live|components|router)/?.*\.(ex|heex)$"
     ]
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :phonix, dev_routes: true
+config :orvox, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

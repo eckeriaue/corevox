@@ -1,8 +1,8 @@
-defmodule PhonixWeb.RoomLiveTest do
-  use PhonixWeb.ConnCase
+defmodule orvoxWeb.RoomLiveTest do
+  use orvoxWeb.ConnCase
 
   import Phoenix.LiveViewTest
-  import Phonix.CallsFixtures
+  import orvox.CallsFixtures
 
   @create_attrs %{name: "some name", password_hash: "some password_hash"}
   @update_attrs %{name: "some updated name", password_hash: "some updated password_hash"}

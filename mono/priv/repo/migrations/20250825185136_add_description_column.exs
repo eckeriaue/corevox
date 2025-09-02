@@ -1,4 +1,4 @@
-defmodule Phonix.Repo.Migrations.AddDescriptionColumn do
+defmodule orvox.Repo.Migrations.AddDescriptionColumn do
   use Ecto.Migration
 
   def change do

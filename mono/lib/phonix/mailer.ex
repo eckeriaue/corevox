@@ -1,3 +1,3 @@
-defmodule Phonix.Mailer do
-  use Swoosh.Mailer, otp_app: :phonix
+defmodule orvox.Mailer do
+  use Swoosh.Mailer, otp_app: :orvox
 end

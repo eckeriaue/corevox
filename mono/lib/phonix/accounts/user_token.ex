@@ -1,7 +1,7 @@
-defmodule Phonix.Accounts.UserToken do
+defmodule orvox.Accounts.UserToken do
   use Ecto.Schema
   import Ecto.Query
-  alias Phonix.Accounts.UserToken
+  alias orvox.Accounts.UserToken
 
   @hash_algorithm :sha256
   @rand_size 32
@@ -17,7 +17,7 @@ defmodule Phonix.Accounts.UserToken do
     field :context, :string
     field :sent_to, :string
     field :authenticated_at, :utc_datetime
-    belongs_to :user, Phonix.Accounts.User
+    belongs_to :user, orvox.Accounts.User
 
     timestamps(type: :utc_datetime, updated_at: false)
   end

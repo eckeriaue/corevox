@@ -1,12 +1,12 @@
-defmodule Phonix.Accounts do
+defmodule orvox.Accounts do
   @moduledoc """
   The Accounts context.
   """
 
   import Ecto.Query, warn: false
-  alias Phonix.Repo
+  alias orvox.Repo
 
-  alias Phonix.Accounts.User
+  alias orvox.Accounts.User
 
   @doc """
   Returns the list of users.
@@ -102,7 +102,7 @@ defmodule Phonix.Accounts do
     User.changeset(user, attrs)
   end
 
-  alias Phonix.Accounts.{User, UserToken, UserNotifier}
+  alias orvox.Accounts.{User, UserToken, UserNotifier}
 
   ## Database getters
 
@@ -179,7 +179,7 @@ defmodule Phonix.Accounts do
   @doc """
   Returns an `%Ecto.Changeset{}` for changing the user email.
 
-  See `Phonix.Accounts.User.email_changeset/3` for a list of supported options.
+  See `orvox.Accounts.User.email_changeset/3` for a list of supported options.
 
   ## Examples
 
@@ -215,7 +215,7 @@ defmodule Phonix.Accounts do
   @doc """
   Returns an `%Ecto.Changeset{}` for changing the user password.
 
-  See `Phonix.Accounts.User.password_changeset/3` for a list of supported options.
+  See `orvox.Accounts.User.password_changeset/3` for a list of supported options.
 
   ## Examples
 

@@ -1,4 +1,4 @@
-defmodule Phonix.Calls.Room do
+defmodule orvox.Calls.Room do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -7,7 +7,7 @@ defmodule Phonix.Calls.Room do
     field :password, :string, virtual: true
     field :description, :string
     field :password_hash, :string
-    belongs_to :owner, Phonix.Accounts.User
+    belongs_to :owner, orvox.Accounts.User
 
     timestamps(type: :utc_datetime)
   end

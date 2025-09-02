@@ -1,9 +1,9 @@
-defmodule PhonixWeb.UserLive.Settings do
-  use PhonixWeb, :live_view
+defmodule orvoxWeb.UserLive.Settings do
+  use orvoxWeb, :live_view
 
-  on_mount {PhonixWeb.UserAuth, :require_sudo_mode}
+  on_mount {orvoxWeb.UserAuth, :require_sudo_mode}
 
-  alias Phonix.Accounts
+  alias orvox.Accounts
 
   @impl true
   def render(assigns) do

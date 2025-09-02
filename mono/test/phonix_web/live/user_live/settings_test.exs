@@ -1,9 +1,9 @@
-defmodule PhonixWeb.UserLive.SettingsTest do
-  use PhonixWeb.ConnCase, async: true
+defmodule orvoxWeb.UserLive.SettingsTest do
+  use orvoxWeb.ConnCase, async: true
 
-  alias Phonix.Accounts
+  alias orvox.Accounts
   import Phoenix.LiveViewTest
-  import Phonix.AccountsFixtures
+  import orvox.AccountsFixtures
 
   describe "Settings page" do
     test "renders settings page", %{conn: conn} do

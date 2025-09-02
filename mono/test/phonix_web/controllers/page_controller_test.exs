@@ -1,5 +1,5 @@
-defmodule PhonixWeb.PageControllerTest do
-  use PhonixWeb.ConnCase
+defmodule orvoxWeb.PageControllerTest do
+  use orvoxWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")

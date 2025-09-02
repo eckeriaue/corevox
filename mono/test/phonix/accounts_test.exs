@@ -1,12 +1,12 @@
-defmodule Phonix.AccountsTest do
-  use Phonix.DataCase
+defmodule orvox.AccountsTest do
+  use orvox.DataCase
 
-  alias Phonix.Accounts
+  alias orvox.Accounts
 
   describe "users" do
-    alias Phonix.Accounts.User
+    alias orvox.Accounts.User
 
-    import Phonix.AccountsFixtures
+    import orvox.AccountsFixtures
 
     @invalid_attrs %{name: nil}
 
@@ -57,8 +57,8 @@ defmodule Phonix.AccountsTest do
     end
   end
 
-  import Phonix.AccountsFixtures
-  alias Phonix.Accounts.{User, UserToken}
+  import orvox.AccountsFixtures
+  alias orvox.Accounts.{User, UserToken}
 
   describe "get_user_by_email/1" do
     test "does not return the user if the email does not exist" do

@@ -1,4 +1,4 @@
-defmodule Phonix.Repo.Migrations.CreateRooms do
+defmodule orvox.Repo.Migrations.CreateRooms do
   use Ecto.Migration
 
   def change do

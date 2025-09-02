@@ -1,8 +1,8 @@
-defmodule PhonixWeb.UserLive.Registration do
-  use PhonixWeb, :live_view
+defmodule orvoxWeb.UserLive.Registration do
+  use orvoxWeb, :live_view
 
-  alias Phonix.Accounts
-  alias Phonix.Accounts.User
+  alias orvox.Accounts
+  alias orvox.Accounts.User
 
   @impl true
   def render(assigns) do
@@ -51,7 +51,7 @@ defmodule PhonixWeb.UserLive.Registration do
   @impl true
   def mount(_params, _session, %{assigns: %{current_scope: %{user: user}}} = socket)
       when not is_nil(user) do
-    {:ok, redirect(socket, to: PhonixWeb.UserAuth.signed_in_path(socket))}
+    {:ok, redirect(socket, to: orvoxWeb.UserAuth.signed_in_path(socket))}
   end
 
   def mount(_params, _session, socket) do

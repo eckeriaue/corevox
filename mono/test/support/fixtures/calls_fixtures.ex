@@ -1,7 +1,7 @@
-defmodule Phonix.CallsFixtures do
+defmodule orvox.CallsFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `Phonix.Calls` context.
+  entities via the `orvox.Calls` context.
   """
 
   @doc """
@@ -14,7 +14,7 @@ defmodule Phonix.CallsFixtures do
         password_hash: "some password_hash"
       })
 
-    {:ok, room_live} = Phonix.Calls.create_room_live(scope, attrs)
+    {:ok, room_live} = orvox.Calls.create_room_live(scope, attrs)
     room_live
   end
 end

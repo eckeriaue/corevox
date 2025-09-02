@@ -1,2 +1,2 @@
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(Phonix.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(orvox.Repo, :manual)

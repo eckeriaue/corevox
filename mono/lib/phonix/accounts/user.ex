@@ -1,4 +1,4 @@
-defmodule Phonix.Accounts.User do
+defmodule orvox.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -43,7 +43,7 @@ defmodule Phonix.Accounts.User do
 
     if Keyword.get(opts, :validate_unique, true) do
       changeset
-      |> unsafe_validate_unique(:email, Phonix.Repo)
+      |> unsafe_validate_unique(:email, orvox.Repo)
       |> unique_constraint(:email)
       |> validate_email_changed()
     else
@@ -123,7 +123,7 @@ defmodule Phonix.Accounts.User do
   If there is no user or the user doesn't have a password, we call
   `Bcrypt.no_user_verify/0` to avoid timing attacks.
   """
-  def valid_password?(%Phonix.Accounts.User{hashed_password: hashed_password}, password)
+  def valid_password?(%orvox.Accounts.User{hashed_password: hashed_password}, password)
       when is_binary(hashed_password) and byte_size(password) > 0 do
     Bcrypt.verify_pass(password, hashed_password)
   end

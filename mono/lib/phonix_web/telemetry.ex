@@ -1,4 +1,4 @@
-defmodule PhonixWeb.Telemetry do
+defmodule orvoxWeb.Telemetry do
   use Supervisor
   import Telemetry.Metrics
 
@@ -53,23 +53,23 @@ defmodule PhonixWeb.Telemetry do
       ),
 
       # Database Metrics
-      summary("phonix.repo.query.total_time",
+      summary("orvox.repo.query.total_time",
         unit: {:native, :millisecond},
         description: "The sum of the other measurements"
       ),
-      summary("phonix.repo.query.decode_time",
+      summary("orvox.repo.query.decode_time",
         unit: {:native, :millisecond},
         description: "The time spent decoding the data received from the database"
       ),
-      summary("phonix.repo.query.query_time",
+      summary("orvox.repo.query.query_time",
         unit: {:native, :millisecond},
         description: "The time spent executing the query"
       ),
-      summary("phonix.repo.query.queue_time",
+      summary("orvox.repo.query.queue_time",
         unit: {:native, :millisecond},
         description: "The time spent waiting for a database connection"
       ),
-      summary("phonix.repo.query.idle_time",
+      summary("orvox.repo.query.idle_time",
         unit: {:native, :millisecond},
         description:
           "The time the connection spent waiting before being checked out for the query"
@@ -87,7 +87,7 @@ defmodule PhonixWeb.Telemetry do
     [
       # A module, function and arguments to be invoked periodically.
       # This function must call :telemetry.execute/3 and a metric must be added above.
-      # {PhonixWeb, :count_users, []}
+      # {orvoxWeb, :count_users, []}
     ]
   end
 end

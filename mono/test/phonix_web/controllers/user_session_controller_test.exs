@@ -1,8 +1,8 @@
-defmodule PhonixWeb.UserSessionControllerTest do
-  use PhonixWeb.ConnCase, async: true
+defmodule orvoxWeb.UserSessionControllerTest do
+  use orvoxWeb.ConnCase, async: true
 
-  import Phonix.AccountsFixtures
-  alias Phonix.Accounts
+  import orvox.AccountsFixtures
+  alias orvox.Accounts
 
   setup do
     %{unconfirmed_user: unconfirmed_user_fixture(), user: user_fixture()}
@@ -40,7 +40,7 @@ defmodule PhonixWeb.UserSessionControllerTest do
           }
         })
 
-      assert conn.resp_cookies["_phonix_web_user_remember_me"]
+      assert conn.resp_cookies["_orvox_web_user_remember_me"]
       assert redirected_to(conn) == ~p"/"
     end
 

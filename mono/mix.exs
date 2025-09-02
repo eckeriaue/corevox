@@ -1,9 +1,9 @@
-defmodule Phonix.MixProject do
+defmodule orvox.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :phonix,
+      app: :orvox,
       version: "0.1.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -20,7 +20,7 @@ defmodule Phonix.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Phonix.Application, []},
+      mod: {orvox.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -84,10 +84,10 @@ defmodule Phonix.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind phonix", "esbuild phonix"],
+      "assets.build": ["tailwind orvox", "esbuild orvox"],
       "assets.deploy": [
-        "tailwind phonix --minify",
-        "esbuild phonix --minify",
+        "tailwind orvox --minify",
+        "esbuild orvox --minify",
         "phx.digest"
       ],
       precommit: ["compile --warning-as-errors", "deps.unlock --unused", "format", "test"]

@@ -1,4 +1,4 @@
-# Phonix
+# orvox
 
 To start your Phoenix server:
 

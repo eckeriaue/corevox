@@ -1,7 +1,7 @@
-defmodule Phonix.Rooms do
+defmodule orvox.Rooms do
   import Ecto.Query, warn: false
-  alias Phonix.Calls.Room
-  alias Phonix.Repo
+  alias orvox.Calls.Room
+  alias orvox.Repo
 
   def list_rooms do
     Repo.all(Room)

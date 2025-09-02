@@ -1,17 +1,17 @@
-defmodule PhonixWeb.ErrorHTML do
+defmodule orvoxWeb.ErrorHTML do
   @moduledoc """
   This module is invoked by your endpoint in case of errors on HTML requests.
 
   See config/config.exs.
   """
-  use PhonixWeb, :html
+  use orvoxWeb, :html
 
   # If you want to customize your error pages,
   # uncomment the embed_templates/1 call below
   # and add pages to the error directory:
   #
-  #   * lib/phonix_web/controllers/error_html/404.html.heex
-  #   * lib/phonix_web/controllers/error_html/500.html.heex
+  #   * lib/orvox_web/controllers/error_html/404.html.heex
+  #   * lib/orvox_web/controllers/error_html/500.html.heex
   #
   # embed_templates "error_html/*"
 

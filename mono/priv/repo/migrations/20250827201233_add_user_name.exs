@@ -1,4 +1,4 @@
-defmodule Phonix.Repo.Migrations.AddUserName do
+defmodule orvox.Repo.Migrations.AddUserName do
   use Ecto.Migration
 
   def change do

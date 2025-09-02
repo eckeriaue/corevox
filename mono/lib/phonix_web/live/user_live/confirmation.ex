@@ -1,7 +1,7 @@
-defmodule PhonixWeb.UserLive.Confirmation do
-  use PhonixWeb, :live_view
+defmodule orvoxWeb.UserLive.Confirmation do
+  use orvoxWeb, :live_view
 
-  alias Phonix.Accounts
+  alias orvox.Accounts
 
   @impl true
   def render(assigns) do

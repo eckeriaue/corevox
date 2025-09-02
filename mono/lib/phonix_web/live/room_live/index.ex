@@ -1,6 +1,6 @@
-defmodule PhonixWeb.RoomLive.Index do
-  alias Phonix.Rooms
-  use PhonixWeb, :live_view
+defmodule orvoxWeb.RoomLive.Index do
+  alias orvox.Rooms
+  use orvoxWeb, :live_view
 
   @impl true
   def render(assigns) do

@@ -1,7 +1,7 @@
-defmodule PhonixWeb.UserLive.Login do
-  use PhonixWeb, :live_view
+defmodule orvoxWeb.UserLive.Login do
+  use orvoxWeb, :live_view
 
-  alias Phonix.Accounts
+  alias orvox.Accounts
 
   @impl true
   def render(assigns) do
@@ -126,6 +126,6 @@ defmodule PhonixWeb.UserLive.Login do
   end
 
   defp local_mail_adapter? do
-    Application.get_env(:phonix, Phonix.Mailer)[:adapter] == Swoosh.Adapters.Local
+    Application.get_env(:orvox, orvox.Mailer)[:adapter] == Swoosh.Adapters.Local
   end
 end

@@ -1,8 +1,8 @@
-defmodule PhonixWeb.UserLive.LoginTest do
-  use PhonixWeb.ConnCase, async: true
+defmodule orvoxWeb.UserLive.LoginTest do
+  use orvoxWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import Phonix.AccountsFixtures
+  import orvox.AccountsFixtures
 
   describe "login page" do
     test "renders login page", %{conn: conn} do
@@ -27,7 +27,7 @@ defmodule PhonixWeb.UserLive.LoginTest do
 
       assert html =~ "If your email is in our system"
 
-      assert Phonix.Repo.get_by!(Phonix.Accounts.UserToken, user_id: user.id).context ==
+      assert orvox.Repo.get_by!(orvox.Accounts.UserToken, user_id: user.id).context ==
                "login"
     end
 

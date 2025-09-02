@@ -1,8 +1,8 @@
-defmodule PhonixWeb.UserSessionController do
-  use PhonixWeb, :controller
+defmodule orvoxWeb.UserSessionController do
+  use orvoxWeb, :controller
 
-  alias Phonix.Accounts
-  alias PhonixWeb.UserAuth
+  alias orvox.Accounts
+  alias orvoxWeb.UserAuth
 
   def create(conn, %{"_action" => "confirmed"} = params) do
     create(conn, params, "User confirmed successfully.")

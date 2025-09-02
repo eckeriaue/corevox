@@ -1,12 +1,12 @@
-defmodule PhonixWeb do
+defmodule orvoxWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, components, channels, and so on.
 
   This can be used in your application as:
 
-      use PhonixWeb, :controller
-      use PhonixWeb, :html
+      use orvoxWeb, :controller
+      use orvoxWeb, :html
 
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean, focused
@@ -40,7 +40,7 @@ defmodule PhonixWeb do
     quote do
       use Phoenix.Controller, formats: [:html, :json]
 
-      use Gettext, backend: PhonixWeb.Gettext
+      use Gettext, backend: orvoxWeb.Gettext
 
       import Plug.Conn
 
@@ -80,16 +80,16 @@ defmodule PhonixWeb do
   defp html_helpers do
     quote do
       # Translation
-      use Gettext, backend: PhonixWeb.Gettext
+      use Gettext, backend: orvoxWeb.Gettext
 
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components
-      import PhonixWeb.CoreComponents
+      import orvoxWeb.CoreComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS
-      alias PhonixWeb.Layouts
+      alias orvoxWeb.Layouts
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
@@ -99,9 +99,9 @@ defmodule PhonixWeb do
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
-        endpoint: PhonixWeb.Endpoint,
-        router: PhonixWeb.Router,
-        statics: PhonixWeb.static_paths()
+        endpoint: orvoxWeb.Endpoint,
+        router: orvoxWeb.Router,
+        statics: orvoxWeb.static_paths()
     end
   end
 

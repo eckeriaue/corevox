@@ -1,7 +1,7 @@
-defmodule Phonix.AccountsFixtures do
+defmodule orvox.AccountsFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `Phonix.Accounts` context.
+  entities via the `orvox.Accounts` context.
   """
 
   @doc """
@@ -13,15 +13,15 @@ defmodule Phonix.AccountsFixtures do
       |> Enum.into(%{
         name: "some name"
       })
-      |> Phonix.Accounts.create_user()
+      |> orvox.Accounts.create_user()
 
     user
   end
 
   import Ecto.Query
 
-  alias Phonix.Accounts
-  alias Phonix.Accounts.Scope
+  alias orvox.Accounts
+  alias orvox.Accounts.Scope
 
   def unique_user_email, do: "user#{System.unique_integer()}@example.com"
   def valid_user_password, do: "hello world!"
@@ -78,7 +78,7 @@ defmodule Phonix.AccountsFixtures do
   end
 
   def override_token_authenticated_at(token, authenticated_at) when is_binary(token) do
-    Phonix.Repo.update_all(
+    orvox.Repo.update_all(
       from(t in Accounts.UserToken,
         where: t.token == ^token
       ),
@@ -88,14 +88,14 @@ defmodule Phonix.AccountsFixtures do
 
   def generate_user_magic_link_token(user) do
     {encoded_token, user_token} = Accounts.UserToken.build_email_token(user, "login")
-    Phonix.Repo.insert!(user_token)
+    orvox.Repo.insert!(user_token)
     {encoded_token, user_token.token}
   end
 
   def offset_user_token(token, amount_to_add, unit) do
     dt = DateTime.add(DateTime.utc_now(:second), amount_to_add, unit)
 
-    Phonix.Repo.update_all(
+    orvox.Repo.update_all(
       from(ut in Accounts.UserToken, where: ut.token == ^token),
       set: [inserted_at: dt, authenticated_at: dt]
     )

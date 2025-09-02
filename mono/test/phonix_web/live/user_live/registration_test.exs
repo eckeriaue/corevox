@@ -1,8 +1,8 @@
-defmodule PhonixWeb.UserLive.RegistrationTest do
-  use PhonixWeb.ConnCase, async: true
+defmodule orvoxWeb.UserLive.RegistrationTest do
+  use orvoxWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import Phonix.AccountsFixtures
+  import orvox.AccountsFixtures
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do

@@ -1,7 +1,7 @@
-defmodule PhonixWeb.RoomLive.Form do
-  alias Phonix.Rooms
-  alias Phonix.Calls.Room
-  use PhonixWeb, :live_view
+defmodule orvoxWeb.RoomLive.Form do
+  alias orvox.Rooms
+  alias orvox.Calls.Room
+  use orvoxWeb, :live_view
 
   @impl true
   def mount(_params, _session, socket) do

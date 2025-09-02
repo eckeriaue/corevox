@@ -1,5 +1,5 @@
-defmodule PhonixWeb.Presence do
+defmodule orvoxWeb.Presence do
   use Phoenix.Presence,
-    otp_app: :phonix,
-    pubsub_server: Phonix.PubSub
+    otp_app: :orvox,
+    pubsub_server: orvox.PubSub
 end

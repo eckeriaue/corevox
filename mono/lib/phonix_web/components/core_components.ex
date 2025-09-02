@@ -1,4 +1,4 @@
-defmodule PhonixWeb.CoreComponents do
+defmodule orvoxWeb.CoreComponents do
   @moduledoc """
   Provides core UI components.
 
@@ -27,7 +27,7 @@ defmodule PhonixWeb.CoreComponents do
 
   """
   use Phoenix.Component
-  use Gettext, backend: PhonixWeb.Gettext
+  use Gettext, backend: orvoxWeb.Gettext
 
   alias Phoenix.LiveView.JS
 
@@ -457,9 +457,9 @@ defmodule PhonixWeb.CoreComponents do
     # with our gettext backend as first argument. Translations are
     # available in the errors.po file (as we use the "errors" domain).
     if count = opts[:count] do
-      Gettext.dngettext(PhonixWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(orvoxWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(PhonixWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(orvoxWeb.Gettext, "errors", msg, opts)
     end
   end
 

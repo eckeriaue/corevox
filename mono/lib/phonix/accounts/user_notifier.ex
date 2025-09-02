@@ -1,15 +1,15 @@
-defmodule Phonix.Accounts.UserNotifier do
+defmodule orvox.Accounts.UserNotifier do
   import Swoosh.Email
 
-  alias Phonix.Mailer
-  alias Phonix.Accounts.User
+  alias orvox.Mailer
+  alias orvox.Accounts.User
 
   # Delivers the email using the application mailer.
   defp deliver(recipient, subject, body) do
     email =
       new()
       |> to(recipient)
-      |> from({"Phonix", "contact@example.com"})
+      |> from({"orvox", "contact@example.com"})
       |> subject(subject)
       |> text_body(body)
 

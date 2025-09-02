@@ -1,16 +1,16 @@
-defmodule PhonixWeb.UserAuth do
-  use PhonixWeb, :verified_routes
+defmodule orvoxWeb.UserAuth do
+  use orvoxWeb, :verified_routes
 
   import Plug.Conn
   import Phoenix.Controller
 
-  alias Phonix.Accounts
-  alias Phonix.Accounts.Scope
+  alias orvox.Accounts
+  alias orvox.Accounts.Scope
 
   # Make the remember me cookie valid for 14 days. This should match
   # the session validity setting in UserToken.
   @max_cookie_age_in_days 14
-  @remember_me_cookie "_phonix_web_user_remember_me"
+  @remember_me_cookie "_orvox_web_user_remember_me"
   @remember_me_options [
     sign: true,
     max_age: @max_cookie_age_in_days * 24 * 60 * 60,
@@ -50,7 +50,7 @@ defmodule PhonixWeb.UserAuth do
     user_token && Accounts.delete_user_session_token(user_token)
 
     if live_socket_id = get_session(conn, :live_socket_id) do
-      PhonixWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
+      orvoxWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
     end
 
     conn
@@ -173,7 +173,7 @@ defmodule PhonixWeb.UserAuth do
   """
   def disconnect_sessions(tokens) do
     Enum.each(tokens, fn %{token: token} ->
-      PhonixWeb.Endpoint.broadcast(user_session_topic(token), "disconnect", %{})
+      orvoxWeb.Endpoint.broadcast(user_session_topic(token), "disconnect", %{})
     end)
   end
 
@@ -198,16 +198,16 @@ defmodule PhonixWeb.UserAuth do
   Use the `on_mount` lifecycle macro in LiveViews to mount or authenticate
   the `current_scope`:
 
-      defmodule PhonixWeb.PageLive do
-        use PhonixWeb, :live_view
+      defmodule orvoxWeb.PageLive do
+        use orvoxWeb, :live_view
 
-        on_mount {PhonixWeb.UserAuth, :mount_current_scope}
+        on_mount {orvoxWeb.UserAuth, :mount_current_scope}
         ...
       end
 
   Or use the `live_session` of your router to invoke the on_mount callback:
 
-      live_session :authenticated, on_mount: [{PhonixWeb.UserAuth, :require_authenticated}] do
+      live_session :authenticated, on_mount: [{orvoxWeb.UserAuth, :require_authenticated}] do
         live "/profile", ProfileLive, :index
       end
   """

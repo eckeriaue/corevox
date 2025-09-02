@@ -1,5 +1,5 @@
-defmodule PhonixWeb.RoomLive.Show do
-  use PhonixWeb, :live_view
+defmodule orvoxWeb.RoomLive.Show do
+  use orvoxWeb, :live_view
 
   @impl true
   def mount(_params, _session, %{assigns: %{current_scope: current_scope}} = socket)
@@ -7,7 +7,7 @@ defmodule PhonixWeb.RoomLive.Show do
     {:ok,
      socket
      |> put_flash(:info, "Чтобы войти в комнату вы должны быть авторизованы")
-     |> redirect(to: PhonixWeb.UserAuth.signed_in_path(socket))}
+     |> redirect(to: orvoxWeb.UserAuth.signed_in_path(socket))}
   end
 
   def mount(%{"id" => room_id}, _session, socket) do
@@ -15,10 +15,10 @@ defmodule PhonixWeb.RoomLive.Show do
     if connected?(socket) do
       user = socket.assigns.current_scope.user
       topic = "room:#{room_id}"
-      PhonixWeb.Endpoint.subscribe(topic)
-      Phoenix.PubSub.subscribe(Phonix.PubSub, "room-call:#{room_id}")
+      orvoxWeb.Endpoint.subscribe(topic)
+      Phoenix.PubSub.subscribe(orvox.PubSub, "room-call:#{room_id}")
 
-      {:ok, _} = PhonixWeb.Presence.track(
+      {:ok, _} = orvoxWeb.Presence.track(
         self(),
         topic,
         user.id,
@@ -250,13 +250,13 @@ defmodule PhonixWeb.RoomLive.Show do
 
   def handle_event("leave_room", _params, socket) do
     topic = "room:" <> socket.assigns.room_id
-    PhonixWeb.Presence.untrack(self(), topic, socket.assigns.current_scope.user.id)
+    orvoxWeb.Presence.untrack(self(), topic, socket.assigns.current_scope.user.id)
     {:noreply, socket}
   end
 
 
   def handle_event("offer", %{"offer" => offer, "fromUserId" => fromUserId, "toUserId" => toUserId} = payload, socket) do
-    Phonix.PubSub |> Phoenix.PubSub.broadcast("room-call:#{socket.assigns.room_id}", {:offer_delivery, payload})
+    orvox.PubSub |> Phoenix.PubSub.broadcast("room-call:#{socket.assigns.room_id}", {:offer_delivery, payload})
     {:noreply, socket}
   end
 
@@ -265,7 +265,7 @@ defmodule PhonixWeb.RoomLive.Show do
   end
 
   def handle_event("icecandidate", payload, socket) do
-    Phonix.PubSub |> Phoenix.PubSub.broadcast("room-call:#{socket.assigns.room_id}", {:icecandidate_delivery, payload})
+    orvox.PubSub |> Phoenix.PubSub.broadcast("room-call:#{socket.assigns.room_id}", {:icecandidate_delivery, payload})
     {:noreply, socket}
   end
 
@@ -274,7 +274,7 @@ defmodule PhonixWeb.RoomLive.Show do
   end
 
   def handle_event("answer", %{"answer" => answer, "fromUserId" => fromUserId, "toUserId" => toUserId} = payload, socket) do
-    Phonix.PubSub |> Phoenix.PubSub.broadcast("room-call:#{socket.assigns.room_id}", {:answer_delivery, payload})
+    orvox.PubSub |> Phoenix.PubSub.broadcast("room-call:#{socket.assigns.room_id}", {:answer_delivery, payload})
     {:noreply, socket}
   end
 
@@ -284,7 +284,7 @@ defmodule PhonixWeb.RoomLive.Show do
 
 
   defp presence_members(room_id) do
-    PhonixWeb.Presence.list("room:" <> room_id)
+    orvoxWeb.Presence.list("room:" <> room_id)
     |> Enum.map(fn {_key, %{metas: metas}} ->
       List.first(metas)
     end)

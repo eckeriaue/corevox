@@ -1,10 +1,10 @@
-defmodule PhonixWeb.UserLive.ConfirmationTest do
-  use PhonixWeb.ConnCase, async: true
+defmodule orvoxWeb.UserLive.ConfirmationTest do
+  use orvoxWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import Phonix.AccountsFixtures
+  import orvox.AccountsFixtures
 
-  alias Phonix.Accounts
+  alias orvox.Accounts
 
   setup do
     %{unconfirmed_user: unconfirmed_user_fixture(), confirmed_user: user_fixture()}

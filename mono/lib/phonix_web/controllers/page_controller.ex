@@ -1,5 +1,5 @@
-defmodule PhonixWeb.PageController do
-  use PhonixWeb, :controller
+defmodule orvoxWeb.PageController do
+  use orvoxWeb, :controller
 
   def home(conn, _params) do
     render(conn, :home)

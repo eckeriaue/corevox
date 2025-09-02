@@ -1,13 +1,13 @@
-defmodule PhonixWeb.Router do
-  use PhonixWeb, :router
+defmodule orvoxWeb.Router do
+  use orvoxWeb, :router
 
-  import PhonixWeb.UserAuth
+  import orvoxWeb.UserAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, html: {PhonixWeb.Layouts, :root}
+    plug :put_root_layout, html: {orvoxWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_scope_for_user
@@ -17,12 +17,12 @@ defmodule PhonixWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", PhonixWeb do
+  scope "/", orvoxWeb do
     pipe_through :browser
 
     # get "/", PageController, :home
     live_session :default,
-      on_mount: [PhonixWeb.CurrentUser] do
+      on_mount: [orvoxWeb.CurrentUser] do
       live "/", RoomLive.Index, :index
       live "/rooms/new", RoomLive.Form, :new
       live "/rooms/:id", RoomLive.Show, :show
@@ -31,12 +31,12 @@ defmodule PhonixWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", PhonixWeb do
+  # scope "/api", orvoxWeb do
   #   pipe_through :api
   # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:phonix, :dev_routes) do
+  if Application.compile_env(:orvox, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,
@@ -47,18 +47,18 @@ defmodule PhonixWeb.Router do
     scope "/dev" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: PhonixWeb.Telemetry
+      live_dashboard "/dashboard", metrics: orvoxWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
 
   ## Authentication routes
 
-  scope "/", PhonixWeb do
+  scope "/", orvoxWeb do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :require_authenticated_user,
-      on_mount: [{PhonixWeb.UserAuth, :require_authenticated}] do
+      on_mount: [{orvoxWeb.UserAuth, :require_authenticated}] do
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
     end
@@ -66,11 +66,11 @@ defmodule PhonixWeb.Router do
     post "/users/update-password", UserSessionController, :update_password
   end
 
-  scope "/", PhonixWeb do
+  scope "/", orvoxWeb do
     pipe_through [:browser]
 
     live_session :current_user,
-      on_mount: [{PhonixWeb.UserAuth, :mount_current_scope}] do
+      on_mount: [{orvoxWeb.UserAuth, :mount_current_scope}] do
       live "/users/register", UserLive.Registration, :new
       live "/users/log-in", UserLive.Login, :new
       live "/users/log-in/:token", UserLive.Confirmation, :new
