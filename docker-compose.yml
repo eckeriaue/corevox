@@ -1,6 +1,8 @@
 
 services:
   phonix_monolith:
+    profiles:
+      - mono
     container_name: phonix_monolith
     build:
       context: ./mono
