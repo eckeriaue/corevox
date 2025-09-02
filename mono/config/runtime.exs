@@ -1,13 +1,13 @@
 import Config
-import Dotenvy
+# import Dotenvy
 
-source!(System.get_env("RELEASE_ROOT") || Path.expand(".env"))
+# source!(System.get_env("RELEASE_ROOT") || Path.expand(".env"))
 
 config :phonix, Phonix.Repo,
-  username: env!("POSTGRES_USER", :string!),
-  password: env!("POSTGRES_PASSWORD", :string),
-  database: env!("POSTGRES_DB", :string),
-  hostname: env!("POSTGRES_HOST", :string!),
+  username: System.get_env("POSTGRES_USER", nil),
+  password: System.get_env("POSTGRES_PASSWORD", nil),
+  database: System.get_env("POSTGRES_DB", nil),
+  hostname: System.get_env("POSTGRES_HOST", nil),
   pool_size: 10
 
 # config/runtime.exs is executed for all environments, including

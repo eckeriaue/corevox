@@ -1,5 +1,31 @@
 
 services:
+  phonix_monolith:
+    container_name: phonix_monolith
+    build:
+      context: ./mono
+      dockerfile: Dockerfile.dev
+    command: sh -c "mix ecto.create && mix ecto.migrate && mix phx.server"
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./mono:/app
+      - /app/deps
+      - /app/_build
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - TURN_USER=${TURN_USER}
+      - TURN_PASSWORD=${TURN_PASSWORD}
+      - TURN_REALM=${TURN_REALM}
+    depends_on:
+      - phonix_postgres
+      - phonix_coturn
+
   phonix_coturn:
     container_name: phonix_coturn
     image: instrumentisto/coturn

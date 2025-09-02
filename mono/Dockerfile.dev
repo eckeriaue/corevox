@@ -1,0 +1,26 @@
+FROM elixir:1.18-alpine as dev
+
+
+RUN apk add --no-cache \
+  build-base \
+  git \
+  nodejs \
+  npm \
+  inotify-tools \
+  postgresql-client
+
+WORKDIR /app
+
+RUN mix local.hex --force && \
+    mix local.rebar --force
+
+COPY mix.exs mix.lock ./
+COPY config config
+RUN mix deps.get
+
+# COPY assets/package.json assets/package-lock.json assets/
+# RUN cd assets && npm install
+
+RUN mix deps.compile
+
+CMD ["mix", "phx.server"]
