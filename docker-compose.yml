@@ -1,5 +1,26 @@
 
 services:
+
+  phonix_web:
+    container_name: phonix_web
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4321:4321"
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    env_file: ./.env
+
+    environment:
+      - NODE_ENV=development
+      - TURN_USER=${TURN_USER}
+      - TURN_PASSWORD=${TURN_PASSWORD}
+      - TURN_REALM=${TURN_REALM}
+
+    command: npm run dev -- --host 0.0.0.0
+
   phonix_monolith:
     profiles:
       - mono
