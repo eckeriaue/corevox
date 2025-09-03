@@ -20,6 +20,9 @@ defmodule CorevoxWeb.Endpoint do
     same_site: "Lax"
   ]
 
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [connect_info: [session: @session_options]]
+
   plug Plug.Static,
     at: "/",
     from: :corevox,

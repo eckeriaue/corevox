@@ -15,9 +15,6 @@ defmodule CorevoxWeb.Router do
     post "/auth/sign-in", AuthController, :sign_in
     post "/auth/sign-up", AuthController, :sign_up
     post "/auth/sign-out", AuthController, :sign_out
-    # options "/auth/sign-in", AuthController, :options
-    # options "/auth/sign-up", AuthController, :options
-    # options "/auth/sign-out", AuthController, :options
 
     scope "/" do
       pipe_through CorevoxWeb.Auth.Pipeline
@@ -26,13 +23,7 @@ defmodule CorevoxWeb.Router do
     end
   end
 
-  # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:corevox, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
     import Phoenix.LiveDashboard.Router
     scope "/dev" do
       pipe_through [:fetch_session, :protect_from_forgery]
