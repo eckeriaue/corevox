@@ -1,4 +1,4 @@
-# Corevox
+# corevox
 
 To start your Phoenix server:
 

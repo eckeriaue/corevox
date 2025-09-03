@@ -1,4 +1,4 @@
-defmodule CorevoxWeb.ConnCase do
+defmodule CoreVoxWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,7 +11,7 @@ defmodule CorevoxWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use CorevoxWeb.ConnCase, async: true`, although
+  by setting `use CoreVoxWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -20,19 +20,19 @@ defmodule CorevoxWeb.ConnCase do
   using do
     quote do
       # The default endpoint for testing
-      @endpoint CorevoxWeb.Endpoint
+      @endpoint CoreVoxWeb.Endpoint
 
-      use CorevoxWeb, :verified_routes
+      use CoreVoxWeb, :verified_routes
 
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
-      import CorevoxWeb.ConnCase
+      import CoreVoxWeb.ConnCase
     end
   end
 
   setup tags do
-    Corevox.DataCase.setup_sandbox(tags)
+    CoreVox.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

@@ -1,14 +1,14 @@
 
 services:
 
-  orvox_app:
-    container_name: orvox_app
+  corevox_app:
+    container_name: corevox_app
     build:
       context: ./app
       dockerfile: Dockerfile.dev
     depends_on:
-      - orvox_postgres
-      - orvox_coturn
+      - corevox_postgres
+      - corevox_coturn
     volumes:
       - ./app:/app
       - /app/_build
@@ -24,8 +24,8 @@ services:
       - POSTGRES_HOST=${POSTGRES_HOST}
     command: sh -c "mix ecto.create && mix ecto.migrate && mix phx.server"
 
-  orvox_web:
-    container_name: orvox_web
+  corevox_web:
+    container_name: corevox_web
     build:
       context: ./web
       dockerfile: Dockerfile.dev
@@ -33,9 +33,9 @@ services:
       - "4321:4321"
 
     depends_on:
-      - orvox_postgres
-      - orvox_coturn
-      - orvox_app
+      - corevox_postgres
+      - corevox_coturn
+      - corevox_app
     volumes:
       - ./web:/app
       - /app/node_modules
@@ -49,10 +49,10 @@ services:
 
     command: npm run dev -- --host 0.0.0.0
 
-  orvox_monolith:
+  corevox_monolith:
     profiles:
       - mono
-    container_name: orvox_monolith
+    container_name: corevox_monolith
     build:
       context: ./mono
       dockerfile: Dockerfile.dev
@@ -74,11 +74,11 @@ services:
       - TURN_PASSWORD=${TURN_PASSWORD}
       - TURN_REALM=${TURN_REALM}
     depends_on:
-      - orvox_postgres
-      - orvox_coturn
+      - corevox_postgres
+      - corevox_coturn
 
-  orvox_coturn:
-    container_name: orvox_coturn
+  corevox_coturn:
+    container_name: corevox_coturn
     image: instrumentisto/coturn
     restart: unless-stopped
     ports:
@@ -102,8 +102,8 @@ services:
     env_file:
       - ./.env
 
-  orvox_postgres:
-    container_name: orvox_postgres
+  corevox_postgres:
+    container_name: corevox_postgres
     image: postgres:17-alpine
     ports:
       - "5432:5432"

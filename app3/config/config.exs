@@ -8,19 +8,19 @@
 import Config
 
 config :corevox,
-  ecto_repos: [Corevox.Repo],
+  ecto_repos: [CoreVox.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
-config :corevox, CorevoxWeb.Endpoint,
+config :corevox, CoreVoxWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [json: CorevoxWeb.ErrorJSON],
+    formats: [json: CoreVoxWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Corevox.PubSub,
-  live_view: [signing_salt: "WvN+0GVI"]
+  pubsub_server: CoreVox.PubSub,
+  live_view: [signing_salt: "CSZ5dhXM"]
 
 # Configures the mailer
 #
@@ -29,7 +29,7 @@ config :corevox, CorevoxWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :corevox, Corevox.Mailer, adapter: Swoosh.Adapters.Local
+config :corevox, CoreVox.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configures Elixir's Logger
 config :logger, :default_formatter,

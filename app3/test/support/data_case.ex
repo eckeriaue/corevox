@@ -1,4 +1,4 @@
-defmodule Corevox.DataCase do
+defmodule CoreVox.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -10,7 +10,7 @@ defmodule Corevox.DataCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use Corevox.DataCase, async: true`, although
+  by setting `use corevox.DataCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -18,17 +18,17 @@ defmodule Corevox.DataCase do
 
   using do
     quote do
-      alias Corevox.Repo
+      alias CoreVox.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Corevox.DataCase
+      import CoreVox.DataCase
     end
   end
 
   setup tags do
-    Corevox.DataCase.setup_sandbox(tags)
+    CoreVox.DataCase.setup_sandbox(tags)
     :ok
   end
 
@@ -36,7 +36,7 @@ defmodule Corevox.DataCase do
   Sets up the sandbox based on the test tags.
   """
   def setup_sandbox(tags) do
-    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Corevox.Repo, shared: not tags[:async])
+    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(CoreVox.Repo, shared: not tags[:async])
     on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
   end
 
