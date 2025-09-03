@@ -11,6 +11,7 @@ defmodule CorevoxWeb.Router do
     get "/ping", PingController, :ping
 
     post "/sign-in", AuthController, :sign_in
+    post "/sign-up", AuthController, :sign_up
 
     scope "/" do
       pipe_through CorevoxWeb.Auth.Pipeline

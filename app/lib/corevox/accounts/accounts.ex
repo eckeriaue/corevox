@@ -27,4 +27,12 @@ defmodule Corevox.Accounts do
         end
     end
   end
+
+  def register_user(attrs) do
+    %User{}
+    |> User.registration_changeset(attrs)
+    |> Repo.insert()
+  end
+
+
 end
