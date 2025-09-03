@@ -22,6 +22,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_URL=${POSTGRES_URL}
     command: sh -c "mix ecto.create && mix ecto.migrate && mix phx.server"
 
   corevox_web:
@@ -48,34 +49,6 @@ services:
       - TURN_REALM=${TURN_REALM}
 
     command: npm run dev -- --host 0.0.0.0
-
-  corevox_monolith:
-    profiles:
-      - mono
-    container_name: corevox_monolith
-    build:
-      context: ./mono
-      dockerfile: Dockerfile.dev
-    command: sh -c "mix ecto.create && mix ecto.migrate && mix phx.server"
-    ports:
-      - "4000:4000"
-    volumes:
-      - ./mono:/app
-      - /app/deps
-      - /app/_build
-    env_file:
-      - ./.env
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - TURN_USER=${TURN_USER}
-      - TURN_PASSWORD=${TURN_PASSWORD}
-      - TURN_REALM=${TURN_REALM}
-    depends_on:
-      - corevox_postgres
-      - corevox_coturn
 
   corevox_coturn:
     container_name: corevox_coturn
