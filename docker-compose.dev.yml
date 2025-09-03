@@ -1,61 +1,71 @@
+
 services:
+
   corevox_app:
     container_name: corevox_app
     restart: always
     build:
       context: ./app
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       - corevox_postgres
       - corevox_coturn
+    volumes:
+      - ./app:/app
+      - /app/_build
+      - /app/deps
     ports:
       - "4000:4000"
     env_file: ./.env
     environment:
-      - MIX_ENV=prod
+      - MIX_ENV=dev
       - GUARDIAN_SECRET=${GUARDIAN_SECRET}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_URL=${POSTGRES_URL}
-    command: sh -c "mix deps.get --only prod && mix release --overwrite && _build/prod/rel/corevox/bin/server"
-    networks:
-      - corevox_network
+    command: sh -c "mix setup && mix phx.server"
 
   corevox_web:
     container_name: corevox_web
     build:
       context: ./web
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
-      - "80:80"
+      - "4321:4321"
+
     depends_on:
       - corevox_postgres
       - corevox_coturn
       - corevox_app
+    volumes:
+      - ./web:/app
+      - /app/node_modules
     env_file: ./.env
+
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - TURN_USER=${TURN_USER}
       - TURN_PASSWORD=${TURN_PASSWORD}
       - TURN_REALM=${TURN_REALM}
-    command: npm run start
-    networks:
-      - corevox_network
+
+    command: npm run dev -- --host 0.0.0.0
 
   corevox_coturn:
     container_name: corevox_coturn
     image: instrumentisto/coturn
     restart: unless-stopped
     ports:
+      - "3478:3478"
       - "3478:3478/tcp"
-      - "3478:3478/udp"
       - "49160-49200:49160-49200/udp"
     command: >
       turnserver
         -a
         -v
+        --no-dtls
+        --no-tls
         --lt-cred
         --fingerprint
         --user=${TURN_USER}:${TURN_PASSWORD}
@@ -66,13 +76,10 @@ services:
         --max-port=49200
     env_file:
       - ./.env
-    networks:
-      - corevox_network
 
   corevox_postgres:
     container_name: corevox_postgres
     image: postgres:17-alpine
-    restart: unless-stopped
     ports:
       - "5432:5432"
     env_file: ./.env
@@ -81,11 +88,6 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=${POSTGRES_HOST}
+
     volumes:
       - ./data:/var/lib/postgresql/data
-    networks:
-      - corevox_network
-
-networks:
-  corevox_network:
-    driver: bridge
