@@ -1,7 +1,7 @@
 defmodule CorevoxWeb.RoomChannel do
 	use CorevoxWeb, :channel
-	def join("room:lobby", _params, socket) do
-		{:ok, socket}
+	def join("rooms:lobby", _params, socket) do
+		{:ok, %{rooms: []}, socket}
 	end
 
 	def handle_in("new_msg", %{"body" => body}, socket) do

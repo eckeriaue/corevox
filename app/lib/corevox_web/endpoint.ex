@@ -1,7 +1,6 @@
 defmodule CorevoxWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :corevox
 
-  # plug Corevox.Cors
   plug Corsica,
     origins: ["http://localhost:4321"], # Замените на актуальный домен фронтенда
     allow_methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH", "HEAD", "CONNECT", "TRACE"],
@@ -9,6 +8,10 @@ defmodule CorevoxWeb.Endpoint do
     allow_credentials: true,
     max_age: 3600,
     send_preflight_response?: true
+
+    socket "/socket", CorevoxWeb.UserSocket,
+      websocket: true,
+      longpoll: false   # можно включить true, если нужен fallback
 
 
   # The session will be stored in the cookie and signed,

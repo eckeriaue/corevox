@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import Socket from '../components/Socket.vue'
 
 const isAuth = Astro.cookies.has("jwt_token")
 
@@ -12,6 +13,8 @@ const isAuth = Astro.cookies.has("jwt_token")
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro Basics</title>
+
+		<Socket client:idle />
 	</head>
 	<body>
 
