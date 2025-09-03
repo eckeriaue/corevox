@@ -14,10 +14,11 @@ defmodule CorevoxWeb.AuthController do
           token,
           http_only: true,
           secure: Mix.env() == :prod,
-          max_age: 60 * 60 * 24 * 7 # 7 дней
+          max_age: 60 * 60 * 24 * 7
+          # same_site: "None"
         )
         # |> put_status(:ok)
-        |> json(%{user: %{id: user.id, email: user.email}})
+        |> json(%{user: %{id: user.id, email: user.email, token: token, username: user.username}})
 
       {:error, _reason} ->
         conn
@@ -39,7 +40,7 @@ defmodule CorevoxWeb.AuthController do
           secure: Mix.env() == :prod,
           max_age: 60 * 60 * 24 * 7
         )
-        |> json(%{user: %{id: user.id, email: user.email, username: user.username}})
+        |> json(%{user: %{id: user.id, email: user.email, token: token, username: user.username}})
 
       {:error, changeset} ->
         conn

@@ -8,7 +8,7 @@ import Layout from '../layouts/Layout.astro'
 <Layout>
     test
     <script type="module">
-    await fetch("http://localhost:4000/api/v1/auth/sign-in", {
+    const { user } = await fetch("http://localhost:4000/api/v1/auth/sign-in", {
       method: "POST",
       headers: { "Content-Type": "application/json" }, // Удален Access-Control-Allow-Origin
       body: JSON.stringify({
@@ -18,13 +18,12 @@ import Layout from '../layouts/Layout.astro'
       credentials: "include",
     })
       .then((response) => response.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.error(error));
 
-    await fetch("http://localhost:4000/api/v1/me", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
+    await fetch('http://localhost:4000/api/v1/me', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
     })
       .then((response) => response.json())
       .then((data) => console.log(data))
