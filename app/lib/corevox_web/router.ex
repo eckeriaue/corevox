@@ -5,7 +5,7 @@ defmodule CorevoxWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", CorevoxWeb do
+  scope "/api/v1", CorevoxWeb do
     pipe_through :api
 
     get "/ping", PingController, :ping
