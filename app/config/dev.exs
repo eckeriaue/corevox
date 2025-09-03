@@ -23,6 +23,13 @@ config :corevox, CorevoxWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
+  live_reload: [
+    patterns: [
+      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"lib/corevox_web/(controllers|live|views)/.*(ex)$",
+      ~r"lib/corevox_web/templates/.*(eex)$"
+    ]
+  ],
   secret_key_base: "QiKRH7W5hrSxFKiYTbaZupiNt+9DGsKjx6YYvCRgn+QlhZ2lFFUFuNlliAvagvFz",
   watchers: []
 
