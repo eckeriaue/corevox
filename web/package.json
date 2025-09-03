@@ -9,6 +9,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.13.5"
+    "@tailwindcss/vite": "^4.1.12",
+    "astro": "^5.13.5",
+    "phoenix": "^1.8.1",
+    "tailwindcss": "^4.1.12"
+  },
+  "devDependencies": {
+    "daisyui": "^5.1.6"
   }
 }
