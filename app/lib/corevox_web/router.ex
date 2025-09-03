@@ -12,6 +12,7 @@ defmodule CorevoxWeb.Router do
 
     post "/sign-in", AuthController, :sign_in
     post "/sign-up", AuthController, :sign_up
+    post "/sign-out", AuthController, :sign_out
 
     scope "/" do
       pipe_through CorevoxWeb.Auth.Pipeline

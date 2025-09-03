@@ -9,6 +9,15 @@ defmodule Corevox.Accounts do
     Repo.get_by(User, email: email)
   end
 
+
+  def get_user(id) do
+    try do
+      get_user!(id)
+    rescue
+      Ecto.NoResultsError -> nil
+    end
+  end
+
   def get_user!(id), do: Repo.get!(User, id)
 
 
