@@ -20,7 +20,7 @@ defmodule Corevox.MixProject do
   def application do
     [
       mod: {Corevox.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :os_mon]
     ]
   end
 
