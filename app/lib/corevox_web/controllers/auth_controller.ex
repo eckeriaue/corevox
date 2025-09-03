@@ -56,4 +56,10 @@ defmodule CorevoxWeb.AuthController do
     |> json(%{message: "Signed out successfully"})
   end
 
+  def options(conn, _params) do
+    conn
+    |> put_status(200)
+    |> text("")
+  end
+
 end

@@ -40,6 +40,7 @@ defmodule Corevox.MixProject do
   defp deps do
     [
       # {:guardian, "~> 2.3"},
+      {:corsica, "~> 2.1"},
       {:guardian, github: "ueberauth/guardian"},
       {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.8.0"},

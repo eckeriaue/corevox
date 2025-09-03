@@ -5,14 +5,19 @@ defmodule CorevoxWeb.Router do
     plug :accepts, ["json"]
   end
 
+
   scope "/api/v1", CorevoxWeb do
     pipe_through :api
 
+
     get "/ping", PingController, :ping
 
-    post "/sign-in", AuthController, :sign_in
-    post "/sign-up", AuthController, :sign_up
-    post "/sign-out", AuthController, :sign_out
+    post "/auth/sign-in", AuthController, :sign_in
+    post "/auth/sign-up", AuthController, :sign_up
+    post "/auth/sign-out", AuthController, :sign_out
+    options "/auth/sign-in", AuthController, :options
+    options "/auth/sign-up", AuthController, :options
+    options "/auth/sign-out", AuthController, :options
 
     scope "/" do
       pipe_through CorevoxWeb.Auth.Pipeline
