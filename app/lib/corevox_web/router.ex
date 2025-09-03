@@ -7,6 +7,8 @@ defmodule CorevoxWeb.Router do
 
   scope "/api", CorevoxWeb do
     pipe_through :api
+
+    get "/ping", PingController, :ping
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
