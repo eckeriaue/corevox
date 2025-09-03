@@ -15,9 +15,9 @@ defmodule CorevoxWeb.Router do
     post "/auth/sign-in", AuthController, :sign_in
     post "/auth/sign-up", AuthController, :sign_up
     post "/auth/sign-out", AuthController, :sign_out
-    options "/auth/sign-in", AuthController, :options
-    options "/auth/sign-up", AuthController, :options
-    options "/auth/sign-out", AuthController, :options
+    # options "/auth/sign-in", AuthController, :options
+    # options "/auth/sign-up", AuthController, :options
+    # options "/auth/sign-out", AuthController, :options
 
     scope "/" do
       pipe_through CorevoxWeb.Auth.Pipeline

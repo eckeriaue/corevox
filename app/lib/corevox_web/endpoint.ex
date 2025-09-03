@@ -1,7 +1,15 @@
 defmodule CorevoxWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :corevox
 
-  plug Corevox.Cors
+  # plug Corevox.Cors
+  plug Corsica,
+    origins: ["http://localhost:4321"], # Замените на актуальный домен фронтенда
+    allow_methods: ["GET", "POST", "OPTIONS"],
+    allow_headers: ["content-type", "authorization"],
+    allow_credentials: true,
+    max_age: 3600,
+    send_preflight_response?: true
+
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.

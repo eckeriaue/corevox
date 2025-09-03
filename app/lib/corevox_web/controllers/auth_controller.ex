@@ -16,6 +16,7 @@ defmodule CorevoxWeb.AuthController do
           secure: Mix.env() == :prod,
           max_age: 60 * 60 * 24 * 7 # 7 дней
         )
+        # |> put_status(:ok)
         |> json(%{user: %{id: user.id, email: user.email}})
 
       {:error, _reason} ->
@@ -56,10 +57,10 @@ defmodule CorevoxWeb.AuthController do
     |> json(%{message: "Signed out successfully"})
   end
 
-  def options(conn, _params) do
-    conn
-    |> put_status(200)
-    |> text("")
-  end
+  # def options(conn, _params) do
+  #   conn
+  #   |> put_status(200)
+  #   |> text("")
+  # end
 
 end
