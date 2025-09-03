@@ -22,6 +22,11 @@ config :corevox, CorevoxWeb.Endpoint,
   pubsub_server: Corevox.PubSub,
   live_view: [signing_salt: "WvN+0GVI"]
 
+config :corevox, CorevoxWeb.Auth.Guardian,
+  issuer: "corevox",
+  secret_key: System.fetch_env!("GUARDIAN_SECRET")
+
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

@@ -9,6 +9,14 @@ defmodule CorevoxWeb.Router do
     pipe_through :api
 
     get "/ping", PingController, :ping
+
+    post "/sign-in", AuthController, :sign_in
+
+    scope "/" do
+      pipe_through CorevoxWeb.Auth.Pipeline
+
+      get "/me", UserController, :me
+    end
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

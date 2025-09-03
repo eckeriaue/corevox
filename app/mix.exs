@@ -39,7 +39,8 @@ defmodule Corevox.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:guardian, "~> 2.3.0"},
+      # {:guardian, "~> 2.3"},
+      {:guardian, github: "ueberauth/guardian"},
       {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.8.0"},
       {:phoenix_ecto, "~> 4.5"},
