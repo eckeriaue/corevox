@@ -39,6 +39,8 @@ defmodule Corevox.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:comeonin, "~> 5.5.1"},
+      {:guardian, "~> 2.3"},
       {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.8.0"},
       {:phoenix_ecto, "~> 4.5"},
