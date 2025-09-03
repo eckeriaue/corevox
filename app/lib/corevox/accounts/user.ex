@@ -17,5 +17,13 @@ defmodule Corevox.Accounts.User do
     user
     |> cast(attrs, [:email, :username, :password, :confirmed_at])
     |> validate_required([:email, :username, :password, :confirmed_at])
+    |> hash_password()
+  end
+
+  defp hash_password(changeset) do
+    case get_change(changeset, :password) do
+      nil -> changeset
+      password -> put_change(changeset, :password_hash, Bcrypt.hash_pwd_salt(password))
+    end
   end
 end
