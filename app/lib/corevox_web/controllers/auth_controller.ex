@@ -9,13 +9,6 @@ defmodule CorevoxWeb.AuthController do
         {:ok, token, _claims} = Guardian.encode_and_sign(user)
 
         conn
-        # |> put_resp_cookie(
-        #   "access_token",
-        #   token,
-        #   http_only: true,
-        #   secure: Mix.env() == :prod,
-        #   max_age: 60 * 60 * 24 * 7
-        # )
         |> json(%{user: %{id: user.id, email: user.email, token: token, username: user.username}})
 
       {:error, _reason} ->
@@ -31,13 +24,6 @@ defmodule CorevoxWeb.AuthController do
         {:ok, token, _claims} = Guardian.encode_and_sign(user)
 
         conn
-        # |> put_resp_cookie(
-        #   "access_token",
-        #   token,
-        #   http_only: true,
-        #   secure: Mix.env() == :prod,
-        #   max_age: 60 * 60 * 24 * 7
-        # )
         |> json(%{user: %{id: user.id, email: user.email, token: token, username: user.username}})
 
       {:error, changeset} ->
@@ -52,14 +38,7 @@ defmodule CorevoxWeb.AuthController do
 
   def sign_out(conn, _params) do
     conn
-    # |> delete_resp_cookie("access_token")
     |> json(%{message: "Signed out successfully"})
   end
-
-  # def options(conn, _params) do
-  #   conn
-  #   |> put_status(200)
-  #   |> text("")
-  # end
 
 end

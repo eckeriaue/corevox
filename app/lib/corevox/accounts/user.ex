@@ -17,6 +17,10 @@ defmodule Corevox.Accounts.User do
     user
     |> cast(attrs, [:email, :username, :password])
     |> validate_required([:email, :username, :password])
+    |> unique_constraint(:email)
+    |> unique_constraint(:username)
+    |> validate_format(:email, ~r/@/)
+    |> validate_length(:password, min: 6)
     |> hash_password()
   end
 
