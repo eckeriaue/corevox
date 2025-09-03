@@ -6,7 +6,7 @@ defmodule Corevox.Repo.Migrations.CreateUsers do
       add :email, :string
       add :username, :string
       add :password_hash, :string
-      add :confirmed_at, :utc_datetime
+      add :confirmed_at, :utc_datetime, default: nil
 
       timestamps(type: :utc_datetime)
     end

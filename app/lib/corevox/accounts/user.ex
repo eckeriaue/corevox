@@ -7,16 +7,16 @@ defmodule Corevox.Accounts.User do
     field :username, :string
     field :password_hash, :string
     field :password, :string, virtual: true
-    field :confirmed_at, :utc_datetime
+    field :confirmed_at, :utc_datetime, default: nil
 
     timestamps(type: :utc_datetime)
   end
 
   @doc false
-  def changeset(user, attrs) do
+  def registration_changeset(user, attrs) do
     user
-    |> cast(attrs, [:email, :username, :password, :confirmed_at])
-    |> validate_required([:email, :username, :password, :confirmed_at])
+    |> cast(attrs, [:email, :username, :password])
+    |> validate_required([:email, :username, :password])
     |> hash_password()
   end
 
