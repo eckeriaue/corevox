@@ -24,7 +24,7 @@ config :corevox, CorevoxWeb.Endpoint,
 
 config :corevox, CorevoxWeb.Auth.Guardian,
   issuer: "corevox",
-  secret_key: System.fetch_env!("GUARDIAN_SECRET")
+  secret_key: System.get_env("GUARDIAN_SECRET")
 
 
 # Configures the mailer

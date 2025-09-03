@@ -3,7 +3,6 @@ FROM elixir:1.18-alpine
 
 RUN apk add --no-cache \
     inotify-tools \
-    erlang-os-mon \
     build-base \
     git \
     nodejs \

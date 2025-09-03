@@ -1,15 +1,15 @@
 
 services:
 
-  corevox_app:
-    container_name: corevox_app
+  corevox_app_dev:
+    container_name: corevox_app_dev
     restart: always
     build:
       context: ./app
       dockerfile: Dockerfile.dev
     depends_on:
-      - corevox_postgres
-      - corevox_coturn
+      - corevox_postgres_dev
+      - corevox_coturn_dev
     volumes:
       - ./app:/app
       - /app/_build
@@ -27,8 +27,8 @@ services:
       - POSTGRES_URL=${POSTGRES_URL}
     command: sh -c "mix setup && mix phx.server"
 
-  corevox_web:
-    container_name: corevox_web
+  corevox_web_dev:
+    container_name: corevox_web_dev
     build:
       context: ./web
       dockerfile: Dockerfile.dev
@@ -36,9 +36,9 @@ services:
       - "4321:4321"
 
     depends_on:
-      - corevox_postgres
-      - corevox_coturn
-      - corevox_app
+      - corevox_postgres_dev
+      - corevox_coturn_dev
+      - corevox_app_dev
     volumes:
       - ./web:/app
       - /app/node_modules
@@ -52,8 +52,8 @@ services:
 
     command: npm run dev -- --host 0.0.0.0
 
-  corevox_coturn:
-    container_name: corevox_coturn
+  corevox_coturn_dev:
+    container_name: corevox_coturn_dev
     image: instrumentisto/coturn
     restart: unless-stopped
     ports:
@@ -77,8 +77,8 @@ services:
     env_file:
       - ./.env
 
-  corevox_postgres:
-    container_name: corevox_postgres
+  corevox_postgres_dev:
+    container_name: corevox_postgres_dev
     image: postgres:17-alpine
     ports:
       - "5432:5432"

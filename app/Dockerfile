@@ -2,7 +2,8 @@
 FROM elixir:1.18-alpine AS builder
 
 RUN apk add --no-cache \
-    erlang-os-mon \
+    build-base \
+    git \
     nodejs \
     npm \
     postgresql-client
@@ -22,14 +23,12 @@ ENV MIX_ENV=prod
 
 RUN mix deps.compile && \
     mix compile && \
-    mix assets.deploy && \
     mix release
 
 # Runtime stage
 FROM elixir:1.18-alpine
 
 RUN apk add --no-cache \
-    erlang-os-mon \
     postgresql-client
 
 WORKDIR /app
