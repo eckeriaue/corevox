@@ -1,17 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onUnmounted, ref } from 'vue'
 import { socket } from '../socket'
 
 const status = ref<'loading' | 'loaded' | 'error'>('loading')
 const rooms = ref([])
 
 const channel = socket.channel('rooms:lobby', {})
-channel.join().receive('ok', payload => {
+channel.join().receive('ok', (payload: { rooms: [] }) => {
   rooms.value = payload.rooms
   status.value = 'loaded'
-}).receive('error', reason => {
+}).receive('error', (reason: Error) => {
   status.value = 'error'
   console.error('Failed to join', reason)
+})
+
+onUnmounted(() => {
+  channel.leave()
 })
 
 </script>

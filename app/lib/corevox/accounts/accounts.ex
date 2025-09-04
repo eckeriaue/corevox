@@ -9,6 +9,23 @@ defmodule Corevox.Accounts do
     Repo.get_by(User, email: email)
   end
 
+  def user_exists_by_email?(email) do
+    case get_user_by_email(email) do
+      nil -> false
+      %User{} -> true
+    end
+  end
+
+  def get_user_by_username(username) when is_binary(username) do
+    Repo.get_by(User, username: username)
+  end
+
+  def user_exists_by_username?(username) do
+    case get_user_by_username(username) do
+      nil -> false
+      %User{} -> true
+    end
+  end
 
   def get_user(id) do
     try do
