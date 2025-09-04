@@ -78,7 +78,7 @@ services:
       - ./.env
 
   corevox_postgres_dev:
-    container_name: corevox_postgres_dev
+    container_name: ${POSTGRES_HOST}
     image: postgres:17-alpine
     ports:
       - "5432:5432"
