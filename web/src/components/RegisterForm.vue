@@ -1,24 +1,25 @@
-<script setup lang="ts">
+<script setup>
 import { onMounted, toRaw, onUnmounted, reactive, ref, computed } from 'vue'
 import { socket } from '../socket'
 import { debounce } from 'radashi'
 import FrTextField from './FrTextField.vue'
 import FrPasswordField from './FrPasswordField.vue'
 import { z } from 'zod'
+import { isClient } from '../utils'
 
 
-if (typeof window !== 'undefined') {
+if (isClient()) {
   z.config(z.locales.ru())
 }
 
-const formStatus = ref<'ready' | 'loading'>('ready')
+const formStatus = ref('ready')
 
 const channel = socket.channel('register:formvalidation', {})
 channel.join().receive('ok', () => {
     console.log('Joined successfully')
 })
 
-const checkUniqueness = (field: string, value: string) => {
+const checkUniqueness = (field, value) => {
   return new Promise((resolve) => {
     channel.push(`check_${field}`, { value })
       .receive('ok', (resp) => {
@@ -78,6 +79,10 @@ const validate = debounce({ delay: 100 }, async () => {
   errors.value = z.flattenError(error).fieldErrors
 })
 
+function saveMe(event) {
+  formStatus.value = 'loading'
+}
+
 onMounted(validate)
 
 onUnmounted(() => {
@@ -89,6 +94,7 @@ onUnmounted(() => {
 <template>
     <form
         @input="validate"
+        @submit.prevent="saveMe"
         class="flex flex-col mx-auto w-md"
     >
 

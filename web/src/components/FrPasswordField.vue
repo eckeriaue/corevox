@@ -36,7 +36,7 @@ const canSee = ref(false)
         />
         <button
             type="button"
-            class="not-[&:hover]:opacity-80 block ph"
+            class="not-[&:hover]:opacity-80 cursor-pointer block ph"
             @click="canSee = !canSee"
             :class="{
               'ph-eye': canSee,
