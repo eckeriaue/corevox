@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "icons/regular/regular.css";
 @plugin "daisyui" {
     theme: dracula;
 };
