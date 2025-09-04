@@ -5,7 +5,7 @@ import { debounce } from 'radashi'
 import FrTextField from './FrTextField.vue'
 import FrPasswordField from './FrPasswordField.vue'
 import { z } from 'zod'
-import { isClient } from '../utils'
+import { isClient } from '../lib'
 
 
 if (isClient()) {
@@ -36,20 +36,24 @@ const checkUniqueness = (field, value) => {
   });
 }
 
-
-const errors = ref({
+const defaultErrors = () => ({
   username: [],
   email: [],
   password: [],
   confirm_password: []
 })
 
-const form = reactive({
+const defaultForm = () => ({
   username: '',
   email: '',
   password: '',
-  confirm_password: '',
+  confirm_password: ''
 })
+
+
+const errors = ref(defaultErrors())
+
+const form = reactive(defaultForm())
 
 const schema = z.object({
   username: z.string().nonempty().max(20).default('')
@@ -62,7 +66,7 @@ const schema = z.object({
     }),
   password: z.string().nonempty().min(8).max(100).default(''),
   confirm_password: z.string().nonempty().min(8).max(100).default('')
-}).refine((data) => data.password === data.confirm_password, {
+}).refine((data) => data.password == data.confirm_password, {
   message: 'Пароли не совпадают',
   path: ['confirm_password'],
 })
@@ -74,13 +78,27 @@ const disabled = computed(() => {
 
 const validate = debounce({ delay: 100 }, async () => {
   formStatus.value = 'loading'
-  const { error } = await schema.safeParseAsync(structuredClone(toRaw(form)))
+  const formData = structuredClone(toRaw(form))
+  const { error } = await schema.safeParseAsync(formData)
   formStatus.value = 'ready'
-  errors.value = z.flattenError(error).fieldErrors
+  if (error) {
+    errors.value = z.flattenError(error).fieldErrors
+  } else {
+    errors.value = defaultErrors()
+  }
 })
 
 function saveMe(event) {
   formStatus.value = 'loading'
+  const formData = structuredClone(toRaw(form))
+  channel.push('register_me', formData).receive('ok', ({ user, token }) => {
+    formStatus.value = 'ready'
+    localStorage.setItem('jwt_token', token)
+    barba.go('/')
+  }).receive('error', (reason) => {
+    formStatus.value = 'ready'
+    console.error(reason)
+  })
 }
 
 onMounted(validate)
