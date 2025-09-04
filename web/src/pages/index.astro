@@ -1,8 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import RoomsList from '../components/RoomsList.vue'
 
 ---
 
-<Layout>
-    <div>test</div>
+<Layout namespace="lobby">
+    <RoomsList client:idle />
 </Layout>

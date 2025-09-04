@@ -3,6 +3,7 @@ defmodule CorevoxWeb.UserSocket do
 
   ## Channels
   channel "rooms:*", CorevoxWeb.RoomChannel
+  channel "register:form", CorevoxWeb.RegisterChannel
 
   def connect(%{"token" => token}, socket, _connect_info) do
     case CorevoxWeb.Auth.Guardian.decode_and_verify(token) do

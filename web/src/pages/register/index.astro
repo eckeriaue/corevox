@@ -1,54 +1,16 @@
 ---
-import Layout from '../../layouts/Layout.astro'
+import AuthLayout from '../../layouts/AuthLayout.astro'
+import RegisterForm from '../../components/RegisterForm.vue'
 
 ---
 
-<Layout>
-    <form
-        action="/register"
-        method="POST"
-        class="flex flex-col gap-y-2 mx-auto max-w-md"
-    >
-        <label for="name">Ваш ник:</label>
-        <input
-            class="input w-full"
-            type="text"
-            id="name"
-            name="name"
-            required
-        >
-        <label for="email">Email:</label>
-        <input
-            class="input w-full"
-            type="email"
-            id="email"
-            name="email"
-            required
-        >
+<AuthLayout namespace="register">
+    <RegisterForm client:idle />
+</AuthLayout>
 
-        <label for="password">Пароль:</label>
-        <input
-            class="input w-full"
-            type="password"
-            id="password"
-            name="password"
-            required
-        >
-
-        <label for="confirm_password">Подтвердите пароль:</label>
-        <input
-            class="input w-full"
-            type="password"
-            id="confirm_password"
-            name="confirm_password"
-            required
-        >
-
-        <div class="flex items-center gap-x-2">
-            <label for="remember_me">Запомнить меня</label>
-            <input type="checkbox" class="checkbox" id="remember_me" name="remember_me">
-        </div>
-
-        <button class="btn btn-primary" type="submit">Зарегистрироваться</button>
-    </form>
-</Layout>
+<style scoped>
+label {
+    font-size: 14px;
+    color: var(--color-primary-content);
+}
+</style>

@@ -11,6 +11,7 @@
   "dependencies": {
     "@astrojs/node": "^9.4.3",
     "@astrojs/vue": "^5.1.0",
+    "@barba/core": "^2.10.3",
     "@tailwindcss/vite": "^4.1.12",
     "astro": "^5.13.5",
     "phoenix": "^1.8.1",
