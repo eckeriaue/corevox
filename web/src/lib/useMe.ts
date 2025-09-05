@@ -26,7 +26,15 @@ export function useMe() {
           if (token.value) {
             isLoading.value = true
             fetch(meRequest.clone())
-            .then(response => response.json())
+            .then(response => {
+              if (response.status === 401) {
+                localToken.value = ''
+                sessionToken.value = ''
+                location.reload()
+                return Promise.resolve()
+              }
+              return response.json()
+            })
             .then(data => me.value = data)
             .catch(err => error.value = err)
             .finally(() => isLoading.value = false)
@@ -44,6 +52,7 @@ export function useMe() {
     return {
         me,
         error,
+        isAuth: computed(() => me.value !== null),
         isLoading,
         login(token: string, { remember = false } = {}) {
             if (remember) {

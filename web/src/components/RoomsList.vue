@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { onUnmounted, ref } from 'vue'
+import { onUnmounted, defineAsyncComponent, ref } from 'vue'
 import { socket } from '../socket'
+import { useMe } from '@/lib'
+
+const CreateRoomButton = defineAsyncComponent(() => import('@/components/createRoom/CreateRoomButton.vue'))
+
+const { isAuth } = useMe()
 
 const status = ref<'loading' | 'loaded' | 'error'>('loading')
 const rooms = ref([])
@@ -33,6 +38,9 @@ onUnmounted(() => {
         <div
             v-else-if="status === 'loaded'"
         >
+            <div v-if="isAuth">
+                <create-room-button />
+            </div>
             <ul v-if="rooms.length > 0">
                 <li v-for="room in rooms" :key="room.id">{{ room.name }}</li>
             </ul>
