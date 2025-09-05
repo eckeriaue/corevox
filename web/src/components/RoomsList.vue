@@ -39,8 +39,8 @@ onUnmounted(() => {
 
 <template>
 <section  style="height:calc(100dvh - 64px)">
-    <div v-if="/* isAuth */true" class="mt-16 mx-auto w-fit">
-        <create-room-button v-if="props.ownerId" :ownerId="props.ownerId" :channel />
+    <div v-if="props.ownerId" class="mt-16 mx-auto w-fit">
+        <create-room-button :ownerId="props.ownerId" :channel />
     </div>
     <div class="flex items-center justify-center">
         <div
@@ -62,7 +62,11 @@ onUnmounted(() => {
                   <div>{{ room.name }} </div>
                   <div v-if="room.description" class="text-xs uppercase font-semibold opacity-60"> {{ room.description }} </div>
                 </div>
-                <a :href="'/rooms/' + room.id" class="btn btn-square btn-ghost">
+                <a
+                    v-if="props.ownerId"
+                    :href="'/rooms/' + room.id"
+                    class="btn btn-square btn-ghost"
+                >
                     <span class="ph ph-door-open" />
                 </a>
               </li>
