@@ -1,16 +1,23 @@
-<script setup >
-import { useMe } from '@/lib/useMe'
+<script setup lang="ts">
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
+import { actions } from 'astro:actions'
 
-const { me, logout } = useMe()
-function logoutAndReload() {
-    logout()
-    location.reload()
+const props = defineProps<{
+  username: string
+}>()
+
+
+async function logoutAndReload() {
+    const { data, error } = await actions.signout()
+    console.info(data, error)
+    if (data.redirect) {
+        window.location.href = data.redirect
+    }
 }
 </script>
 
@@ -18,7 +25,7 @@ function logoutAndReload() {
 <dropdown-menu>
     <dropdown-menu-trigger>
         <button class="btn btn-ghost">
-          <span>{{ me?.username }}</span>
+          <span>{{ props.username }}</span>
           <span class="ph ph-user" />
         </button>
     </dropdown-menu-trigger>

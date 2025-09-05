@@ -5,15 +5,10 @@ import { debounce } from 'radashi'
 import FrTextField from './FrTextField.vue'
 import FrPasswordField from './FrPasswordField.vue'
 import { z } from 'zod'
-import { isClient, useMe } from '../lib'
+import { actions } from 'astro:actions'
 
-
-if (isClient()) {
-  z.config(z.locales.ru())
-}
 
 const formStatus = ref('ready')
-const { login } = useMe()
 
 const channel = socket.channel('register:formvalidation', {})
 channel.join().receive('ok', () => {
@@ -73,30 +68,41 @@ const schema = z.object({
   path: ['confirm_password'],
 })
 
-
+const isValid = ref(false)
 const disabled = computed(() => {
-  return !form.username || !form.email || !form.password || !form.confirm_password || form.password !== form.confirm_password
+  return !isValid.value
 })
 
 const validate = debounce({ delay: 100 }, async () => {
   formStatus.value = 'loading'
   const formData = structuredClone(toRaw(form))
-  const { error } = await schema.safeParseAsync(formData)
+  const { success, error } = await schema.safeParseAsync(formData)
   formStatus.value = 'ready'
   if (error) {
     errors.value = z.flattenError(error).fieldErrors
   } else {
     errors.value = defaultErrors()
   }
+  isValid.value = success
 })
 
-function saveMe(event) {
+function saveMe() {
   formStatus.value = 'loading'
   const formData = structuredClone(toRaw(form))
-  channel.push('register_me', formData).receive('ok', ({ user, token }) => {
+  channel.push('register_me', formData).receive('ok', async ({ user, token }) => {
     formStatus.value = 'ready'
-    login(token, { remember: formData.remember_me })
-    window.location.href = '/'
+    console.info(user)
+    console.info(user)
+    console.info(user)
+    const {
+      data: { redirect = '/'},
+      error
+    } = await actions.signin({ token, user, remember: formData.remember_me })
+    if (redirect) {
+      window.location.href = redirect
+    } else if (error) {
+      console.error(error)
+    }
   }).receive('error', (reason) => {
     formStatus.value = 'ready'
     console.error(reason)
@@ -172,7 +178,6 @@ onUnmounted(() => {
             :disabled
         >
             Зарегистрироваться
-            <span v-if="formStatus === 'loading'" class="loading loading-ball loading-md"></span>
         </button>
     </form>
 </template>

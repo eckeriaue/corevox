@@ -1,9 +1,11 @@
 import { changeTheme } from './changeTheme'
-import { getMe } from './getMe'
-import { setMe } from './setMe'
+import { me } from './me'
+import { signin } from './signin'
+import { signout } from './signout'
 
 export const server = {
   changeTheme,
-  setMe,
-  getMe
+  me,
+  signin,
+  signout
 }

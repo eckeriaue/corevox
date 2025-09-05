@@ -1,12 +1,14 @@
 ---
 import '../styles/global.css'
 import { ClientRouter } from 'astro:transitions'
-import Logo from '../components/Logo.astro'
-import UserNavbar from '../components/UserNavbar.vue'
+import Logo from '@/components/Logo.astro'
 import SwapTheme from '@/components/theme/SwapTheme.astro'
+import UserProfile from '@/components/user/UserProfile.vue'
+import SignNav from '@/components/user/SignNav.vue'
 
 const { namespace } = Astro.props
 const theme = await Astro.session?.get('theme') || 'light'
+const me = await Astro.session?.get('me')
 
 ---
 <!doctype html>
@@ -30,7 +32,7 @@ const theme = await Astro.session?.get('theme') || 'light'
                         <Logo />
                         <div class="flex items-center gap-x-2">
                             <SwapTheme />
-                            <UserNavbar client:idle />
+                            {me && me.user?.id ? <UserProfile username={me.user?.username} client:idle /> : <SignNav />}
                         </div>
                     </div>
            	</header>

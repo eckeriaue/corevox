@@ -15,7 +15,6 @@ import { z } from 'zod'
 import { ref, unref, toRaw } from 'vue'
 import { debounce, isString, } from 'radashi'
 import type { Channel } from 'phoenix'
-import { useMe } from '@/lib'
 
 type Room = {
   id: string,
@@ -25,17 +24,14 @@ type Room = {
 
 const props = defineProps<{
   channel: Channel
+  ownerId: number
 }>()
 
 const emit = defineEmits<{
   create: [room: Room]
 }>()
 
-const { me } = useMe()
 const isOpen = ref(false)
-
-
-
 const isValid = ref(false)
 
 const defaultErrors = () => ({
@@ -82,7 +78,7 @@ function createRoom() {
     formData.description = null
   }
   if (me.value) {
-    Reflect.set(formData, 'owner_id', me.value.id)
+    Reflect.set(formData, 'owner_id', props.ownerId)
     props.channel.push('create_room', formData)
       .receive('ok', ({ room }: { room: Room }) => {
         isOpen.value = false

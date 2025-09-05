@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { onUnmounted, defineAsyncComponent, ref } from 'vue'
 import { socket } from '@/socket'
-import { useMe } from '@/lib'
+
+const props = defineProps({
+  ownerId: Number,
+})
 
 type Room = {
   id: string,
@@ -10,8 +13,6 @@ type Room = {
 }
 
 const CreateRoomButton = defineAsyncComponent(() => import('@/components/createRoom/CreateRoomButton.vue'))
-
-const { isAuth } = useMe()
 
 const status = ref<'loading' | 'loaded' | 'error'>('loading')
 const rooms = ref<Room[]>([])
@@ -28,7 +29,6 @@ channel.join().receive('ok', (payload: { rooms: Room[] }) => {
 
 channel.on('room_created', ({ room }: { room: Room }) => {
   rooms.value.unshift(room)
-  barba.go('/rooms/' + room.id)
 })
 
 onUnmounted(() => {
@@ -39,8 +39,8 @@ onUnmounted(() => {
 
 <template>
 <section  style="height:calc(100dvh - 64px)">
-    <div v-if="isAuth" class="mt-16 mx-auto w-fit">
-        <create-room-button :channel />
+    <div v-if="/* isAuth */true" class="mt-16 mx-auto w-fit">
+        <create-room-button v-if="props.ownerId" :ownerId="props.ownerId" :channel />
     </div>
     <div class="flex items-center justify-center">
         <div

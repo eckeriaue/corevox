@@ -1,9 +1,10 @@
 ---
 import '../styles/global.css'
-// import Barba from '../components/Barba.astro'
+
 import { ClientRouter } from 'astro:transitions'
 import Logo from '../components/Logo.astro'
 import SwapTheme from '@/components/theme/SwapTheme.astro'
+
 
 const { namespace } = Astro.props
 const theme = await Astro.session?.get('theme') || 'light'

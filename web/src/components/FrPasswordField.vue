@@ -36,6 +36,7 @@ const canSee = ref(false)
         />
         <button
             type="button"
+            tabindex="-1"
             class="not-[&:hover]:opacity-80 cursor-pointer block ph"
             @click="canSee = !canSee"
             :class="{

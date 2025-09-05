@@ -4,7 +4,7 @@ import FrPasswordField from './FrPasswordField.vue'
 import { toast } from 'vue-sonner'
 import { ref, onMounted, onUnmounted, computed, unref, toRaw } from 'vue'
 import { z } from 'zod'
-import { useMe, isClient } from '@/lib'
+import { actions } from 'astro:actions'
 import { debounce } from 'radashi'
 import { socket } from '@/socket'
 
@@ -17,12 +17,6 @@ channel.join().receive('ok', () => {
 }).receive('error', () => {
   toast('Невозможно подключиться к серверу')
 })
-
-if (isClient()) {
-  z.config(z.locales.ru())
-}
-
-const { login } = useMe()
 
 const defaultErrors = () => ({
   email: [],
@@ -76,9 +70,9 @@ function submit() {
   if (disabled.value) return
   isLoading.value = true
   channel.push('login', structuredClone(toRaw(unref(form))))
-    .receive('ok', ({ token }: { token: string }) => {
-      login(token, { remember: unref(form).remember_me })
-      window.location.href = '/'
+    .receive('ok', async ({ token, user }: { token: string, user: object }) => {
+      const { data } = await actions.signin({ token, user, remember: unref(form).remember_me })
+      window.location.href = data.redirect
       isLoading.value = false
     })
     .receive('error', () => {

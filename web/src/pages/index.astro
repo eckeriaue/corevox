@@ -2,8 +2,10 @@
 import Layout from '../layouts/Layout.astro'
 import RoomsList from '../components/RoomsList.vue'
 
+const me = await Astro.session?.get('me')
+
 ---
 
 <Layout namespace="lobby">
-    <RoomsList client:idle />
+    <RoomsList client:idle ownerId={me?.user?.id} />
 </Layout>

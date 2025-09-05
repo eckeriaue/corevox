@@ -17,5 +17,5 @@ export default defineConfig({
     })]
   },
 
-  integrations: [vue()]
+  integrations: [vue({ appEntrypoint: '/src/pages/_app' })]
 })
