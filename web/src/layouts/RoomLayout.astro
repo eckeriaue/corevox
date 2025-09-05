@@ -24,8 +24,7 @@ const theme = Astro.cookies.get('theme')?.value || 'light'
 	</head>
     	<body >
         	<header>
-            	<div class="border-b border-base-300 navbar bg-base-100">
-                        <Logo />
+            	<div class="border-b border-base-300 navbar flex justify-end bg-base-100">
                         <div class="flex items-center gap-x-2">
                             <SwapTheme client:idle />
                         </div>

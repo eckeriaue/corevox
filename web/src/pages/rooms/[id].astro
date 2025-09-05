@@ -1,17 +1,20 @@
 ---
 import RoomLayout from '@/layouts/RoomLayout.astro'
-
+import RoomSidebar from '@/components/room/RoomSidebar.vue'
 const { id: roomId } = Astro.params
 const me = await Astro.session?.get('me')
-
 if (!me) {
-  return Astro.redirect('/')
+    return Astro.redirect('/')
 }
-
 ---
-
 <RoomLayout>
     <div>
-        {roomId}
+        <RoomSidebar client:idle>
+
+        <div>
+            {roomId}
+        </div>
+        </RoomSidebar>
+
     </div>
 </RoomLayout>
