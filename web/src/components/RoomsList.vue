@@ -52,10 +52,22 @@ onUnmounted(() => {
         </div>
         <div
             v-else-if="status === 'loaded'"
+            class="min-w-md mt-4"
         >
-            <ul v-if="rooms.length > 0">
-                <li v-for="room in rooms" :key="room.id">{{ room.name }}</li>
+            <ul v-if="rooms.length > 0" class="list bg-base-100 rounded-box shadow-md">
+
+              <li v-for="room in rooms" :key="room.id" class="list-row">
+                <div></div>
+                <div>
+                  <div>{{ room.name }} </div>
+                  <div v-if="room.description" class="text-xs uppercase font-semibold opacity-60"> {{ room.description }} </div>
+                </div>
+                <a :href="'/rooms/' + room.id" data-barba-prevent="self" class="btn btn-square btn-ghost">
+                    <span class="ph ph-door-open" />
+                </a>
+              </li>
             </ul>
+
             <p v-else>Комнат пока нет</p>
         </div>
         <p v-else>Ошибка загрузки комнат</p>

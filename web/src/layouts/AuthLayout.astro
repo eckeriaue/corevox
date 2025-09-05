@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css'
-import Barba from '../components/Barba.astro'
+// import Barba from '../components/Barba.astro'
+import { ClientRouter } from 'astro:transitions'
 import Logo from '../components/Logo.astro'
 import SwapTheme from '@/components/theme/SwapTheme.astro'
 
@@ -16,26 +17,26 @@ const theme = await Astro.session?.get('theme') || 'light'
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro Basics</title>
-		<Barba />
+		<ClientRouter />
 		<link
             rel="stylesheet"
             type="text/css"
             href="/icons/regular/regular.css"
         />
 	</head>
-    	<body data-barba="wrapper">
-           	<div  data-barba="container" class="contents" data-barba-namespace={namespace}>
-               	    <div class="h-dvh flex flex-col overflow-auto">
-                       	<header class="sticky top-0 h-16">
-                           	<div class="navbar bg-base-100">
-                                <Logo />
-                                <SwapTheme />
-                            </div>
-                       	</header>
-                       	<main class="grow flex items-center justify-center">
-                      		<slot />
-                       	</main>
-               	</div>
+    	<body>
+       	    <div class="h-dvh flex flex-col overflow-auto">
+               	<header class="pb-16">
+                   	<div class="border-b border-base-300 navbar bg-base-100">
+                        <Logo />
+                        <SwapTheme />
+                    </div>
+               	</header>
+               	<main data-barba="wrapper">
+                   	<div data-barba="container" data-barba-namespace={namespace} class="contents">
+                  		<slot />
+                   	</div>
+               	</main>
            	</div>
     	</body>
 </html>

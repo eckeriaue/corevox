@@ -12,7 +12,7 @@ import {
 import FrTextField from '@/components/FrTextField.vue'
 import FrPasswordField from '@/components/FrPasswordField.vue'
 import { z } from 'zod'
-import { ref, unref, toRaw, onUnmounted } from 'vue'
+import { ref, unref, toRaw } from 'vue'
 import { debounce, isString, } from 'radashi'
 import type { Channel } from 'phoenix'
 import { useMe } from '@/lib'
@@ -86,7 +86,6 @@ function createRoom() {
     props.channel.push('create_room', formData)
       .receive('ok', ({ room }: { room: Room }) => {
         isOpen.value = false
-        // barba.go('/rooms/' + room.id)
         emit('create', room)
       })
       .receive('error', (response) => {

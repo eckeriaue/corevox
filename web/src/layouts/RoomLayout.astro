@@ -17,16 +17,16 @@ const theme = await Astro.session?.get('theme') || 'light'
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro Basics</title>
-		<ClientRouter />
 		<link
             rel="stylesheet"
             type="text/css"
             href="/icons/regular/regular.css"
         />
+        <ClientRouter />
 	</head>
     	<body >
-        	<header>
-            	<div class="border-b border-base-300 navbar bg-base-100">
+           	<header class="h-16">
+               	<div class="navbar bg-base-100">
                         <Logo />
                         <div class="flex items-center gap-x-2">
                             <SwapTheme />
@@ -34,11 +34,15 @@ const theme = await Astro.session?.get('theme') || 'light'
                         </div>
                     </div>
            	</header>
-           	<main data-barba="wrapper">
-               	<div data-barba="container" data-barba-namespace={namespace} class="contents">
-              		<slot />
-               	</div>
-           	</main>
+
+            <div>
+               	<main data-barba="wrapper">
+                   	<div data-barba="container" data-barba-namespace={namespace} class="contents">
+                  		<slot />
+                   	</div>
+               	</main>
+            </div>
+
     	</body>
 </html>
 

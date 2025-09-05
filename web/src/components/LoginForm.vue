@@ -76,9 +76,9 @@ function submit() {
   if (disabled.value) return
   isLoading.value = true
   channel.push('login', structuredClone(toRaw(unref(form))))
-    .receive('ok', ({ token }) => {
-      login(token, { remember: form.remember_me })
-      barba.go('/')
+    .receive('ok', ({ token }: { token: string }) => {
+      login(token, { remember: unref(form).remember_me })
+      window.location.href = '/'
       isLoading.value = false
     })
     .receive('error', () => {
@@ -96,7 +96,7 @@ onUnmounted(() => {
 
 <template>
     <form
-        class="w-md"
+        class="w-md mx-auto"
         @submit.prevent="submit"
     >
         <FrTextField

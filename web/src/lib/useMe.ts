@@ -58,7 +58,7 @@ export function useMe() {
     return {
         me,
         error,
-        isAuth: computed(() => me.value !== null),
+        isAuth: computed(() => me.value !== null && 'id' in me.value),
         isLoading,
         login(token: string, { remember = false } = {}) {
             if (remember) {

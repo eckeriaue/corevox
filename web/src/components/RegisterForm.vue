@@ -96,7 +96,7 @@ function saveMe(event) {
   channel.push('register_me', formData).receive('ok', ({ user, token }) => {
     formStatus.value = 'ready'
     login(token, { remember: formData.remember_me })
-    barba.go('/')
+    window.location.href = '/'
   }).receive('error', (reason) => {
     formStatus.value = 'ready'
     console.error(reason)

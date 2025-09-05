@@ -12,7 +12,7 @@ defmodule CorevoxWeb.RoomChannel do
 	def handle_in("create_room", attrs, socket) do
     case attrs |> Map.merge(%{"max_users" => 12}) |> Rooms.create_room() do
       {:ok, room} ->
-        payload = Map.take(room, [:id, :description, :name])
+        payload = room |> Map.take([:id, :description, :name])
         if not room.is_private do
           :ok = socket |> broadcast!("room_created", %{room: payload})
         end

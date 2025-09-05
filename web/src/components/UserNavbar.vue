@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import { useMe } from '../lib'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '../components/ui/dropdown-menu'
+import { useMe } from '@/lib'
+import UserProfile from './UserProfile.vue'
+import SignNav from './SignNav.vue'
 
-const { me, error, isLoading, logout, login } = useMe()
+const { isAuth, error, isLoading } = useMe()
 
-function logoutAndReload() {
-    logout()
-    location.reload()
-}
 
 </script>
 
@@ -25,26 +17,11 @@ function logoutAndReload() {
     <div v-else-if="error">
         {{ error }}
     </div>
-    <div v-else-if="me">
-        <dropdown-menu>
-            <dropdown-menu-trigger>
-                <button class="btn btn-ghost">
-                  <span>{{ me.username }}</span>
-                  <span class="ph ph-user" />
-                </button>
-            </dropdown-menu-trigger>
-            <dropdown-menu-content>
-                <dropdown-menu-item @select="logoutAndReload">
-                    <span>Выйти</span>
-                </dropdown-menu-item>
-            </dropdown-menu-content>
-        </dropdown-menu>
+    <div v-else-if="isAuth">
+        <user-profile />
     </div>
-    <div v-else-if="me === null" class="flex-none">
-        <ul class="menu menu-horizontal px-1">
-            <li><a href="/register">Зарегистрироваться</a></li>
-            <li><a href="/login">Войти</a></li>
-        </ul>
+    <div v-else-if="!isAuth" class="flex-none">
+        <sign-nav />
     </div>
 </div>
 </template>
