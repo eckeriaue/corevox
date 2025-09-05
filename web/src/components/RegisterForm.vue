@@ -129,6 +129,7 @@ onUnmounted(() => {
         <fr-text-field
             name="email"
             class="w-full"
+            type="email"
             required
             label="Email"
             v-model="form.email"

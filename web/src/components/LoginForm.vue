@@ -101,6 +101,7 @@ onUnmounted(() => {
     >
         <FrTextField
             label="Email"
+            type="email"
             v-model="form.email"
             @update:modelValue="validate()"
             :error-messages="errors.email"

@@ -26,8 +26,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-<section>
-    <div class="flex items-center justify-center" style="height:calc(100dvh - 64px)">
+<section  style="height:calc(100dvh - 64px)">
+    <div v-if="isAuth" class="mt-16 mx-auto w-fit">
+        <create-room-button />
+    </div>
+    <div class="flex items-center justify-center">
         <div
             v-if="status === 'loading'"
             class="flex flex-col items-center justify-center"
@@ -38,9 +41,6 @@ onUnmounted(() => {
         <div
             v-else-if="status === 'loaded'"
         >
-            <div v-if="isAuth">
-                <create-room-button />
-            </div>
             <ul v-if="rooms.length > 0">
                 <li v-for="room in rooms" :key="room.id">{{ room.name }}</li>
             </ul>

@@ -31,8 +31,12 @@ import FrPasswordField from '@/components/FrPasswordField.vue'
             <div class="mb-8">
                 <fr-text-field
                     label="Топик"
+                    name="roomTopicName"
+                    autocomplete="off"
                 />
                 <fr-password-field
+                    name="roomPassword"
+                    autocomplete="off"
                     label="Пароль для комнаты (необязательно)"
                 />
                 <fieldset class="fieldset w-full">
