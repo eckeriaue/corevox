@@ -28,7 +28,13 @@ import FrPasswordField from '@/components/FrPasswordField.vue'
                 </DialogDescription>
             </DialogHeader>
 
-            <div class="mb-8">
+            <div class="mb-8 mt-8">
+
+                <label class="label mb-2">
+                  <input type="checkbox" class="toggle" />
+                  <span class="text-sm">Приватная комната</span>
+                </label>
+
                 <fr-text-field
                     label="Топик"
                     name="roomTopicName"

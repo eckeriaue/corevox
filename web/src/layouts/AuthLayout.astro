@@ -2,12 +2,14 @@
 import '../styles/global.css'
 import Barba from '../components/Barba.astro'
 import Logo from '../components/Logo.astro'
+import SwapTheme from '@/components/theme/SwapTheme.astro'
 
 const { namespace } = Astro.props
+const theme = await Astro.session?.get('theme') || 'light'
 
 ---
 <!doctype html>
-<html lang="en">
+<html lang="ru" data-theme={theme}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -27,6 +29,7 @@ const { namespace } = Astro.props
                        	<header class="sticky top-0 h-16">
                            	<div class="navbar bg-base-100">
                                 <Logo />
+                                <SwapTheme />
                             </div>
                        	</header>
                        	<main class="grow flex items-center justify-center">

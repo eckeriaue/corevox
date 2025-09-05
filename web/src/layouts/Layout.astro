@@ -3,12 +3,14 @@ import '../styles/global.css'
 import Barba from '../components/Barba.astro'
 import Logo from '../components/Logo.astro'
 import UserNavbar from '../components/UserNavbar.vue'
+import SwapTheme from '@/components/theme/SwapTheme.astro'
 
 const { namespace } = Astro.props
+const theme = await Astro.session?.get('theme') || 'light'
 
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme={theme}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -27,7 +29,10 @@ const { namespace } = Astro.props
                	<header class="h-16">
                    	<div class="navbar bg-base-100">
                             <Logo />
-                            <UserNavbar client:idle />
+                            <div class="flex items-center gap-x-2">
+                                <SwapTheme />
+                                <UserNavbar client:idle />
+                            </div>
                         </div>
                	</header>
                	<main>
