@@ -2,7 +2,12 @@ import { defineAction } from 'astro:actions'
 
 export const changeTheme = defineAction({
   async handler(input, context) {
-    console.info(input.theme)
-    await (context.session?.set('theme', input.theme) || Promise.resolve())
+    context.cookies.set('theme', input.theme, {
+      path: '/',
+      maxAge: 31536000,
+      sameSite: 'lax',
+      secure: true,
+    })
+    return { ok: true }
   }
 })

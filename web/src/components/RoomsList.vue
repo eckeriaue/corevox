@@ -62,7 +62,7 @@ onUnmounted(() => {
                   <div>{{ room.name }} </div>
                   <div v-if="room.description" class="text-xs uppercase font-semibold opacity-60"> {{ room.description }} </div>
                 </div>
-                <a :href="'/rooms/' + room.id" data-barba-prevent="self" class="btn btn-square btn-ghost">
+                <a :href="'/rooms/' + room.id" class="btn btn-square btn-ghost">
                     <span class="ph ph-door-open" />
                 </a>
               </li>

@@ -3,11 +3,10 @@ import '../styles/global.css'
 
 import { ClientRouter } from 'astro:transitions'
 import Logo from '../components/Logo.astro'
-import SwapTheme from '@/components/theme/SwapTheme.astro'
+import SwapTheme from '@/components/theme/SwapTheme.vue'
 
 
-const { namespace } = Astro.props
-const theme = await Astro.session?.get('theme') || 'light'
+const theme = Astro.cookies.get('theme')?.value || 'light'
 
 ---
 <!doctype html>
@@ -30,11 +29,11 @@ const theme = await Astro.session?.get('theme') || 'light'
                	<header class="pb-16">
                    	<div class="border-b border-base-300 navbar bg-base-100">
                         <Logo />
-                        <SwapTheme />
+                        <SwapTheme client:idle />
                     </div>
                	</header>
-               	<main data-barba="wrapper">
-                   	<div data-barba="container" data-barba-namespace={namespace} class="contents">
+               	<main >
+                   	<div class="contents">
                   		<slot />
                    	</div>
                	</main>

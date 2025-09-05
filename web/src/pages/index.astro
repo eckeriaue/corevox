@@ -6,6 +6,6 @@ const me = await Astro.session?.get('me')
 
 ---
 
-<Layout namespace="lobby">
+<Layout>
     <RoomsList client:idle ownerId={me?.user?.id} />
 </Layout>
