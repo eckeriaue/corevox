@@ -43,7 +43,7 @@ const items = [
         <SidebarGroupContent>
           <SidebarMenu>
               <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton>
                     <span>{{item.title}}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -54,7 +54,11 @@ const items = [
     <SidebarFooter class="border-t border-base-300">
         <SidebarMenuItem>
         <SidebarMenuButton>
-            <span>test</span>
+            <ul>
+                <li>
+                    test
+                </li>
+            </ul>
         </SidebarMenuButton>
         </SidebarMenuItem>
     </SidebarFooter>
