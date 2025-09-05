@@ -8,6 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarFooter
 } from "@/components/ui/sidebar"
 
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
@@ -50,11 +51,20 @@ const items = [
         </SidebarGroupContent>
       </SidebarGroup>
     </SidebarContent>
+    <SidebarFooter class="border-t border-base-300">
+        <SidebarMenuItem>
+        <SidebarMenuButton>
+            <span>test</span>
+        </SidebarMenuButton>
+        </SidebarMenuItem>
+    </SidebarFooter>
   </Sidebar>
-  <div class="flex flex-col border-r border-base-300 justify-between">
+  <div class="flex flex-col justify-between">
       <ul>
-          <li>
-              <SidebarTrigger />
+          <li class="relative">
+              <div class="absolute -top-8 left-1 -translate-y-1/2 block">
+                <SidebarTrigger />
+              </div>
           </li>
       </ul>
   </div>
