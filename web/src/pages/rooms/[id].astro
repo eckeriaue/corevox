@@ -1,9 +1,17 @@
 ---
-import Layout from '@/layouts/Layout.astro'
+import RoomLayout from '@/layouts/RoomLayout.astro'
 
 const { id: roomId } = Astro.params
+const me = await Astro.session?.get('me')
+
+if (!me) {
+  return Astro.redirect('/')
+}
+
 ---
 
-<Layout>
-    {roomId}
-</Layout>
+<RoomLayout>
+    <div>
+        {roomId}
+    </div>
+</RoomLayout>

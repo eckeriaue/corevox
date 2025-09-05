@@ -1,0 +1,49 @@
+---
+import '../styles/global.css'
+import { ClientRouter } from 'astro:transitions'
+import Logo from '@/components/Logo.astro'
+import SwapTheme from '@/components/theme/SwapTheme.vue'
+
+const theme = Astro.cookies.get('theme')?.value || 'light'
+
+---
+<!doctype html>
+<html lang="ru" data-theme={theme}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro Basics</title>
+		<ClientRouter />
+		<link
+            rel="stylesheet"
+            type="text/css"
+            href="/icons/regular/regular.css"
+        />
+	</head>
+    	<body >
+        	<header>
+            	<div class="border-b border-base-300 navbar bg-base-100">
+                        <Logo />
+                        <div class="flex items-center gap-x-2">
+                            <SwapTheme client:idle />
+                        </div>
+                    </div>
+           	</header>
+           	<main>
+               	<div class="contents">
+              		<slot />
+               	</div>
+           	</main>
+    	</body>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+</style>
