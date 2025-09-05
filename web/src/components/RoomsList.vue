@@ -59,8 +59,8 @@ onUnmounted(() => {
               <li v-for="room in rooms" :key="room.id" class="list-row">
                 <div></div>
                 <div>
-                  <div>{{ room.name }} </div>
-                  <div v-if="room.description" class="text-xs uppercase font-semibold opacity-60"> {{ room.description }} </div>
+                  <span>{{ room.name }} </span>
+                  <div class="text-xs font-semibold opacity-60"> {{ room.description || 'Без описания' }} </div>
                 </div>
                 <a
                     v-if="props.ownerId"

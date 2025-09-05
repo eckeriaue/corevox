@@ -72,7 +72,7 @@ const items = [
           </li>
       </ul>
   </div>
-  <div class="p-4">
+  <div class="p-4 grow">
       <slot />
   </div>
 </SidebarProvider>
