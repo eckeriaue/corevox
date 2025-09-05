@@ -5,7 +5,7 @@ import { debounce } from 'radashi'
 import FrTextField from './FrTextField.vue'
 import FrPasswordField from './FrPasswordField.vue'
 import { z } from 'zod'
-import { isClient } from '../lib'
+import { isClient, useMe } from '../lib'
 
 
 if (isClient()) {
@@ -13,6 +13,7 @@ if (isClient()) {
 }
 
 const formStatus = ref('ready')
+const { login } = useMe()
 
 const channel = socket.channel('register:formvalidation', {})
 channel.join().receive('ok', () => {
@@ -47,7 +48,8 @@ const defaultForm = () => ({
   username: '',
   email: '',
   password: '',
-  confirm_password: ''
+  confirm_password: '',
+  remember_me: false
 })
 
 
@@ -93,7 +95,7 @@ function saveMe(event) {
   const formData = structuredClone(toRaw(form))
   channel.push('register_me', formData).receive('ok', ({ user, token }) => {
     formStatus.value = 'ready'
-    localStorage.setItem('jwt_token', token)
+    login(token, { remember: formData.remember_me })
     barba.go('/')
   }).receive('error', (reason) => {
     formStatus.value = 'ready'
@@ -152,8 +154,15 @@ onUnmounted(() => {
         />
 
         <fieldset class="flex items-center mb-8 mt-2 gap-x-2">
-            <label for="rememberMe">Запомнить меня</label>
-            <input type="checkbox" class="checkbox" id="rememberMe" name="rememberMe">
+            <label for="remember_me">Запомнить меня</label>
+            <input
+                type="checkbox"
+                class="checkbox"
+                id="remember_me"
+                name="remember_me"
+                v-model="form.remember_me"
+            >
+
         </fieldset>
 
         <button

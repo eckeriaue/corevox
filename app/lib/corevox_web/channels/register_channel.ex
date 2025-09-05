@@ -1,7 +1,6 @@
 defmodule CorevoxWeb.RegisterChannel do
 	use CorevoxWeb, :channel
 	alias Corevox.Accounts
-	alias Corevox.Accounts.User
 	alias CorevoxWeb.Auth.Guardian
 
 
@@ -9,7 +8,7 @@ defmodule CorevoxWeb.RegisterChannel do
 		{:ok, socket}
 	end
 
-	def handle_in("register_me", %{"username" => username, "email" => email, "password" => password, "confirm_password" => _confirm_password}, socket) do
+	def handle_in("register_me", %{"username" => username, "email" => email, "password" => password, "confirm_password" => _confirm_password, "remember_me" => _remember_me}, socket) do
 		case Accounts.register_user(%{"username" => username, "email" => email, "password" => password}) do
 			{:ok, user} ->
   			{:ok, token, _claims} = Guardian.encode_and_sign(user)

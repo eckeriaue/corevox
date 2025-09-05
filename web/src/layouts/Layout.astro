@@ -1,9 +1,10 @@
 ---
 import '../styles/global.css'
 import Barba from '../components/Barba.astro'
+import Logo from '../components/Logo.astro'
+import UserNavbar from '../components/UserNavbar.vue'
 
 const { namespace } = Astro.props
-const isAuth = Astro.cookies.has("jwt_token")
 
 ---
 <!doctype html>
@@ -21,26 +22,19 @@ const isAuth = Astro.cookies.has("jwt_token")
             href="/icons/regular/regular.css"
         />
 	</head>
-	<body data-barba="wrapper">
-    	<div data-barba="container" data-barba-namespace={namespace} class="contents">
-           	<header class="h-16">
-               	<div class="navbar bg-base-100">
-                        <div class="flex-1">
-                            <a href="/" class="btn btn-ghost text-xl">CoreVox</a>
+    	<body data-barba="wrapper">
+       	<div data-barba="container" data-barba-namespace={namespace} class="contents">
+               	<header class="h-16">
+                   	<div class="navbar bg-base-100">
+                            <Logo />
+                            <UserNavbar client:idle />
                         </div>
-                        <div class="flex-none">
-                            <ul class="menu menu-horizontal px-1">
-                                <li><a href="/register">Зарегистрироваться</a></li>
-                            <li><a href="/login">Войти</a></li>
-                            </ul>
-                        </div>
-                    </div>
-           	</header>
-           	<main>
-          		<slot />
-           	</main>
-    	</div>
-	</body>
+               	</header>
+               	<main>
+              		<slot />
+               	</main>
+       	</div>
+    	</body>
 </html>
 
 <style>

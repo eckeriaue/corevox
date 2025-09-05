@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css'
 import Barba from '../components/Barba.astro'
-
+import Logo from '../components/Logo.astro'
 
 const { namespace } = Astro.props
 
@@ -21,22 +21,20 @@ const { namespace } = Astro.props
             href="/icons/regular/regular.css"
         />
 	</head>
-	<body data-barba="wrapper">
-	<div  data-barba="container" class="contents" data-barba-namespace={namespace}>
-   	    <div class="h-dvh flex flex-col overflow-auto">
-           	<header class="sticky top-0 h-16">
-               	<div class="navbar bg-base-100">
-                        <div class="flex-1">
-                            <a href="/" class="btn btn-ghost text-xl">CoreVox</a>
-                        </div>
-                    </div>
-           	</header>
-           	<main class="grow flex items-center justify-center">
-          		<slot />
-           	</main>
-    	</div>
-	</div>
-	</body>
+    	<body data-barba="wrapper">
+           	<div  data-barba="container" class="contents" data-barba-namespace={namespace}>
+               	    <div class="h-dvh flex flex-col overflow-auto">
+                       	<header class="sticky top-0 h-16">
+                           	<div class="navbar bg-base-100">
+                                <Logo />
+                            </div>
+                       	</header>
+                       	<main class="grow flex items-center justify-center">
+                      		<slot />
+                       	</main>
+               	</div>
+           	</div>
+    	</body>
 </html>
 
 <style>
