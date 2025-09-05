@@ -4,6 +4,12 @@ import { useSessionStorage, useLocalStorage } from '@vueuse/core'
 import { apiUrl } from './apiUrl'
 
 
+type Me = {
+  id: number,
+  email: string,
+  name: string,
+}
+
 export function useMe() {
     const TOKEN_STORAGE_KEY = 'jwt_token'
     const sessionToken = useSessionStorage(TOKEN_STORAGE_KEY, '')
@@ -11,7 +17,7 @@ export function useMe() {
     const token = computed(() => sessionToken.value || localToken.value)
     const isLoading = ref(true)
     const error = ref(null)
-    const me = ref(null)
+    const me = ref<Me | null>(null)
 
     let watcher: WatchStopHandle | undefined
     onMounted(() => {

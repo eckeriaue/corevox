@@ -6,17 +6,6 @@
    theme: dracula;
 };
 
-input:-moz-autofill {
-  box-shadow: 0 0 0 1000px var(--color-background) inset !important; /* фон как у формы */
-  -moz-text-fill-color: #fff !important; /* цвет текста */
-  transition: background-color 5000s ease-in-out 0s; /* хак для отключения фоновой заливки */
-}
-input:-webkit-autofill {
-  box-shadow: 0 0 0 1000px var(--color-background) inset !important;
-  -webkit-text-fill-color: #fff !important;
-  transition: background-color 5000s ease-in-out 0s;
-}
-
 @theme inline {
     /*--color-background: var(--background);
     --color-foreground: var(--foreground);

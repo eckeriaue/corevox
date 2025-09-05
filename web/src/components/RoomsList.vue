@@ -1,22 +1,34 @@
 <script setup lang="ts">
 import { onUnmounted, defineAsyncComponent, ref } from 'vue'
-import { socket } from '../socket'
+import { socket } from '@/socket'
 import { useMe } from '@/lib'
+
+type Room = {
+  id: string,
+  description: string,
+  name: string
+}
 
 const CreateRoomButton = defineAsyncComponent(() => import('@/components/createRoom/CreateRoomButton.vue'))
 
 const { isAuth } = useMe()
 
 const status = ref<'loading' | 'loaded' | 'error'>('loading')
-const rooms = ref([])
+const rooms = ref<Room[]>([])
 
-const channel = socket.channel('rooms:lobby', {})
-channel.join().receive('ok', (payload: { rooms: [] }) => {
+const channel = socket.channel('rooms:lobby')
+
+channel.join().receive('ok', (payload: { rooms: Room[] }) => {
   rooms.value = payload.rooms
   status.value = 'loaded'
 }).receive('error', (reason: Error) => {
   status.value = 'error'
   console.error('Failed to join', reason)
+})
+
+channel.on('room_created', ({ room }: { room: Room }) => {
+  rooms.value.unshift(room)
+  barba.go('/rooms/' + room.id)
 })
 
 onUnmounted(() => {
@@ -28,7 +40,7 @@ onUnmounted(() => {
 <template>
 <section  style="height:calc(100dvh - 64px)">
     <div v-if="isAuth" class="mt-16 mx-auto w-fit">
-        <create-room-button />
+        <create-room-button :channel />
     </div>
     <div class="flex items-center justify-center">
         <div

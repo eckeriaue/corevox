@@ -7,8 +7,8 @@ defmodule Corevox.Rooms do
     query =
       from r in Room,
         where: r.is_private == false,
-        order_by: [desc: r.inserted_at]
-
+        order_by: [desc: r.inserted_at],
+        select: map(r, [:id, :name, :description])
     Repo.all(query)
   end
 

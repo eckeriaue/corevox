@@ -21,8 +21,8 @@ defmodule Corevox.Rooms.Room do
   @doc false
   def changeset(room, attrs) do
     room
-    |> cast(attrs, [:name, :description, :password, :is_private, :max_users, :status, :owner_id])
-    |> validate_required([:name, :owner_id])
+    |> cast(attrs, [:name, :description, :password, :is_private, :max_users, :owner_id])
+    |> validate_required([:name, :owner_id, :max_users])
     |> hash_password()
   end
 
