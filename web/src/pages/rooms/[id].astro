@@ -1,6 +1,6 @@
 ---
 import RoomLayout from '@/layouts/RoomLayout.astro'
-import RoomSidebar from '@/components/room/RoomSidebar.vue'
+import Room from '@/components/room/Room.vue'
 const { id: roomId } = Astro.params
 const me = await Astro.session?.get('me')
 if (!me) {
@@ -9,12 +9,7 @@ if (!me) {
 ---
 <RoomLayout>
     <div>
-        <RoomSidebar client:idle>
-
-        <div>
-            {roomId}
-        </div>
-        </RoomSidebar>
+        <Room client:idle roomId={roomId} />
 
     </div>
 </RoomLayout>

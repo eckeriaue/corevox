@@ -72,6 +72,8 @@ const items = [
           </li>
       </ul>
   </div>
-  <slot />
+  <div class="p-4">
+      <slot />
+  </div>
 </SidebarProvider>
 </template>
