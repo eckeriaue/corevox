@@ -22,17 +22,17 @@ async function logoutAndReload() {
 </script>
 
 <template>
-<dropdown-menu>
-    <dropdown-menu-trigger>
-        <button class="btn btn-ghost">
-          <span>{{ props.username }}</span>
-          <span class="ph ph-user" />
-        </button>
-    </dropdown-menu-trigger>
-    <dropdown-menu-content>
-        <dropdown-menu-item @select="logoutAndReload">
-            <span>Выйти</span>
-        </dropdown-menu-item>
-    </dropdown-menu-content>
-</dropdown-menu>
+    <dropdown-menu>
+        <dropdown-menu-trigger as-child>
+            <button class="btn btn-ghost">
+            <span>{{ props.username }}</span>
+            <span class="ph ph-user" />
+            </button>
+        </dropdown-menu-trigger>
+        <dropdown-menu-content>
+            <dropdown-menu-item @select="logoutAndReload">
+                <span>Выйти</span>
+            </dropdown-menu-item>
+        </dropdown-menu-content>
+    </dropdown-menu>
 </template>
