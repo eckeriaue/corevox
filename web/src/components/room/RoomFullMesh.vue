@@ -30,7 +30,7 @@ type User = {
   username: string
   email: string
   joined_at: Date
-  peer: RTCPeerConnection
+  // peer: RTCPeerConnection
   stream: MediaStream
 }
 
@@ -62,7 +62,6 @@ channel.on('presence_state', (state) => {
     .map(([_, { metas }]) => ({
       id: metas.at(0).id,
       stream: new MediaStream(),
-      peer: new RTCPeerConnection(config),
       username: metas.at(0).username,
       email: metas.at(0).email,
       joined_at: new Date(metas.at(0).joined_at)
@@ -109,7 +108,6 @@ channel.on('presence_diff', (diff) => {
       if (!users.value.some(user => user.id === metas.at(0).id)) {
         users.value.push({
           stream: new MediaStream(),
-          peer: new RTCPeerConnection(config),
           id: metas.at(0).id,
           username: metas.at(0).username,
           email: metas.at(0).email,
@@ -127,18 +125,7 @@ channel.on('presence_diff', (diff) => {
 })
 
 function addTracksToRtc(myStream: MediaStream) {
-  const tracks = myStream.getTracks()
 
-  users.value.forEach(user => {
-    tracks.forEach(track => {
-      user.peer.addTrack(track, myStream)
-    })
-    user.peer.addEventListener('track', (event) => {
-      user.stream.addTrack(event.track)
-    }, {
-      signal: leavePageAbortController.signal
-    })
-  })
 }
 
 

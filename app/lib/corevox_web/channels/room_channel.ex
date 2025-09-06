@@ -44,16 +44,6 @@ defmodule CorevoxWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_in("offer", %{"offer" => offer, "from_user_id" => from_user_id, "to_user_id" => to_user_id}, socket) do
-    broadcast!(socket, "offer_delivery", %{offer: offer, from_user_id: from_user_id, to_user_id: to_user_id})
-    {:noreply, socket}
-  end
-
-  def handle_in("answer", %{"answer" => answer, "from_user_id" => from_user_id, "to_user_id" => to_user_id}, socket) do
-    broadcast!(socket, "answer_delivery", %{answer: answer, from_user_id: from_user_id, to_user_id: to_user_id})
-    {:noreply, socket}
-  end
-
   def handle_in("create_room", attrs, socket) do
     case attrs |> Map.merge(%{"max_users" => 12}) |> Rooms.create_room() do
       {:ok, room} ->
