@@ -30,8 +30,7 @@ defmodule CorevoxWeb.AuthController do
         conn
         |> put_status(:unprocessable_entity)
         |> json(%{
-          errors:
-            Ecto.Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
+          errors: Ecto.Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end)
         })
     end
   end
@@ -40,5 +39,4 @@ defmodule CorevoxWeb.AuthController do
     conn
     |> json(%{message: "Signed out successfully"})
   end
-
 end

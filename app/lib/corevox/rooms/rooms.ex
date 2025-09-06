@@ -9,6 +9,7 @@ defmodule Corevox.Rooms do
         where: r.is_private == false,
         order_by: [desc: r.inserted_at],
         select: map(r, [:id, :name, :description])
+
     Repo.all(query)
   end
 

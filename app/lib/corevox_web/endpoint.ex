@@ -3,8 +3,19 @@ defmodule CorevoxWeb.Endpoint do
   # use Phoenix.Presence, otp_app: :corevox, pubsub_server: Corevox.PubSub
 
   plug Corsica,
-    origins: [System.get_env("PUBLIC_CLIENT_HTTP_URL")], # Замените на актуальный домен фронтенда
-    allow_methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH", "HEAD", "CONNECT", "TRACE"],
+    # Замените на актуальный домен фронтенда
+    origins: [System.get_env("PUBLIC_CLIENT_HTTP_URL")],
+    allow_methods: [
+      "GET",
+      "POST",
+      "OPTIONS",
+      "PUT",
+      "DELETE",
+      "PATCH",
+      "HEAD",
+      "CONNECT",
+      "TRACE"
+    ],
     allow_headers: ["content-type", "authorization"],
     allow_credentials: true,
     max_age: 3600,
@@ -21,8 +32,7 @@ defmodule CorevoxWeb.Endpoint do
     same_site: "Lax"
   ]
 
-  socket "/live", Phoenix.LiveView.Socket,
-    websocket: [connect_info: [session: @session_options]]
+  socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
   plug Plug.Static,
     at: "/",

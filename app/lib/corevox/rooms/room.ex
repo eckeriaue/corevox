@@ -32,5 +32,4 @@ defmodule Corevox.Rooms.Room do
       password -> put_change(changeset, :password_hash, Bcrypt.hash_pwd_salt(password))
     end
   end
-
 end

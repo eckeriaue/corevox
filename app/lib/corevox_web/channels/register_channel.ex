@@ -1,24 +1,38 @@
 defmodule CorevoxWeb.RegisterChannel do
-	use CorevoxWeb, :channel
-	alias Corevox.Accounts
-	alias CorevoxWeb.Auth.Guardian
+  use CorevoxWeb, :channel
+  alias Corevox.Accounts
+  alias CorevoxWeb.Auth.Guardian
 
+  def join("register:formvalidation", _params, socket) do
+    {:ok, socket}
+  end
 
-	def join("register:formvalidation", _params, socket) do
-		{:ok, socket}
-	end
+  def handle_in(
+        "register_me",
+        %{
+          "username" => username,
+          "email" => email,
+          "password" => password,
+          "confirm_password" => _confirm_password,
+          "remember_me" => _remember_me
+        },
+        socket
+      ) do
+    case Accounts.register_user(%{
+           "username" => username,
+           "email" => email,
+           "password" => password
+         }) do
+      {:ok, user} ->
+        {:ok, token, _claims} = Guardian.encode_and_sign(user)
+        {:reply, {:ok, %{token: token, user: user |> Map.take([:id, :username, :email])}}, socket}
 
-	def handle_in("register_me", %{"username" => username, "email" => email, "password" => password, "confirm_password" => _confirm_password, "remember_me" => _remember_me}, socket) do
-		case Accounts.register_user(%{"username" => username, "email" => email, "password" => password}) do
-			{:ok, user} ->
-  			{:ok, token, _claims} = Guardian.encode_and_sign(user)
-  			{:reply, {:ok, %{token: token, user: user |> Map.take([:id, :username, :email])}}, socket}
-			changeset ->
-				{:reply, {:error, changeset}, socket}
-		end
-	end
+      changeset ->
+        {:reply, {:error, changeset}, socket}
+    end
+  end
 
-	def handle_in("check_username", %{"value" => username}, socket) do
+  def handle_in("check_username", %{"value" => username}, socket) do
     unique = !Accounts.user_exists_by_username?(username)
     send_validate_reply(socket, %{unique: unique})
   end

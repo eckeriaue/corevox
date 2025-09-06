@@ -4,7 +4,7 @@ defmodule CorevoxWeb.Auth.Pipeline do
     module: CorevoxWeb.Auth.Guardian,
     error_handler: CorevoxWeb.Auth.ErrorHandler
 
-    plug Guardian.Plug.VerifyHeader
-    plug Guardian.Plug.EnsureAuthenticated
-    plug Guardian.Plug.LoadResource
+  plug Guardian.Plug.VerifyHeader
+  plug Guardian.Plug.EnsureAuthenticated
+  plug Guardian.Plug.LoadResource
 end

@@ -16,7 +16,7 @@ defmodule Corevox.Application do
       # {Corevox.Worker, arg},
       # Start to serve requests, typically the last entry
       CorevoxWeb.Endpoint,
-      CorevoxWeb.Presence,
+      CorevoxWeb.Presence
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -13,6 +13,7 @@ defmodule CorevoxWeb.UserSocket do
       {:ok, user} ->
         Logger.debug("User connected with ID: #{user.id}")
         {:ok, assign(socket, :user_id, user.id)}
+
       {:error, reason} ->
         Logger.warning("Failed to authenticate user: #{inspect(reason)}")
         {:ok, assign(socket, :user_id, nil)}
@@ -25,5 +26,4 @@ defmodule CorevoxWeb.UserSocket do
 
   def id(%{assigns: %{user_id: user_id}}) when not is_nil(user_id), do: "user_socket:#{user_id}"
   def id(_socket), do: nil
-
 end

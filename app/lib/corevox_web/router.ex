@@ -5,10 +5,8 @@ defmodule CorevoxWeb.Router do
     plug :accepts, ["json"]
   end
 
-
   scope "/api/v1", CorevoxWeb do
     pipe_through :api
-
 
     get "/ping", PingController, :ping
 
@@ -25,6 +23,7 @@ defmodule CorevoxWeb.Router do
 
   if Application.compile_env(:corevox, :dev_routes) do
     import Phoenix.LiveDashboard.Router
+
     scope "/dev" do
       pipe_through [:fetch_session, :protect_from_forgery]
 
