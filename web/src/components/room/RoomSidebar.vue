@@ -24,7 +24,7 @@ const props = defineProps<{
 const items = []
 
 const enableCamera = defineModel<boolean>('enableCamera', { default: false })
-const enableMic = defineModel<boolean>('enableMic', { default: false })
+const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
 
 </script>
 

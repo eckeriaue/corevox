@@ -46,7 +46,11 @@ onUnmounted(() => {
 
 <template>
     <div
-        class="bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
+        :class="{
+          'ring-base-300': !enableMicrophone,
+          'ring-primary': enableMicrophone,
+        }"
+        class="ring-2 bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
         style="width:300px;height:200px; object-fit: cover; object-position: center;"
     >
         <span v-if="isLoading" class="loading loading-spinner loading-xl"></span>
