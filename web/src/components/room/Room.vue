@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
 computed,
+defineAsyncComponent,
   onUnmounted,
   ref
 } from 'vue'
@@ -18,6 +19,8 @@ const props = defineProps<{
   }
 }>()
 
+const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
+
 const isJoined = ref(false)
 // const makePresenceId = (userId: string) => `user:${userId}`
 // const presenceUserId = computed(() => makePresenceId(props.user.id))
@@ -28,6 +31,7 @@ const channel = socket.channel(`rooms:${props.roomId}`, {
 
 const stream = ref<MediaStream | null>(null)
 const users = ref<{ id: string; username: string; email: string; joined_at: number }[]>([])
+const otherUsers = computed(() => users.value.filter(user => user.id !== props.user.id))
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
 
@@ -83,8 +87,19 @@ onUnmounted(() => {
         v-model:enable-camera="enableCamera"
         v-model:enable-microphone="enableMicrophone"
     >
-        <suspense>
-            <my-media v-model:stream="stream" v-model:enable-camera="enableCamera" v-model:enable-microphone="enableMicrophone" />
-        </suspense>
+        <ul>
+            <suspense>
+                <my-media
+                    v-model:stream="stream"
+                    v-model:enable-camera="enableCamera"
+                    v-model:enable-microphone="enableMicrophone"
+                />
+            </suspense>
+
+            <remote-media v-for="user in otherUsers" :key="user.id" :user="user" />
+        </ul>
+
+
+
     </room-sidebar>
 </template>
