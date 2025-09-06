@@ -41,6 +41,11 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
       <SidebarGroup>
         <SidebarGroupContent>
           <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton>
+                    <span>{{ me.username }}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem v-for="user in props.users" :key="user.id">
                 <SidebarMenuButton>
                     <span>{{ user.username }}</span>

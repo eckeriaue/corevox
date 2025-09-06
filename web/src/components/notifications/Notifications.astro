@@ -1,0 +1,29 @@
+
+<ul class="toast toast-center">
+    <template id="notification-template">
+        <li class="alert">
+            <span id="message"></span>
+        </li>
+    </template>
+</ul>
+
+
+<script>
+import { socket } from '@/socket'
+
+// const notificationTemplate = document.getElementById('notification-template')
+
+const notifications = socket.channel('notifications:news')
+notifications.join().receive('ok', () => {
+    console.log('Joined successfully notifications')
+}).receive('error', (reason: Error) => {
+    console.log('Failed joining notifications', reason)
+})
+// @todo
+notifications.on('notification', payload => {
+    // notification!.querySelector('#message')!.textContent = payload.message
+    // notification!.querySelector('.alert')!.classList.add(`alert-${payload.type}`)
+    console.log('Received notification', payload)
+})
+
+</script>

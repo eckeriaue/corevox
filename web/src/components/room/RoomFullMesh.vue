@@ -7,6 +7,7 @@ import {
 } from 'vue'
 import RoomSidebar from './RoomSidebar.vue'
 import { socket } from '@/socket'
+import { config } from '@/lib/webrtc'
 import MyMedia from './MyMedia.vue'
 
 const props = defineProps<{
@@ -21,6 +22,14 @@ const props = defineProps<{
 
 const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
 
+type User = {
+  id: string
+  username: string
+  email: string
+  joined_at: number
+  peer: RTCPeerConnection
+}
+
 const isJoined = ref(false)
 // const makePresenceId = (userId: string) => `user:${userId}`
 // const presenceUserId = computed(() => makePresenceId(props.user.id))
@@ -30,7 +39,7 @@ const channel = socket.channel(`rooms:${props.roomId}`, {
 })
 
 const stream = ref<MediaStream | null>(null)
-const users = ref<{ id: string; username: string; email: string; joined_at: number }[]>([])
+const users = ref<User[]>([])
 const otherUsers = computed(() => users.value.filter(user => user.id !== props.user.id))
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
@@ -43,32 +52,37 @@ channel.join().receive('ok', (resp) => {
 })
 
 channel.on('presence_state', (state) => {
-  users.value = Object.entries(state).map(([key, data]) => ({
-    id: data.metas.at(0).id,
-    username: data.metas.at(0).username,
-    email: data.metas.at(0).email,
-    joined_at: data.metas.at(0).joined_at
+  users.value = Object.entries(state)
+    .filter(([_, { metas }]) => metas.at(0).id !== props.user.id)
+    .map(([_, { metas }]) => ({
+      id: metas.at(0).id,
+      peer: new RTCPeerConnection(config),
+      username: metas.at(0).username,
+      email: metas.at(0).email,
+      joined_at: metas.at(0).joined_at
   }))
 })
 
 
 channel.on('presence_diff', (diff) => {
-  console.info(diff)
   if (diff.joins) {
-    Object.entries(diff.joins).forEach(([key, data]) => {
-      if (!users.value.some(user => user.id === data.metas[0].id)) {
+    Object.entries(diff.joins)
+      .filter(([_, { metas }]) => metas.at(0).id !== props.user.id)
+      .forEach(([_, { metas }]) => {
+      if (!users.value.some(user => user.id === metas.at(0).id)) {
         users.value.push({
-          id: data.metas[0].id,
-          username: data.metas[0].username,
-          email: data.metas[0].email,
-          joined_at: data.metas[0].joined_at
+          peer: new RTCPeerConnection(config),
+          id: metas.at(0).id,
+          username: metas.at(0).username,
+          email: metas.at(0).email,
+          joined_at: metas.at(0).joined_at
         })
       }
     })
   }
   if (diff.leaves) {
-    Object.entries(diff.leaves).forEach(([key, data]) => {
-      users.value = users.value.filter(user => user.id !== data.metas[0].id)
+    Object.entries(diff.leaves).forEach(([key, { metas }]) => {
+      users.value = users.value.filter(user => user.id !== metas[0].id)
     })
   }
 })
@@ -94,6 +108,7 @@ onUnmounted(() => {
                     v-model:stream="stream"
                     v-model:enable-camera="enableCamera"
                     v-model:enable-microphone="enableMicrophone"
+                    @load-stream=""
                 />
                 <template #fallback>
                     <div

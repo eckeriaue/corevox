@@ -1,16 +1,20 @@
 defmodule CorevoxWeb.UserSocket do
   use Phoenix.Socket
+  require Logger
 
   ## Channels
   channel "rooms:*", CorevoxWeb.RoomChannel
+  channel "notifications:*", CorevoxWeb.NotificationsChannel
   channel "register:formvalidation", CorevoxWeb.RegisterChannel
   channel "login:formvalidation", CorevoxWeb.LoginChannel
 
   def connect(%{"token" => token}, socket, _connect_info) do
     case CorevoxWeb.Auth.Guardian.resource_from_claims(token) do
       {:ok, user} ->
+        Logger.debug("User connected with ID: #{user.id}")
         {:ok, assign(socket, :user_id, user.id)}
-      {:error, _reason} ->
+      {:error, reason} ->
+        Logger.warn("Failed to authenticate user: #{inspect(reason)}")
         {:ok, assign(socket, :user_id, nil)}
     end
   end
