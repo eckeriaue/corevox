@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   defineAsyncComponent,
+  onScopeDispose,
   onUnmounted,
   ref,
   toRaw
@@ -45,6 +46,8 @@ const stream = ref<MediaStream | null>(null)
 const users = ref<User[]>([])
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
+
+const leavePageAbortController = new AbortController()
 
 channel.join().receive('ok', (resp) => {
   isJoined.value = true
@@ -124,10 +127,28 @@ channel.on('presence_diff', (diff) => {
 })
 
 function addTracksToRtc(myStream: MediaStream) {
+  const tracks = myStream.getTracks()
+
+  users.value.forEach(user => {
+    tracks.forEach(track => {
+      user.peer.addTrack(track, myStream)
+    })
+    user.peer.addEventListener('track', (event) => {
+      user.stream.addTrack(event.track)
+    }, {
+      signal: leavePageAbortController.signal
+    })
+  })
 }
 
+
+onScopeDispose(() => {
+  channel.leave()
+  leavePageAbortController.abort()
+})
 onUnmounted(() => {
   channel.leave()
+  leavePageAbortController.abort()
 })
 
 </script>
