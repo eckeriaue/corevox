@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, toRef, useTemplateRef, watch, nextTick } from 'vue'
 import MediaShortInfo from './MediaShortInfo.vue'
 
 const props = defineProps<{
@@ -7,8 +7,22 @@ const props = defineProps<{
   username: string
   email: string
   joined_at: Date
-  stream: MediaStream
+  streams: MediaStream[]
 }>()
+
+const video = useTemplateRef<HTMLVideoElement>('video')
+const stream = new MediaStream()
+
+
+watch(toRef(props, 'streams'), async (streams) => {
+  isLoading.value = false
+  await nextTick()
+  streams.forEach(stream => {
+    video.value!.srcObject = stream
+  })
+}, {
+  deep: true
+})
 
 const isLoading = ref(true)
 

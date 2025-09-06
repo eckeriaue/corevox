@@ -29,10 +29,11 @@ const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
 
 type User = {
   id: number
+  rtcId: string
   username: string
   email: string
   joined_at: Date
-  stream: MediaStream
+  streams: MediaStream[]
 }
 
 const isJoined = ref(false)
@@ -50,14 +51,24 @@ const enableMicrophone = ref(false)
 
 const makeRoomId = (userId: string | number) => `room-${props.roomId}-user-${userId}`
 
-const peer = new Peer(makeRoomId(props.user.id), peerConfig)
+async function waitForStream() {
+  if (!stream.value) {
+    await new Promise<void>((r) => {
+      watch(stream, () => r(), { once: true })
+    })
+  } else {
+    await Promise.resolve()
+  }
+}
 
-peer.on('open', (id) => {
-  console.log('Peer ID:', id)
-})
-peer.on('connection', (conn) => {
-  conn.on('data', (data) => {
-    console.log('Received from', conn.peer, data)
+const peer = new Peer(makeRoomId(props.user.id), peerConfig)
+peer.on('call', async (call) => {
+  await waitForStream()
+  call.answer(stream.value)
+  call.on('stream', (remoteStream) => {
+    const index = users.value.findIndex(user => user.rtcId === call.peer)
+    users.value[index].streams.push(remoteStream)
+    users.value = users.value
   })
 })
 
@@ -71,23 +82,28 @@ channel.join().receive('ok', (resp) => {
   console.log('Unable to join room', resp)
 })
 
-channel.on('presence_state', (state) => {
+
+channel.on('presence_state', async (state) => {
+  await waitForStream()
+
   users.value = Object.entries(state)
     .filter(([_, { metas }]) => metas.at(0).id !== props.user.id)
     .map(([_, { metas }]) => {
-      const connection = peer.connect(makeRoomId(metas.at(0).id))
-      connection.on('open', () => {
-        console.log('Connected to', metas.at(0).id)
-        connection.send({ type: 'hello', from: props.user.id })
-      })
-      connection.on('data', (data) => {
-        console.log('Message from', metas.at(0).id, data)
-      })
+      const rtcId = makeRoomId(metas.at(0).id)
+      const call = peer.call(rtcId, stream.value)
+      if (call) {
+        call.on('stream', (remoteStream: MediaStream) => {
+          const index = users.value.findIndex(user => user.rtcId === rtcId)
+          users.value[index].streams.push(remoteStream)
+          users.value = users.value
+        })
+      }
 
 
       return {
+        rtcId,
         id: metas.at(0).id,
-        stream: new MediaStream(),
+        streams: [],
         username: metas.at(0).username,
         email: metas.at(0).email,
         joined_at: new Date(metas.at(0).joined_at)
@@ -102,14 +118,10 @@ channel.on('presence_diff', (diff) => {
       .filter(([_, { metas }]) => metas.at(0).id !== props.user.id)
       .forEach(async ([_, { metas }]) => {
       if (!users.value.some(user => user.id === metas.at(0).id)) {
-        if(!stream.value) {
-          await new Promise<void>((r) => {
-            watch(stream, () => r(), { once: true })
-          })
-        }
-
+        await waitForStream()
         users.value.push({
-          stream: new MediaStream(),
+          rtcId: makeRoomId(metas.at(0).id),
+          streams: [],
           id: metas.at(0).id,
           username: metas.at(0).username,
           email: metas.at(0).email,

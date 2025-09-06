@@ -48,13 +48,13 @@ onMounted(async () => {
   mediaControlsScope.run(() => {
     watch(enableCamera, enableCamera => {
       stream.value?.getTracks().filter(track => track.kind === 'video').forEach(track => {
-        track.enabled = enableCamera
+        track.enabled = true /*enableCamera*/
       })
     }, { immediate: true })
 
     watch(enableMicrophone, enableMicrophone => {
       stream.value?.getTracks().filter(track => track.kind === 'audio').forEach(track => {
-        track.enabled = enableMicrophone
+        track.enabled = true /*enableMicrophone*/
       })
     }, { immediate: true })
   })
