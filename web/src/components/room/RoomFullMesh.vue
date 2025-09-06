@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
-computed,
-defineAsyncComponent,
+  computed,
+  defineAsyncComponent,
   onUnmounted,
   ref
 } from 'vue'
@@ -87,16 +87,29 @@ onUnmounted(() => {
         v-model:enable-camera="enableCamera"
         v-model:enable-microphone="enableMicrophone"
     >
-        <ul>
+        <ul class="grid grid-cols-3">
             <suspense>
                 <my-media
+                    :username="props.user.username"
                     v-model:stream="stream"
                     v-model:enable-camera="enableCamera"
                     v-model:enable-microphone="enableMicrophone"
                 />
+                <template #fallback>
+                    <div
+                        class="ring-2 bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
+                        style="width:300px;height:200px; object-fit: cover; object-position: center;"
+                    >
+                        <span class="loading loading-spinner loading-xl"></span>
+                    </div>
+                </template>
             </suspense>
 
-            <remote-media v-for="user in otherUsers" :key="user.id" :user="user" />
+            <remote-media
+                v-for="user in otherUsers"
+                :key="user.id"
+                :="user"
+            />
         </ul>
 
 

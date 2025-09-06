@@ -37,9 +37,9 @@ services:
     env_file: ./.env
     environment:
       - NODE_ENV=production
-      - TURN_USER=${TURN_USER}
-      - TURN_PASSWORD=${TURN_PASSWORD}
-      - TURN_REALM=${TURN_REALM}
+      - PUBLIC_TURN_USER=${PUBLIC_TURN_USER}
+      - PUBLIC_TURN_PASSWORD=${PUBLIC_TURN_PASSWORD}
+      - PUBLIC_TURN_REALM=${PUBLIC_TURN_REALM}
     command: npm run start
     networks:
       - corevox_network
@@ -58,8 +58,8 @@ services:
         -v
         --lt-cred
         --fingerprint
-        --user=${TURN_USER}:${TURN_PASSWORD}
-        --realm=${TURN_REALM}
+        --user=${PUBLIC_TURN_USER}:${PUBLIC_TURN_PASSWORD}
+        --realm=${PUBLIC_TURN_REALM}
         --total-quota=100
         --bps-capacity=0
         --min-port=49160

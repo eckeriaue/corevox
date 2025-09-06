@@ -50,9 +50,9 @@ services:
       - PUBLIC_APP_NAME=${PUBLIC_APP_NAME}
       - PUBLIC_APP_HTTP_URL=${PUBLIC_APP_HTTP_URL}
       - PUBLIC_APP_SOCKET_URL=${PUBLIC_APP_SOCKET_URL}
-      - TURN_USER=${TURN_USER}
-      - TURN_PASSWORD=${TURN_PASSWORD}
-      - TURN_REALM=${TURN_REALM}
+      - PUBLIC_TURN_USER=${PUBLIC_TURN_USER}
+      - PUBLIC_TURN_PASSWORD=${PUBLIC_TURN_PASSWORD}
+      - PUBLIC_TURN_REALM=${PUBLIC_TURN_REALM}
 
     command: npm run dev -- --host 0.0.0.0
 
@@ -72,8 +72,8 @@ services:
         --no-tls
         --lt-cred
         --fingerprint
-        --user=${TURN_USER}:${TURN_PASSWORD}
-        --realm=${TURN_REALM}
+        --user=${PUBLIC_TURN_USER}:${PUBLIC_TURN_PASSWORD}
+        --realm=${PUBLIC_TURN_REALM}
         --total-quota=100
         --bps-capacity=0
         --min-port=49160

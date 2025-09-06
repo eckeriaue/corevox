@@ -1,5 +1,17 @@
 <script setup lang="ts">
-import { useTemplateRef, ref, watch, nextTick, onMounted, triggerRef, effectScope, onUnmounted } from 'vue'
+import {
+  useTemplateRef,
+  ref,
+  watch,
+  nextTick,
+  onMounted,
+  effectScope,
+  onUnmounted
+} from 'vue'
+
+const props = defineProps<{
+  username: string
+}>()
 
 const video = useTemplateRef<HTMLVideoElement>('video')
 
@@ -50,9 +62,12 @@ onUnmounted(() => {
           'ring-base-300': !enableMicrophone,
           'ring-primary': enableMicrophone,
         }"
-        class="ring-2 bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
+        class="relative ring-2 bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
         style="width:300px;height:200px; object-fit: cover; object-position: center;"
     >
+        <div class="absolute inset-2 size-[calc(100%_-_var(--spacing)*4)]">
+            <span class="badge">Вы ({{ props.username }})</span>
+        </div>
         <span v-if="isLoading" class="loading loading-spinner loading-xl"></span>
         <video
             v-else
