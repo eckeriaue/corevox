@@ -9,6 +9,8 @@ import {
   onUnmounted
 } from 'vue'
 
+import MediaShortInfo from './MediaShortInfo.vue'
+
 const props = defineProps<{
   username: string
 }>()
@@ -66,7 +68,12 @@ onUnmounted(() => {
         style="width:300px;height:200px; object-fit: cover; object-position: center;"
     >
         <div class="absolute inset-2 size-[calc(100%_-_var(--spacing)*4)]">
-            <span class="badge">Вы ({{ props.username }})</span>
+            <media-short-info
+                :enable-camera="enableCamera"
+                :enable-microphone="enableMicrophone"
+                :username="`Вы (${props.username})`"
+            />
+
         </div>
         <span v-if="isLoading" class="loading loading-spinner loading-xl"></span>
         <video

@@ -14,7 +14,7 @@ defmodule CorevoxWeb.UserSocket do
         Logger.debug("User connected with ID: #{user.id}")
         {:ok, assign(socket, :user_id, user.id)}
       {:error, reason} ->
-        Logger.warn("Failed to authenticate user: #{inspect(reason)}")
+        Logger.warning("Failed to authenticate user: #{inspect(reason)}")
         {:ok, assign(socket, :user_id, nil)}
     end
   end
