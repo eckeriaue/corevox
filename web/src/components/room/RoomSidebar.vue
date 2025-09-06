@@ -54,7 +54,6 @@ const enableMic = defineModel<boolean>('enableMic', { default: false })
     </SidebarContent>
     <SidebarFooter class="border-t border-base-300">
         <SidebarMenuItem>
-        <SidebarMenuButton>
             <section class="flex items-center gap-x-4 w-full">
                 <span>{{ props.me.username }}</span>
                 <nav>
@@ -85,7 +84,6 @@ const enableMic = defineModel<boolean>('enableMic', { default: false })
                     </ul>
                 </nav>
             </section>
-        </SidebarMenuButton>
         </SidebarMenuItem>
     </SidebarFooter>
   </Sidebar>
