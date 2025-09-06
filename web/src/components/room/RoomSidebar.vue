@@ -4,7 +4,7 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
+  // SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -13,23 +13,19 @@ import {
 
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
-const items = [
-  {
-    title: "Home",
-  },
-  {
-    title: "Inbox",
-  },
-  {
-    title: "Calendar",
-  },
-  {
-    title: "Search",
-  },
-  {
-    title: "Settings",
-  },
-];
+const props = defineProps<{
+  me: {
+    id: string
+    email: string
+    username: string
+  }
+}>()
+
+const items = []
+
+const enableCamera = defineModel<boolean>('enableCamera', { default: false })
+const enableMic = defineModel<boolean>('enableMic', { default: false })
+
 </script>
 
 <template>
@@ -42,9 +38,14 @@ const items = [
       <SidebarGroup>
         <SidebarGroupContent>
           <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton>
+                    <span>{{ props.me.username }}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem v-for="item in items" :key="item.title">
                 <SidebarMenuButton>
-                    <span>{{item.title}}</span>
+                    <span>{{ item.title }}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
           </SidebarMenu>
@@ -54,11 +55,36 @@ const items = [
     <SidebarFooter class="border-t border-base-300">
         <SidebarMenuItem>
         <SidebarMenuButton>
-            <ul>
-                <li>
-                    test
-                </li>
-            </ul>
+            <section class="flex items-center gap-x-4 w-full">
+                <span>{{ props.me.username }}</span>
+                <nav>
+                    <ul class="flex gap-x-2">
+                        <li>
+                            <button
+                                class="btn btn-ghost btn-sm btn-circle"
+                                @click="enableMic = !enableMic"
+                            >
+                                    <span class="ph" :class="{ 'ph-microphone': enableMic, 'ph-microphone-slash': !enableMic }" />
+                                </button>
+                        </li>
+                        <li>
+                            <button
+                                class="btn btn-ghost btn-sm btn-circle"
+                                @click="enableCamera = !enableCamera"
+                            >
+                                    <span class="ph" :class="{ 'ph-video-camera': enableCamera, 'ph-video-camera-slash': !enableCamera }" />
+                                </button>
+                        </li>
+                        <li>
+                            <button
+                                class="btn btn-ghost btn-sm btn-circle"
+                                >
+                                    <span class="ph ph-monitor-play" />
+                                </button>
+                        </li>
+                    </ul>
+                </nav>
+            </section>
         </SidebarMenuButton>
         </SidebarMenuItem>
     </SidebarFooter>

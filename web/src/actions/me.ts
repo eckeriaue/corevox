@@ -4,9 +4,9 @@ export const me = defineAction({
   async handler(_input, context) {
     const me = await context.session?.get('me')
     if (me) {
-      return Response.json({ user: me.user })
+      return ({ user: me.user, token: me.token })
     } else {
-      return Response.json({ user: null })
+      return ({ user: null, token: null })
     }
   }
 })

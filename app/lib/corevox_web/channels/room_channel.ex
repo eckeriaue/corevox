@@ -1,13 +1,16 @@
 defmodule CorevoxWeb.RoomChannel do
 	use CorevoxWeb, :channel
 	alias Corevox.Rooms
-
+	alias CorevoxWeb.Presence
 
 	def join("rooms:lobby", _params, socket) do
 	  rooms = Rooms.list_public_rooms()
 	  {:ok, %{rooms: rooms}, socket}
 	end
 
+	def join("rooms:" <> room_id, _params, socket) do
+	  {:ok, %{room: nil}, socket |> assign(:room_id, room_id)}
+	end
 
 	def handle_in("create_room", attrs, socket) do
     case attrs |> Map.merge(%{"max_users" => 12}) |> Rooms.create_room() do
@@ -29,4 +32,5 @@ defmodule CorevoxWeb.RoomChannel do
       end)
     end)
   end
+
 end

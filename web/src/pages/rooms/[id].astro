@@ -1,15 +1,21 @@
 ---
 import RoomLayout from '@/layouts/RoomLayout.astro'
 import Room from '@/components/room/Room.vue'
+
 const { id: roomId } = Astro.params
 const me = await Astro.session?.get('me')
-if (!me) {
+
+if (!me || !roomId) {
     return Astro.redirect('/')
 }
 ---
 <RoomLayout>
     <div>
-        <Room client:idle roomId={roomId} />
-
+        <Room
+            client:only
+            token={me.token}
+            user={me.user}
+            roomId={roomId}
+        />
     </div>
 </RoomLayout>

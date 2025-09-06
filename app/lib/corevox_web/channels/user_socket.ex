@@ -19,6 +19,15 @@ defmodule CorevoxWeb.UserSocket do
     {:ok, assign(socket, :user_id, nil)}
   end
 
+  def connect(%{"token" => token}, socket, _connect_info) do
+    case CorevoxWeb.Auth.Guardian.resource_from_claims(token) do
+      {:ok, user} ->
+        {:ok, assign(socket, :user_id, user.id)}
+      {:error, _reason} ->
+        {:error, assign(socket, :user_id, nil)}
+    end
+  end
+
   def id(%{assigns: %{user_id: nil}}), do: nil
   def id(socket), do: "user_socket:#{socket.assigns.user_id}"
 end
