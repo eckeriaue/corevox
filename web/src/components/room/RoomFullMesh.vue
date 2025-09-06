@@ -2,7 +2,8 @@
 import {
   defineAsyncComponent,
   onUnmounted,
-  ref
+  ref,
+  toRaw
 } from 'vue'
 import RoomSidebar from './RoomSidebar.vue'
 import { socket } from '@/socket'
@@ -24,7 +25,7 @@ const joinedAt = new Date()
 const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
 
 type User = {
-  id: string
+  id: number
   username: string
   email: string
   joined_at: Date
@@ -66,6 +67,37 @@ channel.on('presence_state', (state) => {
 })
 
 
+channel.on('offer_delivery', async delivery => {
+  if (delivery.from_user_id === props.user.id) {
+    return
+  }
+  console.info(delivery.from_user_id, toRaw(users.value))
+  const fromUser = users.value.find(user => user.id === delivery.from_user_id)
+  if (!fromUser) {
+    throw new Error('offer: User by delivery not found: ' + JSON.stringify(delivery))
+  }
+  fromUser.peer.setRemoteDescription(delivery.offer)
+  const answer = await fromUser.peer.createAnswer()
+  await fromUser.peer.setLocalDescription(answer)
+  console.info(fromUser.peer)
+  channel.push('answer', {
+    answer,
+    from_user_id: props.user.id,
+    to_user_id: fromUser.id
+  })
+})
+
+channel.on('answer_delivery', async delivery => {
+  console.info(delivery)
+  const toUser = users.value.find(user => user.id === delivery.to_user_id)
+  if (!toUser) {
+    throw new Error('answer: User by delivery not found: ' + JSON.stringify(delivery))
+  }
+  toUser.peer.setRemoteDescription(delivery.answer)
+})
+
+
+
 channel.on('presence_diff', (diff) => {
   if (diff.joins) {
     Object.entries(diff.joins)
@@ -80,6 +112,7 @@ channel.on('presence_diff', (diff) => {
           email: metas.at(0).email,
           joined_at: new Date(metas.at(0).joined_at)
         })
+
       }
     })
   }
@@ -90,8 +123,7 @@ channel.on('presence_diff', (diff) => {
   }
 })
 
-function addTracksToRtc(stream: MediaStream) {
-
+function addTracksToRtc(myStream: MediaStream) {
 }
 
 onUnmounted(() => {
@@ -114,7 +146,7 @@ onUnmounted(() => {
                     v-model:stream="stream"
                     v-model:enable-camera="enableCamera"
                     v-model:enable-microphone="enableMicrophone"
-                    @update:stream="addTracksToRtc"
+                    @update:stream="$event && addTracksToRtc($event)"
                 />
                 <template #fallback>
                     <div

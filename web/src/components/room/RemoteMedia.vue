@@ -3,12 +3,12 @@ import { ref } from 'vue'
 import MediaShortInfo from './MediaShortInfo.vue'
 
 const props = defineProps<{
-    stream: MediaStream
-    peer: RTCPeerConnection
-    joined_at: Date
-    username: string
-    id: number
-    email: string
+  id: number
+  username: string
+  email: string
+  joined_at: Date
+  peer: RTCPeerConnection
+  stream: MediaStream
 }>()
 
 const isLoading = ref(true)
@@ -18,8 +18,8 @@ const isLoading = ref(true)
 <template>
 <div
     :class="{
-      'ring-base-300': !false,
-      'ring-primary': true,
+      'ring-base-300': true,
+      'ring-primary': false,
     }"
     class="relative ring-2 bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
     style="aspect-ratio: 16 / 10; object-fit: cover; object-position: center;"
