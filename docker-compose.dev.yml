@@ -25,6 +25,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_URL=${POSTGRES_URL}
+      - PUBLIC_CLIENT_HTTP_URL=${PUBLIC_CLIENT_HTTP_URL}
     command: sh -c "mix setup && mix phx.server"
 
   corevox_web_dev:
@@ -46,6 +47,9 @@ services:
 
     environment:
       - NODE_ENV=development
+      - PUBLIC_APP_NAME=${PUBLIC_APP_NAME}
+      - PUBLIC_APP_HTTP_URL=${PUBLIC_APP_HTTP_URL}
+      - PUBLIC_APP_SOCKET_URL=${PUBLIC_APP_SOCKET_URL}
       - TURN_USER=${TURN_USER}
       - TURN_PASSWORD=${TURN_PASSWORD}
       - TURN_REALM=${TURN_REALM}
