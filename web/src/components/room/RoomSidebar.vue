@@ -58,10 +58,10 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
         </SidebarGroupContent>
       </SidebarGroup>
     </SidebarContent>
-    <SidebarFooter class="border-t border-base-300">
+    <SidebarFooter class="border-t border-base-300 bg-base-100">
         <SidebarMenuItem>
             <section class="flex items-center gap-x-4 w-full">
-                <span>{{ props.me.username }}</span>
+                <!-- <span>{{ props.me.username }}</span> -->
                 <nav>
                     <ul class="flex gap-x-2">
                         <li>

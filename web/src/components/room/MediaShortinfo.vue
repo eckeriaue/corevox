@@ -12,7 +12,7 @@ export default {
     <div class="join">
         <span
             class="join-item badge truncate"
-            style="max-width:66px"
+            style="max-width:88px"
         >{{ username }}</span>
         <div
         :class="{
