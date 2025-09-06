@@ -1,4 +1,4 @@
 import { isClient } from "./isClient"
 
 
-export const apiUrl = isClient() ? 'http://localhost:4000' : 'http://corevox_app_dev:4000'
+export const apiUrl = isClient() ? import.meta.env.PUBLIC_APP_HTTP_URL : `http://${import.meta.env.PUBLIC_APP_NAME}:4000`

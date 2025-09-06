@@ -3,7 +3,7 @@ defmodule CorevoxWeb.Endpoint do
   # use Phoenix.Presence, otp_app: :corevox, pubsub_server: Corevox.PubSub
 
   plug Corsica,
-    origins: ["http://localhost:4321"], # Замените на актуальный домен фронтенда
+    origins: [System.get_env("CLIENT_HTTP_URL")], # Замените на актуальный домен фронтенда
     allow_methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH", "HEAD", "CONNECT", "TRACE"],
     allow_headers: ["content-type", "authorization"],
     allow_credentials: true,

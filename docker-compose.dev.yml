@@ -2,7 +2,7 @@
 services:
 
   corevox_app_dev:
-    container_name: corevox_app_dev
+    container_name: ${PUBLIC_APP_NAME}
     restart: always
     build:
       context: ./app
