@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import MediaShortInfo from './MediaShortInfo.vue'
 
 const props = defineProps<{
-    username: string,
+    stream: MediaStream
+    peer: RTCPeerConnection
+    joined_at: Date
+    username: string
+    id: number
+    email: string
 }>()
 
 const isLoading = ref(true)
@@ -16,10 +22,14 @@ const isLoading = ref(true)
       'ring-primary': true,
     }"
     class="relative ring-2 bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
-    style="width:300px;height:200px; object-fit: cover; object-position: center;"
+    style="aspect-ratio: 16 / 9; object-fit: cover; object-position: center;"
 >
     <div class="absolute inset-2 size-[calc(100%_-_var(--spacing)*4)]">
-        <span class="badge">{{ props.username }}</span>
+        <media-short-info
+            :enable-camera="false"
+            :enable-microphone="false"
+            :username="props.username"
+        />
     </div>
     <span v-if="isLoading" class="loading loading-spinner loading-xl"></span>
     <video

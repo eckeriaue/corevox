@@ -31,7 +31,7 @@ defmodule CorevoxWeb.RoomChannel do
   def handle_info(:after_join, socket) do
     user = Accounts.get_user!(socket.assigns.user_id)
     {:ok, _} = Presence.track(socket, "user:#{user.id}", %{
-      joined_at: System.system_time(:second),
+      joined_at: DateTime.from_unix!(System.system_time(:second)) |> DateTime.to_iso8601(),
       id: user.id,
       username: user.username,
       email: user.email,

@@ -15,6 +15,7 @@ const props = defineProps<{
   username: string
 }>()
 
+
 const video = useTemplateRef<HTMLVideoElement>('video')
 
 const isLoading = ref(true)
@@ -36,6 +37,11 @@ const mediaControlsScope = effectScope()
 onMounted(async () => {
   stream.value = await loadMedia()
   await nextTick()
+  if (!video.value) {
+    await new Promise<void>(r => {
+      watch(video, () => r(), { once: true })
+    })
+  }
   video.value!.srcObject = stream.value
   mediaControlsScope.run(() => {
     watch(enableCamera, enableCamera => {
@@ -65,7 +71,7 @@ onUnmounted(() => {
           'ring-primary': enableMicrophone,
         }"
         class="relative ring-2 bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
-        style="width:300px;height:200px; object-fit: cover; object-position: center;"
+        style="aspect-ratio: 16 / 9; object-fit: cover; object-position: center;"
     >
         <div class="absolute inset-2 size-[calc(100%_-_var(--spacing)*4)]">
             <media-short-info

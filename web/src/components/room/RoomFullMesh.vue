@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  computed,
   defineAsyncComponent,
   onUnmounted,
   ref
@@ -20,14 +19,17 @@ const props = defineProps<{
   }
 }>()
 
+const joinedAt = new Date()
+
 const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
 
 type User = {
   id: string
   username: string
   email: string
-  joined_at: number
+  joined_at: Date
   peer: RTCPeerConnection
+  stream: MediaStream
 }
 
 const isJoined = ref(false)
@@ -40,7 +42,6 @@ const channel = socket.channel(`rooms:${props.roomId}`, {
 
 const stream = ref<MediaStream | null>(null)
 const users = ref<User[]>([])
-const otherUsers = computed(() => users.value.filter(user => user.id !== props.user.id))
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
 
@@ -56,10 +57,11 @@ channel.on('presence_state', (state) => {
     .filter(([_, { metas }]) => metas.at(0).id !== props.user.id)
     .map(([_, { metas }]) => ({
       id: metas.at(0).id,
+      stream: new MediaStream(),
       peer: new RTCPeerConnection(config),
       username: metas.at(0).username,
       email: metas.at(0).email,
-      joined_at: metas.at(0).joined_at
+      joined_at: new Date(metas.at(0).joined_at)
   }))
 })
 
@@ -71,11 +73,12 @@ channel.on('presence_diff', (diff) => {
       .forEach(([_, { metas }]) => {
       if (!users.value.some(user => user.id === metas.at(0).id)) {
         users.value.push({
+          stream: new MediaStream(),
           peer: new RTCPeerConnection(config),
           id: metas.at(0).id,
           username: metas.at(0).username,
           email: metas.at(0).email,
-          joined_at: metas.at(0).joined_at
+          joined_at: new Date(metas.at(0).joined_at)
         })
       }
     })
@@ -87,6 +90,9 @@ channel.on('presence_diff', (diff) => {
   }
 })
 
+function addTracksToRtc(stream: MediaStream) {
+
+}
 
 onUnmounted(() => {
   channel.leave()
@@ -101,14 +107,14 @@ onUnmounted(() => {
         v-model:enable-camera="enableCamera"
         v-model:enable-microphone="enableMicrophone"
     >
-        <ul class="grid grid-cols-3">
+        <ul class="grid grid-cols-3 gap-4 w-full">
             <suspense>
                 <my-media
                     :username="props.user.username"
                     v-model:stream="stream"
                     v-model:enable-camera="enableCamera"
                     v-model:enable-microphone="enableMicrophone"
-                    @load-stream=""
+                    @update:stream="addTracksToRtc"
                 />
                 <template #fallback>
                     <div
@@ -121,7 +127,7 @@ onUnmounted(() => {
             </suspense>
 
             <remote-media
-                v-for="user in otherUsers"
+                v-for="user in users"
                 :key="user.id"
                 :="user"
             />
