@@ -1,6 +1,6 @@
 ---
 import RoomLayout from '@/layouts/RoomLayout.astro'
-import Room from '@/components/room/Room.vue'
+import RoomFullMesh from '@/components/room/RoomFullMesh.vue'
 
 const { id: roomId } = Astro.params
 const me = await Astro.session?.get('me')
@@ -11,7 +11,7 @@ if (!me || !roomId) {
 ---
 <RoomLayout>
     <div>
-        <Room
+        <RoomFullMesh
             client:only
             token={me.token}
             user={me.user}
