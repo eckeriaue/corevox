@@ -7,7 +7,6 @@ const props = defineProps<{
   username: string
   email: string
   joined_at: Date
-  peer: RTCPeerConnection
   stream: MediaStream
 }>()
 

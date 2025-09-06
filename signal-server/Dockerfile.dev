@@ -1,0 +1,11 @@
+FROM node:20
+
+WORKDIR /usr/src/app
+
+COPY package.json ./
+RUN npm install -g peer nodemon
+RUN npm install
+
+EXPOSE 9000
+
+CMD ["nodemon", "--exec", "peerjs", "--", "--port", "9000", "--path", "/myapp"]

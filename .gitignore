@@ -4,6 +4,7 @@
 /**/data
 # If you run "mix test --cover", coverage assets end up here.
 /**/cover/
+/coturn/logs
 
 # The directory Mix downloads your dependencies sources to.
 /**/deps/
@@ -34,4 +35,4 @@ erl_crash.dump
 
 # In case you use Node.js/npm, you want to ignore these.
 /**/npm-debug.log
-/**/assets/node_modules/
+/**/**/node_modules/

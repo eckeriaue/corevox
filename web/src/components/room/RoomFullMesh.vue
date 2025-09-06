@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import {
   defineAsyncComponent,
+  nextTick,
+  watch,
   onScopeDispose,
   onUnmounted,
   ref,
@@ -8,7 +10,8 @@ import {
 } from 'vue'
 import RoomSidebar from './RoomSidebar.vue'
 import { socket } from '@/socket'
-import { config } from '@/lib/webrtc'
+import { peerConfig } from '@/lib/webrtc'
+import Peer from 'peerjs'
 import MyMedia from './MyMedia.vue'
 
 const props = defineProps<{
@@ -21,7 +24,6 @@ const props = defineProps<{
   }
 }>()
 
-const joinedAt = new Date()
 
 const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
 
@@ -30,7 +32,6 @@ type User = {
   username: string
   email: string
   joined_at: Date
-  // peer: RTCPeerConnection
   stream: MediaStream
 }
 
@@ -47,6 +48,20 @@ const users = ref<User[]>([])
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
 
+const makeRoomId = (userId: string | number) => `room-${props.roomId}-user-${userId}`
+
+const peer = new Peer(makeRoomId(props.user.id), peerConfig)
+
+peer.on('open', (id) => {
+  console.log('Peer ID:', id)
+})
+peer.on('connection', (conn) => {
+  conn.on('data', (data) => {
+    console.log('Received from', conn.peer, data)
+  })
+})
+
+
 const leavePageAbortController = new AbortController()
 
 channel.join().receive('ok', (resp) => {
@@ -59,53 +74,40 @@ channel.join().receive('ok', (resp) => {
 channel.on('presence_state', (state) => {
   users.value = Object.entries(state)
     .filter(([_, { metas }]) => metas.at(0).id !== props.user.id)
-    .map(([_, { metas }]) => ({
-      id: metas.at(0).id,
-      stream: new MediaStream(),
-      username: metas.at(0).username,
-      email: metas.at(0).email,
-      joined_at: new Date(metas.at(0).joined_at)
-  }))
+    .map(([_, { metas }]) => {
+      const connection = peer.connect(makeRoomId(metas.at(0).id))
+      connection.on('open', () => {
+        console.log('Connected to', metas.at(0).id)
+        connection.send({ type: 'hello', from: props.user.id })
+      })
+      connection.on('data', (data) => {
+        console.log('Message from', metas.at(0).id, data)
+      })
+
+
+      return {
+        id: metas.at(0).id,
+        stream: new MediaStream(),
+        username: metas.at(0).username,
+        email: metas.at(0).email,
+        joined_at: new Date(metas.at(0).joined_at)
+    }
+    })
 })
-
-
-channel.on('offer_delivery', async delivery => {
-  if (delivery.from_user_id === props.user.id) {
-    return
-  }
-  console.info(delivery.from_user_id, toRaw(users.value))
-  const fromUser = users.value.find(user => user.id === delivery.from_user_id)
-  if (!fromUser) {
-    throw new Error('offer: User by delivery not found: ' + JSON.stringify(delivery))
-  }
-  fromUser.peer.setRemoteDescription(delivery.offer)
-  const answer = await fromUser.peer.createAnswer()
-  await fromUser.peer.setLocalDescription(answer)
-  console.info(fromUser.peer)
-  channel.push('answer', {
-    answer,
-    from_user_id: props.user.id,
-    to_user_id: fromUser.id
-  })
-})
-
-channel.on('answer_delivery', async delivery => {
-  console.info(delivery)
-  const toUser = users.value.find(user => user.id === delivery.to_user_id)
-  if (!toUser) {
-    throw new Error('answer: User by delivery not found: ' + JSON.stringify(delivery))
-  }
-  toUser.peer.setRemoteDescription(delivery.answer)
-})
-
 
 
 channel.on('presence_diff', (diff) => {
   if (diff.joins) {
     Object.entries(diff.joins)
       .filter(([_, { metas }]) => metas.at(0).id !== props.user.id)
-      .forEach(([_, { metas }]) => {
+      .forEach(async ([_, { metas }]) => {
       if (!users.value.some(user => user.id === metas.at(0).id)) {
+        if(!stream.value) {
+          await new Promise<void>((r) => {
+            watch(stream, () => r(), { once: true })
+          })
+        }
+
         users.value.push({
           stream: new MediaStream(),
           id: metas.at(0).id,
@@ -113,20 +115,15 @@ channel.on('presence_diff', (diff) => {
           email: metas.at(0).email,
           joined_at: new Date(metas.at(0).joined_at)
         })
-
       }
     })
   }
   if (diff.leaves) {
-    Object.entries(diff.leaves).forEach(([key, { metas }]) => {
+    Object.entries(diff.leaves).forEach(([_, { metas }]) => {
       users.value = users.value.filter(user => user.id !== metas[0].id)
     })
   }
 })
-
-function addTracksToRtc(myStream: MediaStream) {
-
-}
 
 
 onScopeDispose(() => {
@@ -154,7 +151,6 @@ onUnmounted(() => {
                     v-model:stream="stream"
                     v-model:enable-camera="enableCamera"
                     v-model:enable-microphone="enableMicrophone"
-                    @update:stream="$event && addTracksToRtc($event)"
                 />
                 <template #fallback>
                     <div
