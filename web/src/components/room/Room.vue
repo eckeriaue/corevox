@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import {
+computed,
+  onUnmounted,
   ref
 } from 'vue'
 import RoomSidebar from './RoomSidebar.vue'
@@ -17,7 +19,8 @@ const props = defineProps<{
 }>()
 
 const isJoined = ref(false)
-
+// const makePresenceId = (userId: string) => `user:${userId}`
+// const presenceUserId = computed(() => makePresenceId(props.user.id))
 
 const channel = socket.channel(`rooms:${props.roomId}`, {
   token: props.token
@@ -34,6 +37,16 @@ channel.join().receive('ok', (resp) => {
 }).receive('error', (resp) => {
   console.log('Unable to join room', resp)
 })
+
+channel.on('presence_state', (state) => {
+  users.value = Object.entries(state).map(([key, data]) => ({
+    id: data.metas.at(0).id,
+    username: data.metas.at(0).username,
+    email: data.metas.at(0).email,
+    joined_at: data.metas.at(0).joined_at
+  }))
+})
+
 
 channel.on('presence_diff', (diff) => {
   console.info(diff)
@@ -57,11 +70,16 @@ channel.on('presence_diff', (diff) => {
 })
 
 
+onUnmounted(() => {
+  channel.leave()
+})
+
 </script>
 
 <template>
     <room-sidebar
         :me="props.user"
+        :users
         v-model:enable-camera="enableCamera"
         v-model:enable-microphone="enableMicrophone"
     >

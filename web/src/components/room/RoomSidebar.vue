@@ -18,10 +18,13 @@ const props = defineProps<{
     id: string
     email: string
     username: string
-  }
+  },
+  users: {
+    id: string
+    email: string
+    username: string
+  }[]
 }>()
-
-const items = []
 
 const enableCamera = defineModel<boolean>('enableCamera', { default: false })
 const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
@@ -38,14 +41,9 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
       <SidebarGroup>
         <SidebarGroupContent>
           <SidebarMenu>
-              <SidebarMenuItem>
+              <SidebarMenuItem v-for="user in props.users" :key="user.id">
                 <SidebarMenuButton>
-                    <span>{{ props.me.username }}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton>
-                    <span>{{ item.title }}</span>
+                    <span>{{ user.username }}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
           </SidebarMenu>
