@@ -1,5 +1,6 @@
 defmodule CorevoxWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :corevox
+  # use Phoenix.Presence, otp_app: :corevox, pubsub_server: Corevox.PubSub
 
   plug Corsica,
     origins: ["http://localhost:4321"], # Замените на актуальный домен фронтенда

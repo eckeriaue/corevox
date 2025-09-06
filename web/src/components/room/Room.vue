@@ -18,14 +18,15 @@ const props = defineProps<{
 
 const isJoined = ref(false)
 
+
 const channel = socket.channel(`rooms:${props.roomId}`, {
-  params: { token: props.token }
+  token: props.token
 })
 
 const stream = ref<MediaStream | null>(null)
+const users = ref<{ id: string; username: string; email: string; joined_at: number }[]>([])
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
-
 
 channel.join().receive('ok', (resp) => {
   isJoined.value = true
@@ -33,6 +34,28 @@ channel.join().receive('ok', (resp) => {
 }).receive('error', (resp) => {
   console.log('Unable to join room', resp)
 })
+
+channel.on('presence_diff', (diff) => {
+  console.info(diff)
+  if (diff.joins) {
+    Object.entries(diff.joins).forEach(([key, data]) => {
+      if (!users.value.some(user => user.id === data.metas[0].id)) {
+        users.value.push({
+          id: data.metas[0].id,
+          username: data.metas[0].username,
+          email: data.metas[0].email,
+          joined_at: data.metas[0].joined_at
+        })
+      }
+    })
+  }
+  if (diff.leaves) {
+    Object.entries(diff.leaves).forEach(([key, data]) => {
+      users.value = users.value.filter(user => user.id !== data.metas[0].id)
+    })
+  }
+})
+
 
 </script>
 

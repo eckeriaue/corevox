@@ -7,9 +7,9 @@ defmodule CorevoxWeb.UserSocket do
   channel "login:formvalidation", CorevoxWeb.LoginChannel
 
   def connect(%{"token" => token}, socket, _connect_info) do
-    case CorevoxWeb.Auth.Guardian.decode_and_verify(token) do
-      {:ok, claims} ->
-        {:ok, assign(socket, :user_id, claims["sub"])}
+    case CorevoxWeb.Auth.Guardian.resource_from_claims(token) do
+      {:ok, user} ->
+        {:ok, assign(socket, :user_id, user.id)}
       {:error, _reason} ->
         {:ok, assign(socket, :user_id, nil)}
     end
@@ -19,15 +19,7 @@ defmodule CorevoxWeb.UserSocket do
     {:ok, assign(socket, :user_id, nil)}
   end
 
-  def connect(%{"token" => token}, socket, _connect_info) do
-    case CorevoxWeb.Auth.Guardian.resource_from_claims(token) do
-      {:ok, user} ->
-        {:ok, assign(socket, :user_id, user.id)}
-      {:error, _reason} ->
-        {:ok, assign(socket, :user_id, nil)}
-    end
-  end
+  def id(%{assigns: %{user_id: user_id}}) when not is_nil(user_id), do: "user_socket:#{user_id}"
+  def id(_socket), do: nil
 
-  def id(%{assigns: %{user_id: nil}}), do: nil
-  def id(socket), do: "user_socket:#{socket.assigns.user_id}"
 end

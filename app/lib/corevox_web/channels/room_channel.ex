@@ -3,24 +3,37 @@ defmodule CorevoxWeb.RoomChannel do
 	alias Corevox.Rooms
 	alias CorevoxWeb.Presence
 	alias Corevox.Accounts
+	alias CorevoxWeb.Auth.Guardian
 
 	def join("rooms:lobby", _params, socket) do
 	  rooms = Rooms.list_public_rooms()
 	  {:ok, %{rooms: rooms}, socket}
 	end
 
-	def join("rooms:" <> room_id, _params, socket) do
-    send(self(), :after_join)
-    {:ok, %{room: nil}, socket |> assign(:room_id, room_id)}
+	def join("rooms:" <> room_id, params, socket) do
+	  user_id = case params do
+			%{"token" => token} ->
+			case Guardian.decode_and_verify(token) do
+        {:ok, claims} -> claims["sub"]
+        {:error, _reason} -> nil
+      end
+		end
+
+		if is_nil(user_id) do
+			{:error, %{error: "unauthorized"}}
+		else
+      send(self(), :after_join)
+      {:ok, socket |> assign(:room_id, room_id) |> assign(:user_id, user_id)}
+		end
+
   end
 
   def handle_info(:after_join, socket) do
     user = Accounts.get_user!(socket.assigns.user_id)
-
     {:ok, _} = Presence.track(socket, "user:#{user.id}", %{
       joined_at: System.system_time(:second),
       id: user.id,
-      name: user.name,
+      username: user.username,
       email: user.email,
     })
 

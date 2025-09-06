@@ -15,7 +15,8 @@ defmodule Corevox.Application do
       # Start a worker by calling: Corevox.Worker.start_link(arg)
       # {Corevox.Worker, arg},
       # Start to serve requests, typically the last entry
-      CorevoxWeb.Endpoint
+      CorevoxWeb.Endpoint,
+      CorevoxWeb.Presence,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
