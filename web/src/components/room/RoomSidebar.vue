@@ -20,9 +20,12 @@ const props = defineProps<{
     username: string
   },
   users: {
-    id: string
-    email: string
+    id: number
+    rtcId: string
     username: string
+    email: string
+    joined_at: Date
+    streams: MediaStream[]
   }[]
 }>()
 
@@ -36,7 +39,7 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
   <Sidebar>
     <SidebarContent>
         <div class="flex items-center px-2 h-16">
-           <a href="/"  class="btn btn-ghost text-xl">CoreVox</a>
+           <a href="/" data-astro-reload class="btn btn-ghost text-xl">CoreVox</a>
        </div>
       <SidebarGroup>
         <SidebarGroupContent>
@@ -64,6 +67,7 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
                         <li>
                             <button
                                 class="btn btn-ghost btn-sm btn-circle"
+                                type="button"
                                 @click="enableMic = !enableMic"
                             >
                                     <span class="ph" :class="{ 'ph-microphone': enableMic, 'ph-microphone-slash': !enableMic }" />
@@ -72,6 +76,7 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
                         <li>
                             <button
                                 class="btn btn-ghost btn-sm btn-circle"
+                                type="button"
                                 @click="enableCamera = !enableCamera"
                             >
                                     <span class="ph" :class="{ 'ph-video-camera': enableCamera, 'ph-video-camera-slash': !enableCamera }" />
@@ -80,7 +85,8 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
                         <li>
                             <button
                                 class="btn btn-ghost btn-sm btn-circle"
-                                >
+                                type="button"
+                            >
                                     <span class="ph ph-monitor-play" />
                                 </button>
                         </li>

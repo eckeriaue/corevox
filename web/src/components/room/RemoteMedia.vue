@@ -7,8 +7,12 @@ const props = defineProps<{
   username: string
   email: string
   joined_at: Date
+  enableCamera: boolean
+  enableMicrophone: boolean
   streams: MediaStream[]
 }>()
+
+
 
 const video = useTemplateRef<HTMLVideoElement>('video')
 const mainStream = new MediaStream()
@@ -17,6 +21,7 @@ const mainStream = new MediaStream()
 watch(toRef(props, 'streams'), async (streams) => {
   isLoading.value = false
   await nextTick()
+  mainStream.getTracks().forEach(track => mainStream.removeTrack(track))
   streams.forEach(stream => {
     stream.getTracks().forEach(track => {
       mainStream.addTrack(track)
@@ -42,16 +47,16 @@ const isLoading = ref(true)
 >
     <div class="absolute inset-2 size-[calc(100%_-_var(--spacing)*4)]">
         <media-short-info
-            :enable-camera="false"
-            :enable-microphone="false"
+            :enable-camera="props.enableCamera"
+            :enable-microphone="props.enableMicrophone"
             :username="props.username"
         />
     </div>
     <span v-if="isLoading" class="loading loading-spinner loading-xl"></span>
     <video
-        v-else
         autoplay
-        muted
+        :hidden="!props.enableCamera"
+        :muted="!props.enableMicrophone"
         playsinline
         ref="video"
     />

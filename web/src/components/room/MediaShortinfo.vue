@@ -10,7 +10,10 @@ export default {
 
 <template>
     <div class="join">
-        <span class="join-item badge">{{ username }}</span>
+        <span
+            class="join-item badge truncate"
+            style="max-width:66px"
+        >{{ username }}</span>
         <div
         :class="{
             'badge-info': enableMicrophone,
@@ -18,7 +21,10 @@ export default {
         }"
             class="join-item transition-colors badge size-6 badge-soft"
         >
-            <span class="ph" :class="{ 'ph-microphone-slash': !enableMicrophone, 'ph-microphone': enableMicrophone }" />
+            <span
+                class="ph"
+                :class="{ 'ph-microphone-slash': !enableMicrophone, 'ph-microphone': enableMicrophone }"
+            />
         </div>
 
         <div

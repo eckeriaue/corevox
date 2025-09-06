@@ -43,8 +43,6 @@ onMounted(async () => {
     })
   }
   video.value!.srcObject = stream.value
-  stream.value.getVideoTracks().forEach(track => {
-  })
   mediaControlsScope.run(() => {
     watch(enableCamera, enableCamera => {
       stream.value?.getTracks().filter(track => track.kind === 'video').forEach(track => {
@@ -87,6 +85,7 @@ onUnmounted(() => {
         <video
             v-else
             autoplay
+            :hidden="!enableCamera"
             muted
             playsinline
             ref="video"

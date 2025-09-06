@@ -91,9 +91,6 @@ function saveMe() {
   const formData = structuredClone(toRaw(form))
   channel.push('register_me', formData).receive('ok', async ({ user, token }) => {
     formStatus.value = 'ready'
-    console.info(user)
-    console.info(user)
-    console.info(user)
     const {
       data: { redirect = '/'},
       error

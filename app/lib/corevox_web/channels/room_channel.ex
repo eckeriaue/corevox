@@ -35,6 +35,8 @@ defmodule CorevoxWeb.RoomChannel do
       Presence.track(socket, "user:#{user.id}", %{
         joined_at: DateTime.from_unix!(System.system_time(:second)) |> DateTime.to_iso8601(),
         id: user.id,
+        enable_camera: false,
+        enable_microphone: false,
         username: user.username,
         email: user.email
       })
@@ -60,8 +62,8 @@ defmodule CorevoxWeb.RoomChannel do
     end
   end
 
-  def handle_in("user_change_media", %{"user_id" => user_id, "enable_microphone" => enable_microphone, "enable_camera" => enable_camera}, socket) do
-    socket |> push("user_media_changed", %{user_id: user_id, enable_microphone: enable_microphone, enable_camera: enable_camera})
+  def handle_in("change_user_media", %{"user_id" => user_id, "enable_microphone" => enable_microphone, "enable_camera" => enable_camera}, socket) do
+    :ok = socket |> broadcast!("user_media_changed", %{user_id: user_id, enable_microphone: enable_microphone, enable_camera: enable_camera})
     {:noreply, socket}
   end
 

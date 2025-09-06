@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import {
   defineAsyncComponent,
-  nextTick,
   watch,
   onScopeDispose,
   onUnmounted,
   ref,
-  toRaw
+nextTick,
 } from 'vue'
 import RoomSidebar from './RoomSidebar.vue'
 import { socket } from '@/socket'
@@ -34,6 +33,8 @@ type User = {
   email: string
   joined_at: Date
   streams: MediaStream[]
+  enableMicrophone: boolean
+  enableCamera: boolean
 }
 
 const isJoined = ref(false)
@@ -48,6 +49,22 @@ const stream = ref<MediaStream | null>(null)
 const users = ref<User[]>([])
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
+
+watch([enableCamera, enableMicrophone], async ([enableCamera, enableMicrophone]) => {
+  channel.push('change_user_media', { enable_camera: enableCamera, enable_microphone: enableMicrophone, user_id: props.user.id }).receive('ok', () => {
+    console.log('Media changed successfully')
+  }).receive('error', (reason) => {
+    console.error('Failed to change media', reason)
+  })
+})
+
+channel.on('user_media_changed', ({ user_id, enable_camera, enable_microphone }) => {
+  const index = users.value.findIndex(user => user.id === user_id)
+  if (index !== -1) {
+    users.value[index].enableCamera = enable_camera
+    users.value[index].enableMicrophone = enable_microphone
+  }
+})
 
 const makeRoomId = (userId: string | number) => `room-${props.roomId}-user-${userId}`
 
@@ -65,10 +82,13 @@ const peer = new Peer(makeRoomId(props.user.id), peerConfig)
 peer.on('call', async (call) => {
   await waitForStream()
   call.answer(stream.value)
-  call.on('stream', (remoteStream) => {
+  call.on('stream', async (remoteStream: MediaStream) => {
+    await nextTick()
     const index = users.value.findIndex(user => user.rtcId === call.peer)
-    users.value[index].streams.push(remoteStream)
-    users.value = users.value
+    if (index !== -1) {
+      users.value[index].streams.push(remoteStream)
+      users.value = users.value
+    }
   })
 })
 
@@ -82,8 +102,6 @@ channel.join().receive('ok', (resp) => {
   console.log('Unable to join room', resp)
 })
 
-const changeUserMediaChannel = socket.channel('change_user_media', { token: props.token })
-changeUserMediaChannel.join()
 
 channel.on('presence_state', async (state) => {
   await waitForStream()
@@ -91,7 +109,8 @@ channel.on('presence_state', async (state) => {
   users.value = Object.entries(state)
     .filter(([_, { metas }]) => metas.at(0).id !== props.user.id)
     .map(([_, { metas }]) => {
-      const rtcId = makeRoomId(metas.at(0).id)
+      const remoteUser = metas.at(0)
+      const rtcId = makeRoomId(remoteUser.id)
       const call = peer.call(rtcId, stream.value)
       if (call) {
         call.on('stream', (remoteStream: MediaStream) => {
@@ -100,15 +119,15 @@ channel.on('presence_state', async (state) => {
           users.value = users.value
         })
       }
-
-
       return {
         rtcId,
-        id: metas.at(0).id,
+        id: remoteUser.id,
         streams: [],
-        username: metas.at(0).username,
-        email: metas.at(0).email,
-        joined_at: new Date(metas.at(0).joined_at)
+        username: remoteUser.username,
+        email: remoteUser.email,
+        enableCamera: remoteUser.enable_camera || false,
+        enableMicrophone: remoteUser.enable_microphone || false,
+        joined_at: new Date(remoteUser.joined_at)
     }
     })
 })
@@ -118,18 +137,19 @@ channel.on('presence_diff', (diff) => {
   if (diff.joins) {
     Object.entries(diff.joins)
       .filter(([_, { metas }]) => metas.at(0).id !== props.user.id)
+      .filter(([_, { metas }]) => !users.value.some(user => user.id === metas.at(0).id))
       .forEach(async ([_, { metas }]) => {
-      if (!users.value.some(user => user.id === metas.at(0).id)) {
-        await waitForStream()
+        const remoteUser = metas.at(0)
         users.value.push({
-          rtcId: makeRoomId(metas.at(0).id),
+          enableCamera: remoteUser.enable_camera || false,
+          enableMicrophone: remoteUser.enable_microphone || false,
+          rtcId: makeRoomId(remoteUser.id),
           streams: [],
-          id: metas.at(0).id,
-          username: metas.at(0).username,
-          email: metas.at(0).email,
-          joined_at: new Date(metas.at(0).joined_at)
+          id: remoteUser.id,
+          username: remoteUser.username,
+          email: remoteUser.email,
+          joined_at: new Date(remoteUser.joined_at)
         })
-      }
     })
   }
   if (diff.leaves) {
@@ -141,10 +161,12 @@ channel.on('presence_diff', (diff) => {
 
 
 onScopeDispose(() => {
+  peer.removeAllListeners()
   channel.leave()
   leavePageAbortController.abort()
 })
 onUnmounted(() => {
+  peer.removeAllListeners()
   channel.leave()
   leavePageAbortController.abort()
 })

@@ -14,8 +14,9 @@ const props = defineProps<{
 
 async function logoutAndReload() {
     const { data, error } = await actions.signout()
-    console.info(data, error)
-    if (data.redirect) {
+    if (error) {
+        console.error(error)
+    } else if (data.redirect) {
         window.location.href = data.redirect
     }
 }
