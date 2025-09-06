@@ -82,6 +82,8 @@ channel.join().receive('ok', (resp) => {
   console.log('Unable to join room', resp)
 })
 
+const changeUserMediaChannel = socket.channel('change_user_media', { token: props.token })
+changeUserMediaChannel.join()
 
 channel.on('presence_state', async (state) => {
   await waitForStream()

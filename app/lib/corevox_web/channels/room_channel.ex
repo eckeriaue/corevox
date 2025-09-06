@@ -60,6 +60,11 @@ defmodule CorevoxWeb.RoomChannel do
     end
   end
 
+  def handle_in("user_change_media", %{"user_id" => user_id, "enable_microphone" => enable_microphone, "enable_camera" => enable_camera}, socket) do
+    socket |> push("user_media_changed", %{user_id: user_id, enable_microphone: enable_microphone, enable_camera: enable_camera})
+    {:noreply, socket}
+  end
+
   defp changeset_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->
