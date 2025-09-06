@@ -24,7 +24,7 @@ defmodule CorevoxWeb.UserSocket do
       {:ok, user} ->
         {:ok, assign(socket, :user_id, user.id)}
       {:error, _reason} ->
-        {:error, assign(socket, :user_id, nil)}
+        {:ok, assign(socket, :user_id, nil)}
     end
   end
 
