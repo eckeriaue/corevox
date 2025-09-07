@@ -36,9 +36,6 @@ const mediaControlsScope = effectScope()
 
 onMounted(async () => {
   stream.value = await loadMedia()
-  if (!stream.value) {
-    return
-  }
   await nextTick()
   if (!video.value) {
     await new Promise<void>(r => {
