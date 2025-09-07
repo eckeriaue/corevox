@@ -78,7 +78,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    command: peerjs --port 9000 --path /myapp
+    command: peerjs --port 9000 --path /signal-server
 
   corevox_coturn:
     container_name: corevox_coturn

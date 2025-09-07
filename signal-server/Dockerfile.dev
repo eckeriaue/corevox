@@ -8,4 +8,4 @@ RUN npm install
 
 EXPOSE 9000
 
-CMD ["nodemon", "--exec", "peerjs", "--", "--port", "9000", "--path", "/myapp"]
+CMD ["nodemon", "--exec", "peerjs", "--", "--port", "9000", "--path", "/signal-server"]
