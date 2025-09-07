@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, toRef, useTemplateRef, watch, nextTick } from 'vue'
-import MediaShortInfo from './MediaShortInfo.vue'
+import MediaShortInfo from './MediaShortData.vue'
 
 const props = defineProps<{
   id: number

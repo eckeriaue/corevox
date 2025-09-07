@@ -9,7 +9,7 @@ import {
   onUnmounted
 } from 'vue'
 
-import MediaShortInfo from './MediaShortInfo.vue'
+import MediaShortInfo from './MediaShortData.vue'
 
 const props = defineProps<{
   username: string
