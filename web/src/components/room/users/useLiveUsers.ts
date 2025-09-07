@@ -10,7 +10,6 @@ type Meta = {
   enable_microphone: boolean
   username: string
   email: string
-  joined_at: string
 }
 
 type UserDiff = {
@@ -47,7 +46,6 @@ export function useLiveUsers(
             stream: new MediaStream(),
             username: remoteUser.username,
             email: remoteUser.email,
-            joined_at: new Date(remoteUser.joined_at)
           })
       })
     }

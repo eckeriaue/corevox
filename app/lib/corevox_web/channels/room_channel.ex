@@ -24,7 +24,7 @@ defmodule CorevoxWeb.RoomChannel do
       {:error, %{error: "unauthorized"}}
     else
       send(self(), :after_join)
-      {:ok, socket |> assign(:room_id, room_id) |> assign(:user_id, user_id)}
+      {:ok, socket |> assign(:room_id, room_id) |> assign(:user_id, String.to_integer(user_id))}
     end
   end
 
@@ -33,7 +33,6 @@ defmodule CorevoxWeb.RoomChannel do
 
     {:ok, _} =
       Presence.track(socket, "user:#{user.id}", %{
-        joined_at: DateTime.from_unix!(System.system_time(:second)) |> DateTime.to_iso8601(),
         id: user.id,
         enable_camera: false,
         enable_microphone: false,
@@ -62,8 +61,14 @@ defmodule CorevoxWeb.RoomChannel do
     end
   end
 
-  def handle_in("change_user_media", %{"user_id" => user_id, "enable_microphone" => enable_microphone, "enable_camera" => enable_camera}, socket) do
-    :ok = socket |> broadcast!("user_media_changed", %{user_id: user_id, enable_microphone: enable_microphone, enable_camera: enable_camera})
+  def handle_in("change_user_media", %{"enable_microphone" => enable_microphone, "enable_camera" => enable_camera}, socket) do
+
+    # {:ok,_} = Presence.update(socket, "user:#{socket.assigns.user_id}", fn user ->
+    #   user |> Map.put(:enable_microphone, enable_microphone) |> Map.put(:enable_camera, enable_camera)
+    # end)
+
+    push(socket, "presence_state", Presence.list(socket))
+    :ok = socket |> broadcast!("user_media_changed", %{user_id: socket.assigns.user_id, enable_microphone: enable_microphone, enable_camera: enable_camera})
     {:noreply, socket}
   end
 

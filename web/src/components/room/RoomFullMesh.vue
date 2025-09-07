@@ -31,7 +31,6 @@ type User = {
   rtcId: string
   username: string
   email: string
-  joined_at: Date
   streams: MediaStream[]
   enableMicrophone: boolean
   enableCamera: boolean
@@ -126,7 +125,6 @@ channel.on('presence_state', async (state) => {
         email: remoteUser.email,
         enableCamera: remoteUser.enable_camera || false,
         enableMicrophone: remoteUser.enable_microphone || false,
-        joined_at: new Date(remoteUser.joined_at)
     }
     })
 })
@@ -147,7 +145,6 @@ channel.on('presence_diff', (diff) => {
           id: remoteUser.id,
           username: remoteUser.username,
           email: remoteUser.email,
-          joined_at: new Date(remoteUser.joined_at)
         })
     })
   }

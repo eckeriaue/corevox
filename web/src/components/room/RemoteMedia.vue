@@ -8,7 +8,6 @@ const props = defineProps<{
   username: string
   email: string
   stream: MediaStream
-  joined_at: Date
   enableCamera: boolean
   enableMicrophone: boolean
 }>()

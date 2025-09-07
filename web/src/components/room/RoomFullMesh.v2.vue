@@ -16,10 +16,9 @@ import { socket } from '@/socket'
 import { peerConfig } from '@/lib/webrtc'
 import { Peer } from 'peerjs'
 import MyMedia from './MyMedia.vue'
-import { sleep } from 'radashi'
 import {
   makeMyId,
-  getRoomUsers,
+  useUsers,
   useLiveUsers,
   type User } from './users'
 
@@ -44,15 +43,15 @@ channel.join().receive('ok', () => {
   console.error('Failed to join room: timeout')
 })
 
-const users = ref<User[]>(await getRoomUsers(channel))
+const { users } = useUsers(channel)
 
 const me = computed<User>(() => {
   return users.value.find(user => user.id === props.user.id) as User
 })
 
 const stream = ref<MediaStream>(new MediaStream())
-const enableCamera = ref(me.value.enableCamera)
-const enableMicrophone = ref(me.value.enableMicrophone)
+const enableCamera = ref(me.value?.enableCamera || false)
+const enableMicrophone = ref(me.value?.enableMicrophone || false)
 const rtcId = makeMyId(props.roomId, props.user.id)
 const peer = new Peer(rtcId, peerConfig)
 

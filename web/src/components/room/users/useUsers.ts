@@ -1,6 +1,6 @@
 import type { Channel } from 'phoenix'
 import type { User } from './User'
-import { withResolvers } from 'radashi'
+import { ref } from 'vue'
 
 type UsersMetas = {
   [key: string]: {
@@ -15,10 +15,11 @@ type UsersMetas = {
   }
 }
 
-export async function getRoomUsers(channel: Channel): Promise<User[]> {
-  const { resolve, promise } = withResolvers<User[]>()
+export function useUsers(channel: Channel) {
+  const users = ref<User[]>([])
   channel.on('presence_state', async (state: UsersMetas) => {
-    const users: User[] = Object.values(state).map(({ metas }) => {
+    console.info('state', state)
+    users.value = Object.values(state).map(({ metas }) => {
       const remoteUser = metas.at(0)!
       return {
         id: remoteUser.id,
@@ -30,7 +31,7 @@ export async function getRoomUsers(channel: Channel): Promise<User[]> {
         username: remoteUser.username,
       } satisfies User
     })
-    resolve(users)
   })
-  return promise
+
+  return { users }
 }
