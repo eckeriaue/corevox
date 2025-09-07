@@ -1,72 +1,34 @@
 <script setup lang="ts">
 import {
   useTemplateRef,
-  ref,
   watch,
-  nextTick,
-  onMounted,
-  effectScope,
-  onUnmounted
+  computed
 } from 'vue'
+import { useMicrophone, useCamera } from './mediaDevices'
 
 import MediaShortInfo from './MediaShortData.vue'
 
 const props = defineProps<{
+  stream: MediaStream
   username: string
 }>()
 
 
 const video = useTemplateRef<HTMLVideoElement>('video')
 
-const isLoading = ref(true)
-
-const stream = defineModel<MediaStream | null>('stream', { default: null })
+const stream = defineModel<MediaStream>('stream', { required: true })
 const enableCamera = defineModel<boolean>('enableCamera', { default: false })
 const enableMicrophone = defineModel<boolean>('enableMicrophone', { default: false })
 
-async function loadMedia() {
-  isLoading.value = true
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: {
-      width: { ideal: 400 },   // или { max: 640 }
-      height: { ideal: 250 },
-      frameRate: { max: 24 }
-    },
-    audio: true
-  }).catch(() => null)
-  isLoading.value = false
-  await nextTick()
-  return stream
-}
+const microphone = useMicrophone(stream, enableMicrophone)
+const camera = useCamera(stream, enableCamera)
 
-const mediaControlsScope = effectScope()
+const isLoading = computed(() => microphone.isLoading.value || camera.isLoading.value)
 
-onMounted(async () => {
-  stream.value = await loadMedia()
-  await nextTick()
-  if (!video.value) {
-    await new Promise<void>(r => {
-      watch(video, () => r(), { once: true })
-    })
-  }
-  video.value!.srcObject = stream.value
-  mediaControlsScope.run(() => {
-    watch(enableCamera, enableCamera => {
-      stream.value?.getTracks().filter(track => track.kind === 'video').forEach(track => {
-        track.enabled = enableCamera
-      })
-    }, { immediate: true })
-
-    watch(enableMicrophone, enableMicrophone => {
-      stream.value?.getTracks().filter(track => track.kind === 'audio').forEach(track => {
-        track.enabled = enableMicrophone
-      })
-    }, { immediate: true })
-  })
-})
-
-onUnmounted(() => {
-  mediaControlsScope.stop()
+watch(video, video => {
+  video!.srcObject = stream.value
+}, {
+  once: true,
 })
 
 </script>
@@ -86,13 +48,13 @@ onUnmounted(() => {
                 :enable-microphone="enableMicrophone"
                 :username="`Вы (${props.username})`"
             />
-
         </div>
-        <span v-if="isLoading" class="loading loading-spinner loading-xl"></span>
+        <div v-if="isLoading" class="absolute inset-0 size-full flex items-center justify-center">
+            <span class="loading loading-spinner loading-xl"></span>
+        </div>
         <video
-            v-else
             autoplay
-            :hidden="!enableCamera"
+            :hidden="!enableCamera || isLoading"
             muted
             playsinline
             ref="video"

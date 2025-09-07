@@ -4,29 +4,18 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  // SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter
 } from "@/components/ui/sidebar"
+import type { User } from './User'
 
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
 const props = defineProps<{
-  me: {
-    id: string
-    email: string
-    username: string
-  },
-  users: {
-    id: number
-    rtcId: string
-    username: string
-    email: string
-    joined_at: Date
-    streams: MediaStream[]
-  }[]
+  // me: Pick<User, 'id' | 'email' | 'username'>,
+  users: User[]
 }>()
 
 const enableCamera = defineModel<boolean>('enableCamera', { default: false })
@@ -44,11 +33,11 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
       <SidebarGroup>
         <SidebarGroupContent>
           <SidebarMenu>
-              <SidebarMenuItem>
+              <!-- <SidebarMenuItem>
                 <SidebarMenuButton>
                     <span>{{ me.username }}</span>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
+              </SidebarMenuItem> -->
               <SidebarMenuItem v-for="user in props.users" :key="user.id">
                 <SidebarMenuButton>
                     <span>{{ user.username }}</span>

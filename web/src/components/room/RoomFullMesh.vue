@@ -37,10 +37,6 @@ type User = {
   enableCamera: boolean
 }
 
-const isJoined = ref(false)
-// const makePresenceId = (userId: string) => `user:${userId}`
-// const presenceUserId = computed(() => makePresenceId(props.user.id))
-
 const channel = socket.channel(`rooms:${props.roomId}`, {
   token: props.token
 })
@@ -96,7 +92,6 @@ peer.on('call', async (call) => {
 const leavePageAbortController = new AbortController()
 
 channel.join().receive('ok', (resp) => {
-  isJoined.value = true
   console.log('Room joined successfully', resp)
 }).receive('error', (resp) => {
   console.log('Unable to join room', resp)
@@ -105,6 +100,11 @@ channel.join().receive('ok', (resp) => {
 
 channel.on('presence_state', async (state) => {
   await waitForStream()
+
+  const me = Object.values(state).find(user => user.metas.at(0).id === props.user.id)
+  console.info('me', me)
+  enableCamera.value = me?.enable_camera || false
+  enableMicrophone.value = me?.enable_microphone || false
 
   users.value = Object.entries(state)
     .filter(([_, { metas }]) => metas.at(0).id !== props.user.id)
