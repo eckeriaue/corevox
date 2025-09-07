@@ -56,7 +56,35 @@ const enableMicrophone = ref(me.value.enableMicrophone)
 const rtcId = makeMyId(props.roomId, props.user.id)
 const peer = new Peer(rtcId, peerConfig)
 
+peer.on('open', function(id) {
+  peer.on('call', async call => {
+    call.answer(stream.value)
+    call.on('stream', stream => {
+      const index = users.value.findIndex(user => makeMyId(props.roomId, user.id) === call.peer)
+      stream.getTracks().forEach(track => {
+        users.value.at(index)!.stream.addTrack(track)
+      })
+      users.value = users.value
+    })
+  })
+})
+
+
 watch([enableCamera, enableMicrophone], async ([enableCamera, enableMicrophone]) => {
+  if (enableCamera || enableMicrophone) {
+    const localStream = await navigator.mediaDevices.getUserMedia({ video: enableCamera, audio: enableMicrophone })
+    users.value.filter(user => user.id !== props.user.id).forEach(user => {
+      const call = peer.call(makeMyId(props.roomId, user.id), localStream)
+      call.on('stream', remoteStream  => {
+        const index = users.value.findIndex(user => makeMyId(props.roomId, user.id) === call.peer)
+        remoteStream.getTracks().forEach(track => {
+          users.value.at(index)!.stream.addTrack(track)
+        })
+        users.value = users.value
+      })
+    })
+  }
+
   channel.push('change_user_media', {
     enable_camera: enableCamera,
     enable_microphone: enableMicrophone,
@@ -98,7 +126,6 @@ useLiveUsers(
             :key="user.id"
             :my-stream="stream"
             :room-id
-            :peer
             :="user"
         />
     </ul>

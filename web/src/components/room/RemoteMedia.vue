@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref, toRef, useTemplateRef, watch, nextTick, computed } from 'vue'
 import MediaShortInfo from './MediaShortData.vue'
-import { makeMyId } from './users'
-
-import type { Peer, MediaConnection } from 'peerjs'
 
 const props = defineProps<{
   roomId: string
@@ -11,7 +8,6 @@ const props = defineProps<{
   username: string
   email: string
   stream: MediaStream
-  peer: Peer
   joined_at: Date
   enableCamera: boolean
   enableMicrophone: boolean
@@ -20,10 +16,10 @@ const props = defineProps<{
 const video = useTemplateRef<HTMLVideoElement>('video')
 const isLoading = ref(false)
 
-watch(video, () => {
+watch(video, async () => {
+  await nextTick()
   video.value!.srcObject = props.stream
 }, {
-  once: true,
 })
 
 
