@@ -26,7 +26,7 @@ const enableMicrophone = defineModel<boolean>('enableMicrophone', { default: fal
 
 async function loadMedia() {
   isLoading.value = true
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(() => null)
   isLoading.value = false
   await nextTick()
   return stream
@@ -36,6 +36,9 @@ const mediaControlsScope = effectScope()
 
 onMounted(async () => {
   stream.value = await loadMedia()
+  if (!stream.value) {
+    return
+  }
   await nextTick()
   if (!video.value) {
     await new Promise<void>(r => {
