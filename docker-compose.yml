@@ -121,7 +121,7 @@ services:
         --listening-ip=0.0.0.0
         --min-port=49160
         --max-port=49200
-        --log-file=/var/log/turn_2025-09-06.log
+        --log-file=/coturn.log
         --no-multicast
         --cli-password=${COTURN_CLI_PASSWORD}
     volumes:
