@@ -12,6 +12,9 @@ export default defineConfig({
     mode: 'standalone'
   }),
   vite: {
+    server: {
+      allowedHosts: ['localhost', '127.0.0.1', 'corevox.ru'],
+    },
     plugins: [tailwindcss({
       content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
     })]
