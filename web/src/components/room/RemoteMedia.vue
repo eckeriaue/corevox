@@ -1,22 +1,53 @@
 <script setup lang="ts">
-import { ref, toRef, useTemplateRef, watch, nextTick } from 'vue'
+import { ref, toRef, useTemplateRef, watch, nextTick, computed } from 'vue'
 import MediaShortInfo from './MediaShortData.vue'
+import { makeMyId } from './users'
+
+import type { Peer, MediaConnection } from 'peerjs'
 
 const props = defineProps<{
+  roomId: string
   id: number
   username: string
   email: string
+  stream: MediaStream
+  peer: Peer
   joined_at: Date
   enableCamera: boolean
   enableMicrophone: boolean
-  streams: MediaStream[]
+  myStream: MediaStream
 }>()
 
-
+const rtcId = computed(() => makeMyId(props.roomId, props.id))
 
 const video = useTemplateRef<HTMLVideoElement>('video')
-const mainStream = new MediaStream()
-const isLoading = ref(true)
+const isLoading = ref(false)
+
+watch(video, video => {
+  video!.srcObject = props.stream
+}, {
+  once: true,
+})
+
+watch(
+  [toRef(props, 'enableCamera'), toRef(props, 'enableMicrophone')],
+  async ([enableCamera, enableMicrophone]) => {
+    if(!enableCamera && !enableMicrophone) {
+      return
+    }
+    const call = props.peer.call(rtcId.value, props.myStream)
+    console.info('remoteCall2', call)
+    if (call) {
+      call.on('stream', (remoteStream: MediaStream) => {
+        remoteStream.getTracks().forEach(track => {
+          props.stream.addTrack(track)
+        })
+      })
+    }
+
+  }, {
+  immediate: true,
+})
 
 </script>
 

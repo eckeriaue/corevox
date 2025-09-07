@@ -62,7 +62,7 @@ const schema = z.object({
 const validate = debounce({ delay: 100 }, () => {
   const { success, error } = schema.safeParse(structuredClone(toRaw(unref(form))))
   if (error) {
-    errors.value = z.flattenError(error).fieldErrors
+    errors.value = error.flatten().fieldErrors
   } else {
     errors.value = defaultErrors()
   }

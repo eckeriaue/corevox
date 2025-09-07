@@ -4,7 +4,7 @@ export type User = {
   username: string
   email: string
   joined_at: Date
-  streams: MediaStream[]
+  stream: MediaStream
   enableMicrophone: boolean
   enableCamera: boolean
 }

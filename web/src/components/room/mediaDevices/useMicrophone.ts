@@ -6,6 +6,7 @@ export function useMicrophone(stream: Ref<MediaStream>, enableMicrophone: Ref<bo
   const isLoading = ref(false)
 
   async function streamMicrophone(enableMicrophone: boolean) {
+    await nextTick()
     if (enableMicrophone) {
       const audioStream = await getAudioStream()
       audioStream.getAudioTracks()

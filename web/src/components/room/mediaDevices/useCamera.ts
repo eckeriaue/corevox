@@ -12,7 +12,6 @@ export function useCamera(stream: Ref<MediaStream>, enableCamera: Ref<boolean>) 
   const isLoading = ref(false)
 
   async function streamCamera(enableCamera: boolean) {
-    await nextTick()
     if (enableCamera) {
       const videoStream = await getVideoStream()
       videoStream.getVideoTracks()

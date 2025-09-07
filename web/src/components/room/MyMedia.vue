@@ -2,17 +2,22 @@
 import {
   useTemplateRef,
   watch,
+  nextTick,
   computed
 } from 'vue'
 import { useMicrophone, useCamera } from './mediaDevices'
 
 import MediaShortInfo from './MediaShortData.vue'
+import type { Peer } from 'peerjs'
 
 const props = defineProps<{
-  stream: MediaStream
   username: string
+  peer: Peer
 }>()
 
+const emit = defineEmits<{
+  (e: 'remote-stream', stream: MediaStream): void
+}>()
 
 const video = useTemplateRef<HTMLVideoElement>('video')
 

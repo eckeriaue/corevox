@@ -58,7 +58,7 @@ const validate = debounce({ delay: 100 }, async () => {
   isLoading.value = false
   isValid.value = success
   if (error) {
-    errors.value = z.flattenError(error).fieldErrors
+    errors.value = error.flatten().fieldErrors
   } else {
     errors.value = defaultErrors()
   }

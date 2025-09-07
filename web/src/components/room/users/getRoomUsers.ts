@@ -25,7 +25,7 @@ export async function getRoomUsers(channel: Channel): Promise<User[]> {
         id: remoteUser.id,
         rtcId: remoteUser.rtc_id,
         email: remoteUser.email,
-        streams: [],
+        stream: new MediaStream(),
         joined_at: new Date(remoteUser.joined_at),
         enableCamera: remoteUser.enable_camera || false,
         enableMicrophone: remoteUser.enable_microphone || false,

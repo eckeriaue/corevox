@@ -14,8 +14,9 @@ import {
 import RoomSidebar from './RoomSidebar.vue'
 import { socket } from '@/socket'
 import { peerConfig } from '@/lib/webrtc'
-import Peer from 'peerjs'
+import { Peer } from 'peerjs'
 import MyMedia from './MyMedia.vue'
+import { sleep } from 'radashi'
 import {
   makeMyId,
   getRoomUsers,
@@ -45,15 +46,46 @@ channel.join().receive('ok', () => {
 
 const users = ref<User[]>(await getRoomUsers(channel))
 
-const me = computed<Omit<User, 'streams'>>(() => {
+const me = computed<User>(() => {
   return users.value.find(user => user.id === props.user.id) as User
 })
 
 const stream = ref<MediaStream>(new MediaStream())
-const enableCamera = ref(false)
-const enableMicrophone = ref(false)
+const enableCamera = ref(me.value.enableCamera)
+const enableMicrophone = ref(me.value.enableMicrophone)
 const rtcId = makeMyId(props.roomId, props.user.id)
 const peer = new Peer(rtcId, peerConfig)
+
+peer.on('open', (_rtcId) => {
+  peer.on('call', async (call) => {
+    await nextTick()
+    call.answer(stream.value)
+    call.on('stream', async (remoteStream: MediaStream) => {
+      await nextTick()
+      const index = users.value.findIndex(user => user.rtcId === call.peer)
+      if (index !== -1) {
+        remoteStream.getTracks().forEach(track => {
+          users.value[index].stream.addTrack(track)
+        })
+        users.value = users.value
+      }
+    })
+  })
+})
+
+
+watch([enableCamera, enableMicrophone], async ([enableCamera, enableMicrophone]) => {
+  channel.push('change_user_media', {
+    enable_camera: enableCamera,
+    enable_microphone: enableMicrophone,
+    user_id: props.user.id
+  }).receive('ok', () => {
+    console.log('Media changed successfully')
+  }).receive('error', (reason: Error) => {
+    console.error('Failed to change media', reason)
+  })
+})
+
 
 useLiveUsers(
   toRef(props, 'roomId'),
@@ -74,13 +106,17 @@ useLiveUsers(
     <ul class="grid grid-cols-3 gap-4 w-full">
         <my-media
             :username="user.username"
-            :stream="stream"
+            v-model:stream="stream"
+            :peer
             v-model:enable-camera="enableCamera"
             v-model:enable-microphone="enableMicrophone"
         />
         <remote-media
             v-for="user in users.filter(user => user.id !== props.user.id)"
             :key="user.id"
+            :my-stream="stream"
+            :room-id
+            :peer
             :="user"
         />
     </ul>

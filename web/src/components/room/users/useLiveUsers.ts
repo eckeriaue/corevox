@@ -1,23 +1,50 @@
 import type { Channel } from 'phoenix'
 import type { MaybeRef, Ref } from 'vue'
 import type { User } from './User'
-import { toRaw, toValue } from 'vue'
+import { onMounted, onUnmounted, toValue } from 'vue'
 import { makeMyId } from './makeMyId'
 
-export function useLiveUsers(roomId: MaybeRef<string>, userId: MaybeRef<number>, channel: Channel, users: Ref<User[]>) {
-  channel.on('presence_diff', (diff) => {
+type Meta = {
+  id: number
+  enable_camera: boolean
+  enable_microphone: boolean
+  username: string
+  email: string
+  joined_at: string
+}
+
+type UserDiff = {
+  joins: Record<string, { metas: Meta[]}>
+  leaves: Record<string, { metas: Meta[]}>
+}
+
+type UserMediaChanged = {
+  user_id: number
+  enable_camera: boolean
+  enable_microphone: boolean
+}
+
+
+export function useLiveUsers(
+  roomId: MaybeRef<string>,
+  userId: MaybeRef<number>,
+  channel: Channel,
+  users: Ref<User[]>
+) {
+
+  function listenDiffs(diff: UserDiff) {
     if (diff.joins) {
       Object.entries(diff.joins)
-        .filter(([_, { metas }]) => metas.at(0).id !== toValue(userId))
-        .filter(([_, { metas }]) => !users.value.some(user => user.id === metas.at(0).id))
+        .filter(([_, { metas }]) => metas.at(0)!.id !== toValue(userId))
+        .filter(([_, { metas }]) => !users.value.some(user => user.id === metas.at(0)!.id))
         .forEach(async ([_, { metas }]) => {
-          const remoteUser = metas.at(0)
+          const remoteUser = metas.at(0)!
           users.value.push({
             enableCamera: remoteUser.enable_camera || false,
             enableMicrophone: remoteUser.enable_microphone || false,
             rtcId: makeMyId(toValue(roomId), toValue(userId)),
-            streams: [],
             id: remoteUser.id,
+            stream: new MediaStream(),
             username: remoteUser.username,
             email: remoteUser.email,
             joined_at: new Date(remoteUser.joined_at)
@@ -29,6 +56,24 @@ export function useLiveUsers(roomId: MaybeRef<string>, userId: MaybeRef<number>,
         users.value = users.value.filter(user => user.id !== metas[0].id)
       })
     }
+  }
+
+  function listenMediaChanges({ user_id, enable_camera, enable_microphone }: UserMediaChanged) {
+    const index = users.value.findIndex(user => user.id === user_id)
+    if (index !== -1) {
+      users.value[index].enableCamera = enable_camera
+      users.value[index].enableMicrophone = enable_microphone
+    }
+  }
+
+  onMounted(() => {
+    channel.on('presence_diff', listenDiffs)
+    channel.on('user_media_changed', listenMediaChanges)
+  })
+
+  onUnmounted(() => {
+    channel.off('presence_diff', listenDiffs)
+    channel.off('user_media_changed', listenMediaChanges)
   })
 
 }

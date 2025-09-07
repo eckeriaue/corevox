@@ -79,7 +79,7 @@ const validate = debounce({ delay: 100 }, async () => {
   const { success, error } = await schema.safeParseAsync(formData)
   formStatus.value = 'ready'
   if (error) {
-    errors.value = z.flattenError(error).fieldErrors
+    errors.value = error.flatten().fieldErrors
   } else {
     errors.value = defaultErrors()
   }

@@ -102,7 +102,6 @@ channel.on('presence_state', async (state) => {
   await waitForStream()
 
   const me = Object.values(state).find(user => user.metas.at(0).id === props.user.id)
-  console.info('me', me)
   enableCamera.value = me?.enable_camera || false
   enableMicrophone.value = me?.enable_microphone || false
 
