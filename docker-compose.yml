@@ -1,13 +1,15 @@
 services:
   corevox_app:
-    container_name: corevox_app
-    restart: always
+    container_name: ${PUBLIC_APP_NAME}
+    restart: unless-stopped
     build:
       context: ./app
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     depends_on:
-      - corevox_postgres
-      - corevox_coturn
+      corevox_postgres:
+        condition: service_healthy
+      corevox_coturn:
+        condition: service_started
     ports:
       - "4000:4000"
     env_file: ./.env
@@ -19,17 +21,22 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_URL=${POSTGRES_URL}
-    command: sh -c "mix deps.get --only prod && mix release --overwrite && _build/prod/rel/corevox/bin/server"
-    networks:
-      - corevox_network
+      - PUBLIC_CLIENT_HTTP_URL=${PUBLIC_CLIENT_HTTP_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    command: mix phx.server
 
   corevox_web:
     container_name: corevox_web
     build:
       context: ./web
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
-      - "80:80"
+      - "80:4321"
     depends_on:
       - corevox_postgres
       - corevox_coturn
@@ -37,42 +44,80 @@ services:
     env_file: ./.env
     environment:
       - NODE_ENV=production
+      - PUBLIC_SIGNAL_HOST=${PUBLIC_SIGNAL_HOST}
+      - PUBLIC_SIGNAL_PORT=${PUBLIC_SIGNAL_PORT}
+      - PUBLIC_SIGNAL_PATH=${PUBLIC_SIGNAL_PATH}
+      - PUBLIC_APP_NAME=${PUBLIC_APP_NAME}
+      - PUBLIC_APP_HTTP_URL=${PUBLIC_APP_HTTP_URL}
+      - PUBLIC_APP_SOCKET_URL=${PUBLIC_APP_SOCKET_URL}
       - PUBLIC_TURN_USER=${PUBLIC_TURN_USER}
       - PUBLIC_TURN_PASSWORD=${PUBLIC_TURN_PASSWORD}
       - PUBLIC_TURN_REALM=${PUBLIC_TURN_REALM}
+      - PUBLIC_STUN_SERVER_URL=${PUBLIC_STUN_SERVER_URL}
+      - PUBLIC_TURN_SERVER_URL=${PUBLIC_TURN_SERVER_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4321/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     command: npm run start
-    networks:
-      - corevox_network
+
+  corevox_signal_server:
+    container_name: corevox_signal_server
+    restart: unless-stopped
+    build:
+      context: ./signal-server
+      dockerfile: Dockerfile.prod
+    ports:
+      - "9000:9000"
+    env_file: ./.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    command: peerjs --port 9000 --path /myapp
 
   corevox_coturn:
     container_name: corevox_coturn
-    image: instrumentisto/coturn
+    image: instrumentisto/coturn:4.6.2
     restart: unless-stopped
     ports:
-      - "3478:3478/tcp"
       - "3478:3478/udp"
+      - "3478:3478/tcp"
       - "49160-49200:49160-49200/udp"
+    env_file: ./.env
     command: >
       turnserver
         -a
-        -v
-        --lt-cred
+        --tls
+        --dtls
+        --lt-cred-mech
         --fingerprint
         --user=${PUBLIC_TURN_USER}:${PUBLIC_TURN_PASSWORD}
         --realm=${PUBLIC_TURN_REALM}
-        --total-quota=100
-        --bps-capacity=0
+        --listening-ip=0.0.0.0
         --min-port=49160
         --max-port=49200
-    env_file:
-      - ./.env
-    networks:
-      - corevox_network
+        --cert=/etc/coturn/certs/cert.pem
+        --pkey=/etc/coturn/certs/key.pem
+        --no-multicast
+        --cli-password=${COTURN_CLI_PASSWORD}
+    volumes:
+      - ./coturn/certs:/etc/coturn/certs:ro
+      - ./coturn/logs:/var/log
+    healthcheck:
+      test: ["CMD", "turnadmin", "-C", "-u", "${PUBLIC_TURN_USER}", "-p", "${PUBLIC_TURN_PASSWORD}", "-r", "${PUBLIC_TURN_REALM}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   corevox_postgres:
-    container_name: corevox_postgres
+    container_name: ${POSTGRES_HOST}
     image: postgres:17-alpine
-    restart: unless-stopped
     ports:
       - "5432:5432"
     env_file: ./.env
@@ -82,10 +127,13 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=${POSTGRES_HOST}
     volumes:
-      - ./data:/var/lib/postgresql/data
-    networks:
-      - corevox_network
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
-networks:
-  corevox_network:
-    driver: bridge
+volumes:
+  postgres_data:

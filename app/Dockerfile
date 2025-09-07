@@ -1,44 +1,39 @@
-# Build stage
-FROM elixir:1.18-alpine AS builder
-
-RUN apk add --no-cache \
-    build-base \
-    git \
-    nodejs \
-    npm \
-    postgresql-client
+FROM elixir:1.18.0-alpine AS builder
 
 WORKDIR /app
+
+RUN apk add --no-cache \
+    git \
+    build-base \
+    nodejs \
+    npm
 
 RUN mix local.hex --force && \
     mix local.rebar --force
 
 COPY mix.exs mix.lock ./
-
 RUN mix deps.get --only prod
+RUN mix deps.compile
 
 COPY . .
 
-ENV MIX_ENV=prod
+RUN mix compile
+RUN npm install --prefix assets
+RUN npm run deploy --prefix assets
+RUN mix assets.deploy
+RUN mix release
 
-RUN mix deps.compile && \
-    mix compile && \
-    mix release
-
-# Runtime stage
-FROM elixir:1.18-alpine
+FROM elixir:1.18.0-alpine
 
 RUN apk add --no-cache \
     postgresql-client
 
 WORKDIR /app
 
-RUN adduser -D -h /app corevox
-
-COPY --from=builder /app/_build/prod/rel/corevox /app
-
-USER corevox
+COPY --from=builder /app/_build/prod/rel /app/rel
 
 EXPOSE 4000
 
-CMD ["/app/bin/server"]
+USER nobody
+
+CMD ["/app/rel/corevox/bin/corevox", "start"]
