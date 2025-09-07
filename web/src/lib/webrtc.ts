@@ -31,6 +31,6 @@ export const peerConfig = {
   host: import.meta.env.PUBLIC_SIGNAL_HOST,
   port: parseInt(import.meta.env.PUBLIC_SIGNAL_PORT),
   path: import.meta.env.PUBLIC_SIGNAL_PATH,
-  secure: false,
+  secure: import.meta.env.PUBLIC_SIGNAL_SECURE === 'true',
   config
 }
