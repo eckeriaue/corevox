@@ -87,6 +87,8 @@ services:
       - ./nginx/certbot/conf:/etc/letsencrypt
     depends_on:
       - corevox_web
+      - corevox_signal_server
+      - corevox_app
 
   certbot:
     image: certbot/certbot
