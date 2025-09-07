@@ -8,6 +8,7 @@ import {
   nextTick,
   toRaw,
   computed,
+  toRef,
   onMounted,
 } from 'vue'
 import RoomSidebar from './RoomSidebar.vue'
@@ -15,10 +16,13 @@ import { socket } from '@/socket'
 import { peerConfig } from '@/lib/webrtc'
 import Peer from 'peerjs'
 import MyMedia from './MyMedia.vue'
-import type { User } from './User'
-import { makeMyId } from './makeMyId'
-import { getRoomUsers } from './getRoomUsers'
+import {
+  makeMyId,
+  getRoomUsers,
+  useLiveUsers,
+  type User } from './users'
 
+const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
 
 const props = defineProps<{
   roomId: string
@@ -40,15 +44,23 @@ channel.join().receive('ok', () => {
 })
 
 const users = ref<User[]>(await getRoomUsers(channel))
-console.info(toRaw(users.value))
+
+const me = computed<Omit<User, 'streams'>>(() => {
+  return users.value.find(user => user.id === props.user.id) as User
+})
+
 const stream = ref<MediaStream>(new MediaStream())
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
 const rtcId = makeMyId(props.roomId, props.user.id)
 const peer = new Peer(rtcId, peerConfig)
 
-const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
-
+useLiveUsers(
+  toRef(props, 'roomId'),
+  toRef(() => props.user.id),
+  channel,
+  users
+)
 
 </script>
 
@@ -58,8 +70,6 @@ const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
     v-model:enable-camera="enableCamera"
     v-model:enable-microphone="enableMicrophone"
 >
-    <!-- @update:enable-microphone="streamMicrophone($event)" -->
-    <!-- @update:enable-camera="streamCamera($event)" -->
 
     <ul class="grid grid-cols-3 gap-4 w-full">
         <my-media
@@ -67,6 +77,11 @@ const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
             :stream="stream"
             v-model:enable-camera="enableCamera"
             v-model:enable-microphone="enableMicrophone"
+        />
+        <remote-media
+            v-for="user in users.filter(user => user.id !== props.user.id)"
+            :key="user.id"
+            :="user"
         />
     </ul>
 </room-sidebar>

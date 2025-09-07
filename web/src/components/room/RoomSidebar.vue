@@ -9,7 +9,7 @@ import {
   SidebarMenuItem,
   SidebarFooter
 } from "@/components/ui/sidebar"
-import type { User } from './User'
+import type { User } from './users'
 
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 

@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import { watch, ref, nextTick } from 'vue'
-import { getAudioStream } from '../media'
+import { getAudioStream } from './media'
 
 export function useMicrophone(stream: Ref<MediaStream>, enableMicrophone: Ref<boolean>) {
   const isLoading = ref(false)

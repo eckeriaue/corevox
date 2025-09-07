@@ -16,22 +16,6 @@ const props = defineProps<{
 
 const video = useTemplateRef<HTMLVideoElement>('video')
 const mainStream = new MediaStream()
-
-
-watch(toRef(props, 'streams'), async (streams) => {
-  isLoading.value = false
-  await nextTick()
-  mainStream.getTracks().forEach(track => mainStream.removeTrack(track))
-  streams.forEach(stream => {
-    stream.getTracks().forEach(track => {
-      mainStream.addTrack(track)
-    })
-  })
-  video.value!.srcObject = mainStream
-}, {
-  deep: true
-})
-
 const isLoading = ref(true)
 
 </script>

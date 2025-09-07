@@ -5,7 +5,7 @@ import {
   type Ref
 } from 'vue'
 
-import { getVideoStream } from '../media'
+import { getVideoStream } from './media'
 
 export function useCamera(stream: Ref<MediaStream>, enableCamera: Ref<boolean>) {
 
