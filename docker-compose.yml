@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     build:
       context: ./app
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     depends_on:
       corevox_postgres:
         condition: service_healthy
@@ -34,7 +34,7 @@ services:
     container_name: corevox_web
     build:
       context: ./web
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     ports:
       - "80:4321"
     depends_on:
@@ -68,7 +68,7 @@ services:
     restart: unless-stopped
     build:
       context: ./signal-server
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     ports:
       - "9000:9000"
     env_file: ./.env
@@ -82,7 +82,7 @@ services:
 
   corevox_coturn:
     container_name: corevox_coturn
-    image: instrumentisto/coturn:4.6.2
+    image: coturn/coturn:4.6.2
     restart: unless-stopped
     ports:
       - "3478:3478/udp"

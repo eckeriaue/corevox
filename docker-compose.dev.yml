@@ -78,7 +78,7 @@ services:
 
   corevox_coturn_dev:
     container_name: corevox_coturn_dev
-    image: instrumentisto/coturn
+    image: coturn/coturn
     restart: unless-stopped
     ports:
       - "3478:3478/udp"
