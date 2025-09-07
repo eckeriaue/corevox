@@ -88,12 +88,12 @@ services:
   #   depends_on:
   #     - corevox_web
 
-  certbot:
-    image: certbot/certbot
-    container_name: corevox_certbot
-    volumes:
-      - ./nginx/certbot/www:/var/www/certbot
-      - ./nginx/certbot/conf:/etc/letsencrypt
+  # certbot:
+  #   image: certbot/certbot
+  #   container_name: corevox_certbot
+  #   volumes:
+  #     - ./nginx/certbot/www:/var/www/certbot
+  #     - ./nginx/certbot/conf:/etc/letsencrypt
 
   corevox_coturn:
     container_name: corevox_coturn
