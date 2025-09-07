@@ -32,7 +32,7 @@ services:
     container_name: corevox_web
     build:
       context: ./web
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - "4321:4321"
 
