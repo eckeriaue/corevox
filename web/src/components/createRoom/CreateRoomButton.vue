@@ -77,17 +77,15 @@ function createRoom() {
   if (isString(formData.description) && formData.description!.length === 0) {
     formData.description = null
   }
-  if (me.value) {
-    Reflect.set(formData, 'owner_id', props.ownerId)
-    props.channel.push('create_room', formData)
-      .receive('ok', ({ room }: { room: Room }) => {
-        isOpen.value = false
-        emit('create', room)
-      })
-      .receive('error', (response) => {
-        console.error('Failed to create room:', response)
+  Reflect.set(formData, 'owner_id', props.ownerId)
+  props.channel.push('create_room', formData)
+    .receive('ok', ({ room }: { room: Room }) => {
+      isOpen.value = false
+      emit('create', room)
     })
-  }
+    .receive('error', (response) => {
+      console.error('Failed to create room:', response)
+  })
 }
 
 </script>
