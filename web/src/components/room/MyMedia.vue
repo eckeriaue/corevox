@@ -26,7 +26,14 @@ const enableMicrophone = defineModel<boolean>('enableMicrophone', { default: fal
 
 async function loadMedia() {
   isLoading.value = true
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }).catch(() => null)
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: {
+      width: { ideal: 400 },   // или { max: 640 }
+      height: { ideal: 250 },
+      frameRate: { max: 24 }
+    },
+    audio: true
+  }).catch(() => null)
   isLoading.value = false
   await nextTick()
   return stream
