@@ -56,24 +56,6 @@ const enableMicrophone = ref(me.value.enableMicrophone)
 const rtcId = makeMyId(props.roomId, props.user.id)
 const peer = new Peer(rtcId, peerConfig)
 
-peer.on('open', (_rtcId) => {
-  peer.on('call', async (call) => {
-    await nextTick()
-    call.answer(stream.value)
-    call.on('stream', async (remoteStream: MediaStream) => {
-      await nextTick()
-      const index = users.value.findIndex(user => user.rtcId === call.peer)
-      if (index !== -1) {
-        remoteStream.getTracks().forEach(track => {
-          users.value[index].stream.addTrack(track)
-        })
-        users.value = users.value
-      }
-    })
-  })
-})
-
-
 watch([enableCamera, enableMicrophone], async ([enableCamera, enableMicrophone]) => {
   channel.push('change_user_media', {
     enable_camera: enableCamera,

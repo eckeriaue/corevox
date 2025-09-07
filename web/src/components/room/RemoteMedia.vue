@@ -15,39 +15,17 @@ const props = defineProps<{
   joined_at: Date
   enableCamera: boolean
   enableMicrophone: boolean
-  myStream: MediaStream
 }>()
-
-const rtcId = computed(() => makeMyId(props.roomId, props.id))
 
 const video = useTemplateRef<HTMLVideoElement>('video')
 const isLoading = ref(false)
 
-watch(video, video => {
-  video!.srcObject = props.stream
+watch(video, () => {
+  video.value!.srcObject = props.stream
 }, {
   once: true,
 })
 
-watch(
-  [toRef(props, 'enableCamera'), toRef(props, 'enableMicrophone')],
-  async ([enableCamera, enableMicrophone]) => {
-    if(!enableCamera && !enableMicrophone) {
-      return
-    }
-    const call = props.peer.call(rtcId.value, props.myStream)
-    console.info('remoteCall2', call)
-    if (call) {
-      call.on('stream', (remoteStream: MediaStream) => {
-        remoteStream.getTracks().forEach(track => {
-          props.stream.addTrack(track)
-        })
-      })
-    }
-
-  }, {
-  immediate: true,
-})
 
 </script>
 
