@@ -18,11 +18,11 @@ type UsersMetas = {
 export function useUsers(channel: Channel) {
   const users = ref<User[]>([])
   channel.on('presence_state', async (state: UsersMetas) => {
-    console.info('state', state)
     users.value = Object.values(state).map(({ metas }) => {
       const remoteUser = metas.at(0)!
       return {
         id: remoteUser.id,
+        // todo: use makeMyId
         rtcId: remoteUser.rtc_id,
         email: remoteUser.email,
         stream: new MediaStream(),

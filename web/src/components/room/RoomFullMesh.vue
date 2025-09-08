@@ -22,6 +22,10 @@ import {
   useLiveUsers,
   type User } from './users'
 
+import {
+  tracks,
+} from './mediaDevices'
+
 const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
 
 const props = defineProps<{
@@ -71,9 +75,14 @@ peer.on('open', function(id) {
 
 watch([enableCamera, enableMicrophone], async ([enableCamera, enableMicrophone]) => {
   if (enableCamera || enableMicrophone) {
-    const localStream = await navigator.mediaDevices.getUserMedia({ video: enableCamera, audio: enableMicrophone })
+    if (stream.value.getTracks().length < 1) {
+      await Promise.race([
+        new Promise(r => tracks.addEventListener('tracks:add-microphone', r, { once: true })),
+        new Promise(r => tracks.addEventListener('tracks:add-camera', r, { once: true })),
+      ])
+    }
     users.value.filter(user => user.id !== props.user.id).forEach(user => {
-      const call = peer.call(makeMyId(props.roomId, user.id), localStream)
+      const call = peer.call(makeMyId(props.roomId, user.id), stream.value)
       call.on('stream', remoteStream  => {
         const index = users.value.findIndex(user => makeMyId(props.roomId, user.id) === call.peer)
         remoteStream.getTracks().forEach(track => {
@@ -96,12 +105,21 @@ watch([enableCamera, enableMicrophone], async ([enableCamera, enableMicrophone])
 })
 
 
-useLiveUsers(
-  toRef(props, 'roomId'),
-  toRef(() => props.user.id),
+useLiveUsers({
+  roomId: toRef(props, 'roomId'),
+  userId: toRef(() => props.user.id),
   channel,
-  users
-)
+  users,
+  async onJoin(user: User) {
+    console.info('join', user)
+    if (enableCamera.value || enableMicrophone.value) {
+      const call = peer.call(makeMyId(props.roomId, user.id), stream.value)
+    }
+  },
+  async onLeave(user: User) {
+    console.info('leave', user)
+  }
+})
 
 </script>
 

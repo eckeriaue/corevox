@@ -17,21 +17,39 @@ type UserDiff = {
   leaves: Record<string, { metas: Meta[]}>
 }
 
-export function useLiveUsers(
+export function useLiveUsers({
+  roomId,
+  userId,
+  channel,
+  users,
+  onJoin = (..._args: never[]) => null,
+  onLeave = (..._args: never[]) => null,
+}: {
   roomId: MaybeRef<string>,
   userId: MaybeRef<number>,
   channel: Channel,
-  users: Ref<User[]>
-) {
+  users: Ref<User[]>,
+  onJoin?(user: User): void,
+  onLeave?(user: User): void,
+}) {
 
   function listenDiffs(diff: UserDiff) {
+
+    if (diff.leaves) {
+      Object.entries(diff.leaves).forEach(([_, { metas }]) => {
+        users.value.filter(user => user.id === metas.at(0)!.id).forEach(user => {
+          onLeave(user)
+        })
+        users.value = users.value.filter(user => user.id !== metas[0].id)
+      })
+    }
+
     if (diff.joins) {
       Object.entries(diff.joins)
         .filter(([_, { metas }]) => metas.at(0)!.id !== toValue(userId))
-        .filter(([_, { metas }]) => !users.value.some(user => user.id === metas.at(0)!.id))
         .forEach(async ([_, { metas }]) => {
           const remoteUser = metas.at(0)!
-          users.value.push({
+          const user = {
             enableCamera: remoteUser.enable_camera || false,
             enableMicrophone: remoteUser.enable_microphone || false,
             rtcId: makeMyId(toValue(roomId), toValue(userId)),
@@ -39,12 +57,9 @@ export function useLiveUsers(
             stream: new MediaStream(),
             username: remoteUser.username,
             email: remoteUser.email,
-          })
-      })
-    }
-    if (diff.leaves) {
-      Object.entries(diff.leaves).forEach(([_, { metas }]) => {
-        users.value = users.value.filter(user => user.id !== metas[0].id)
+          }
+          users.value.push(user)
+          onJoin(user)
       })
     }
   }

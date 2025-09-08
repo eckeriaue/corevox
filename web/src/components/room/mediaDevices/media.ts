@@ -24,3 +24,6 @@ export function getAudioStream(): Promise<MediaStream> {
     throw error
   })
 }
+
+
+export const tracks = new EventTarget()

@@ -67,7 +67,6 @@ defmodule CorevoxWeb.RoomChannel do
       user |> Map.put(:enable_microphone, enable_microphone) |> Map.put(:enable_camera, enable_camera)
     end)
 
-    :ok = socket |> broadcast!("presence_state", Presence.list(socket))
     {:noreply, socket}
   end
 

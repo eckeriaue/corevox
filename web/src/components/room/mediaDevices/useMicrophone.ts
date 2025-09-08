@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import { watch, ref, nextTick } from 'vue'
-import { getAudioStream } from './media'
+import { getAudioStream, tracks } from './media'
 
 export function useMicrophone(stream: Ref<MediaStream>, enableMicrophone: Ref<boolean>) {
   const isLoading = ref(false)
@@ -13,11 +13,12 @@ export function useMicrophone(stream: Ref<MediaStream>, enableMicrophone: Ref<bo
         .filter(track => !stream.value.getTrackById(track.id))
         .forEach(track => {
           stream.value.addTrack(track)
+          tracks.dispatchEvent(new CustomEvent('tracks:add-microphone', {}))
         })
     } else {
       stream.value.getAudioTracks().forEach(track => {
-        track.stop()
-        stream.value.removeTrack(track)
+        track.enabled = false
+        tracks.dispatchEvent(new CustomEvent('tracks:disable-microphone', {}))
       })
     }
   }

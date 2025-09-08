@@ -5,7 +5,7 @@ import {
   type Ref
 } from 'vue'
 
-import { getVideoStream } from './media'
+import { getVideoStream, tracks } from './media'
 
 export function useCamera(stream: Ref<MediaStream>, enableCamera: Ref<boolean>) {
 
@@ -18,11 +18,12 @@ export function useCamera(stream: Ref<MediaStream>, enableCamera: Ref<boolean>) 
         .filter(track => !stream.value.getTrackById(track.id))
         .forEach(track => {
           stream.value.addTrack(track)
+          tracks.dispatchEvent(new CustomEvent('tracks:add-camera', {  }))
         })
     } else {
       stream.value.getVideoTracks().forEach(track => {
-        track.stop()
-        stream.value.removeTrack(track)
+        track.enabled = false
+        tracks.dispatchEvent(new CustomEvent('tracks:disable-camera', {  }))
       })
     }
   }
