@@ -1,7 +1,7 @@
 ---
 import RoomLayout from '@/layouts/RoomLayout.astro'
 // @todo: select more topology
-import RoomFullMesh from '@/components/room/RoomFullMesh.v2.vue'
+import RoomFullMesh from '@/components/room/RoomFullMesh.vue'
 
 const { id: roomId } = Astro.params
 const me = await Astro.session?.get('me')
