@@ -63,12 +63,11 @@ defmodule CorevoxWeb.RoomChannel do
 
   def handle_in("change_user_media", %{"enable_microphone" => enable_microphone, "enable_camera" => enable_camera}, socket) do
 
-    # {:ok,_} = Presence.update(socket, "user:#{socket.assigns.user_id}", fn user ->
-    #   user |> Map.put(:enable_microphone, enable_microphone) |> Map.put(:enable_camera, enable_camera)
-    # end)
+    {:ok,_} = Presence.update(socket, "user:#{socket.assigns.user_id}", fn user ->
+      user |> Map.put(:enable_microphone, enable_microphone) |> Map.put(:enable_camera, enable_camera)
+    end)
 
-    push(socket, "presence_state", Presence.list(socket))
-    :ok = socket |> broadcast!("user_media_changed", %{user_id: socket.assigns.user_id, enable_microphone: enable_microphone, enable_camera: enable_camera})
+    :ok = socket |> broadcast!("presence_state", Presence.list(socket))
     {:noreply, socket}
   end
 

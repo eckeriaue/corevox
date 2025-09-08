@@ -17,13 +17,6 @@ type UserDiff = {
   leaves: Record<string, { metas: Meta[]}>
 }
 
-type UserMediaChanged = {
-  user_id: number
-  enable_camera: boolean
-  enable_microphone: boolean
-}
-
-
 export function useLiveUsers(
   roomId: MaybeRef<string>,
   userId: MaybeRef<number>,
@@ -56,22 +49,12 @@ export function useLiveUsers(
     }
   }
 
-  function listenMediaChanges({ user_id, enable_camera, enable_microphone }: UserMediaChanged) {
-    const index = users.value.findIndex(user => user.id === user_id)
-    if (index !== -1) {
-      users.value[index].enableCamera = enable_camera
-      users.value[index].enableMicrophone = enable_microphone
-    }
-  }
-
   onMounted(() => {
     channel.on('presence_diff', listenDiffs)
-    channel.on('user_media_changed', listenMediaChanges)
   })
 
   onUnmounted(() => {
     channel.off('presence_diff', listenDiffs)
-    channel.off('user_media_changed', listenMediaChanges)
   })
 
 }
