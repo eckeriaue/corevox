@@ -19,8 +19,10 @@ import MyMedia from './MyMedia.vue'
 import {
   makeMyId,
   useUsers,
-  useLiveUsers,
-  type User } from './users'
+  type User
+} from './users'
+
+import { sleep, parseDuration } from 'radashi'
 
 import {
   tracks,
@@ -47,29 +49,59 @@ channel.join().receive('ok', () => {
   console.error('Failed to join room: timeout')
 })
 
-const { users } = useUsers(channel)
+const rtcId = makeMyId(props.roomId, props.user.id)
+const stream = ref<MediaStream>(new MediaStream())
+const peer = new Peer(rtcId, peerConfig)
+
+async function getStream() {
+  if (stream.value.getTracks().length < 1) {
+    await Promise.race([
+      new Promise(r => tracks.addEventListener('tracks:add-microphone', r, { once: true })),
+      new Promise(r => tracks.addEventListener('tracks:add-camera', r, { once: true })),
+      sleep(parseDuration('10s')).then(() => console.error('get tracks timeout'))
+    ])
+    return getStream()
+  }
+  return Promise.resolve(stream.value)
+}
+
+await new Promise(resolve => {
+  peer.on('open', () => {
+    resolve()
+    peer.on('call', async call => {
+      call.answer(stream.value)
+      call.on('stream', async remoteStream => {
+        remoteStream.getTracks().forEach(track => {
+          // todo
+        })
+      })
+    })
+  })
+})
+
+
+const enableCamera = ref(false)
+const enableMicrophone = ref(false)
+
+const { users } = useUsers({
+  channel,
+  roomId: props.roomId,
+  userId: props.user.id,
+  async onJoin(user: User) {
+    await nextTick()
+    console.info('join', user)
+    if (enableCamera.value || enableMicrophone.value) {
+      const call = peer.call(user.rtcId, await getStream())
+      console.info('call!', call)
+    }
+  },
+  onLeave(user: User) {
+    console.info('leave', user)
+  }
+})
 
 const me = computed<User>(() => {
   return users.value.find(user => user.id === props.user.id) as User
-})
-
-const stream = ref<MediaStream>(new MediaStream())
-const enableCamera = ref(me.value?.enableCamera || false)
-const enableMicrophone = ref(me.value?.enableMicrophone || false)
-const rtcId = makeMyId(props.roomId, props.user.id)
-const peer = new Peer(rtcId, peerConfig)
-
-peer.on('open', function(id) {
-  peer.on('call', async call => {
-    call.answer(stream.value)
-    call.on('stream', stream => {
-      const index = users.value.findIndex(user => makeMyId(props.roomId, user.id) === call.peer)
-      stream.getTracks().forEach(track => {
-        users.value.at(index)!.stream.addTrack(track)
-      })
-      users.value = users.value
-    })
-  })
 })
 
 
@@ -105,22 +137,6 @@ watch([enableCamera, enableMicrophone], async ([enableCamera, enableMicrophone])
 })
 
 
-useLiveUsers({
-  roomId: toRef(props, 'roomId'),
-  userId: toRef(() => props.user.id),
-  channel,
-  users,
-  async onJoin(user: User) {
-    console.info('join', user)
-    if (enableCamera.value || enableMicrophone.value) {
-      const call = peer.call(makeMyId(props.roomId, user.id), stream.value)
-    }
-  },
-  async onLeave(user: User) {
-    console.info('leave', user)
-  }
-})
-
 </script>
 
 <template>
@@ -141,7 +157,6 @@ useLiveUsers({
         <remote-media
             v-for="user in users.filter(user => user.id !== props.user.id)"
             :key="user.id"
-            :my-stream="stream"
             :room-id
             :="user"
         />

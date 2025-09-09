@@ -15,9 +15,6 @@ const props = defineProps<{
   peer: Peer
 }>()
 
-const emit = defineEmits<{
-  (e: 'remote-stream', stream: MediaStream): void
-}>()
 
 const video = useTemplateRef<HTMLVideoElement>('video')
 

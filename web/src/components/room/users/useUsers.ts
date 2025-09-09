@@ -1,36 +1,103 @@
 import type { Channel } from 'phoenix'
 import type { User } from './User'
-import { ref } from 'vue'
+import { onMounted, ref, toValue, type Ref, type MaybeRef, onUnmounted } from 'vue'
+import { makeMyId } from './makeMyId'
+
+type Meta = {
+  id: number
+  rtc_id: string
+  email: string
+  enable_camera: boolean
+  enable_microphone: boolean
+  username: string
+}
+
+type UserDiff = {
+  joins: Record<string, { metas: Meta[]}>
+  leaves: Record<string, { metas: Meta[]}>
+}
 
 type UsersMetas = {
   [key: string]: {
-    metas: {
-      id: number
-      rtc_id: string
-      email: string
-      enable_camera: boolean
-      enable_microphone: boolean
-      username: string
-    }[]
+    metas: Meta[]
   }
 }
 
-export function useUsers(channel: Channel) {
-  const users = ref<User[]>([])
-  channel.on('presence_state', async (state: UsersMetas) => {
-    users.value = Object.values(state).map(({ metas }) => {
-      const remoteUser = metas.at(0)!
-      return {
-        id: remoteUser.id,
-        // todo: use makeMyId
-        rtcId: remoteUser.rtc_id,
-        email: remoteUser.email,
-        stream: new MediaStream(),
-        enableCamera: remoteUser.enable_camera || false,
-        enableMicrophone: remoteUser.enable_microphone || false,
-        username: remoteUser.username,
-      } satisfies User
+async function getUsers(channel: Channel): Promise<User[]> {
+  return new Promise(resolve => {
+    channel.on('presence_state', async (state: UsersMetas) => {
+      const users = Object.values(state).map(({ metas }) => {
+        const remoteUser = metas.at(0)!
+        return {
+          id: remoteUser.id,
+          // todo: use makeMyId
+          rtcId: remoteUser.rtc_id,
+          email: remoteUser.email,
+          stream: new MediaStream(),
+          enableCamera: remoteUser.enable_camera || false,
+          enableMicrophone: remoteUser.enable_microphone || false,
+          username: remoteUser.username,
+        } satisfies User
+      })
+      resolve(users)
     })
+
+  })
+}
+
+export function useUsers({
+  roomId,
+  userId,
+  channel,
+  onJoin = (..._args: never[]) => null,
+  onLeave = (..._args: never[]) => null,
+}: {
+  roomId: MaybeRef<string>,
+  userId: MaybeRef<number>,
+  channel: Channel,
+  onJoin?(user: User): void,
+  onLeave?(user: User): void,
+}) {
+
+  const users = ref<User[]>([])
+
+  function listenDiffs({ leaves, joins }: UserDiff) {
+
+    if (leaves) {
+      Object.values(leaves).forEach(({ metas }) => {
+        users.value.filter(user => user.id === metas.at(0)!.id).forEach(user => {
+          onLeave(user)
+        })
+        users.value = users.value.filter(user => user.id !== metas[0].id)
+      })
+    }
+    if (joins) {
+      Object.values(joins)
+        .filter(({ metas }) => metas.at(0)!.id !== toValue(userId))
+        .forEach(async ({ metas }) => {
+          const remoteUser = metas.at(0)!
+          const user = {
+            enableCamera: remoteUser.enable_camera || false,
+            enableMicrophone: remoteUser.enable_microphone || false,
+            rtcId: makeMyId(toValue(roomId), toValue(userId)),
+            id: remoteUser.id,
+            stream: new MediaStream(),
+            username: remoteUser.username,
+            email: remoteUser.email,
+          }
+          users.value.push(user)
+          onJoin(user)
+      })
+    }
+  }
+
+  onMounted(async () => {
+    users.value = await getUsers(channel)
+    channel.on('presence_diff', listenDiffs)
+  })
+
+  onUnmounted(() => {
+    channel.off('presence_diff', listenDiffs)
   })
 
   return { users }

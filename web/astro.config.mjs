@@ -11,6 +11,9 @@ export default defineConfig({
   adapter: node({
     mode: 'standalone'
   }),
+  devToolbar: {
+    enabled: import.meta.env.DEV
+  },
   vite: {
     server: {
       allowedHosts: ['localhost', '127.0.0.1', 'corevox.ru'],
