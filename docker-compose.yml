@@ -48,6 +48,8 @@ services:
 
     environment:
       - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=4321
       - PUBLIC_SIGNAL_HOST=${PUBLIC_SIGNAL_HOST}
       - PUBLIC_SIGNAL_PORT=${PUBLIC_SIGNAL_PORT}
       - PUBLIC_SIGNAL_SECURE=${PUBLIC_SIGNAL_SECURE}
@@ -60,8 +62,6 @@ services:
       - PUBLIC_TURN_REALM=${PUBLIC_TURN_REALM}
       - PUBLIC_STUN_SERVER_URL=${PUBLIC_STUN_SERVER_URL}
       - PUBLIC_TURN_SERVER_URL=${PUBLIC_TURN_SERVER_URL}
-      - HOST=0.0.0.0
-      - PORT=4321
 
     command: node ./dist/server/entry.mjs
 

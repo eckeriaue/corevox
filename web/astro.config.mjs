@@ -15,6 +15,7 @@ export default defineConfig({
     enabled: import.meta.env.DEV
   },
   vite: {
+    envPrefix: ['PUBLIC_'],
     server: {
       allowedHosts: ['localhost', '127.0.0.1', 'corevox.ru'],
     },
