@@ -47,7 +47,7 @@ services:
     env_file: ./.env
 
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PUBLIC_SIGNAL_HOST=${PUBLIC_SIGNAL_HOST}
       - PUBLIC_SIGNAL_PORT=${PUBLIC_SIGNAL_PORT}
       - PUBLIC_SIGNAL_SECURE=${PUBLIC_SIGNAL_SECURE}
