@@ -42,8 +42,8 @@ services:
       - corevox_coturn
       - corevox_app
     volumes:
-      # - ./web:/app
       - /app/node_modules
+      # - ./web:/app
     env_file: ./.env
 
     environment:
