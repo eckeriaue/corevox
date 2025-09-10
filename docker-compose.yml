@@ -61,7 +61,7 @@ services:
       - PUBLIC_STUN_SERVER_URL=${PUBLIC_STUN_SERVER_URL}
       - PUBLIC_TURN_SERVER_URL=${PUBLIC_TURN_SERVER_URL}
 
-    command: npm run start -- --host 0.0.0.0
+    command: node ./dist/server/entry.mjs --host 0.0.0.0
 
   corevox_signal_server:
     container_name: corevox_signal_server
