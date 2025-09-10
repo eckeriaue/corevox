@@ -2,15 +2,8 @@
 import {
   defineAsyncComponent,
   watch,
-  onScopeDispose,
-  onUnmounted,
   ref,
-  nextTick,
-  toRaw,
-  computed,
-  toRef,
-  onMounted,
-onBeforeMount,
+  onBeforeMount,
 } from 'vue'
 import RoomSidebar from './RoomSidebar.vue'
 import { socket } from '@/socket'
@@ -23,7 +16,7 @@ import {
   type User
 } from './users'
 
-import { sleep, parseDuration, withResolvers } from 'radashi'
+import { withResolvers } from 'radashi'
 
 
 const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))

@@ -2,9 +2,7 @@
 import {
   useTemplateRef,
   watch,
-  computed
 } from 'vue'
-import { useMicrophone, useCamera } from './mediaDevices'
 
 import MediaShortInfo from './MediaShortData.vue'
 import type { Peer } from 'peerjs'

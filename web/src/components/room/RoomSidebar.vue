@@ -14,7 +14,6 @@ import type { User } from './users'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
 const props = defineProps<{
-  // me: Pick<User, 'id' | 'email' | 'username'>,
   users: User[]
 }>()
 
