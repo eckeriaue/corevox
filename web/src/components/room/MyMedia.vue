@@ -2,7 +2,6 @@
 import {
   useTemplateRef,
   watch,
-  nextTick,
   computed
 } from 'vue'
 import { useMicrophone, useCamera } from './mediaDevices'
@@ -18,19 +17,32 @@ const props = defineProps<{
 
 const video = useTemplateRef<HTMLVideoElement>('video')
 
-const stream = defineModel<MediaStream>('stream', { required: true })
+const stream = defineModel<MediaStream | undefined>('stream', { required: true })
 const enableCamera = defineModel<boolean>('enableCamera', { default: false })
 const enableMicrophone = defineModel<boolean>('enableMicrophone', { default: false })
 
-const microphone = useMicrophone(stream, enableMicrophone)
-const camera = useCamera(stream, enableCamera)
-
-const isLoading = computed(() => microphone.isLoading.value || camera.isLoading.value)
-
-watch(video, video => {
-  video!.srcObject = stream.value
+watch(enableCamera, enableCamera => {
+  stream.value && stream.value.getVideoTracks().forEach(track => {
+    track.enabled = enableCamera
+  })
 }, {
-  once: true,
+  immediate: true
+})
+
+watch(enableMicrophone, enableMicrophone => {
+  stream.value && stream.value.getAudioTracks().forEach(track => {
+    track.enabled = enableMicrophone
+  })
+}, {
+  immediate: true
+})
+
+
+const { stop } = watch([video, stream], ([video, stream]) => {
+  if (video && stream) {
+    video!.srcObject = stream!
+    stop()
+  }
 })
 
 </script>
@@ -51,12 +63,12 @@ watch(video, video => {
                 :username="`Вы (${props.username})`"
             />
         </div>
-        <div v-if="isLoading" class="absolute inset-0 size-full flex items-center justify-center">
+        <div v-if="!stream" class="absolute inset-0 size-full flex items-center justify-center">
             <span class="loading loading-spinner loading-xl"></span>
         </div>
         <video
             autoplay
-            :hidden="!enableCamera || isLoading"
+            :hidden="!stream || !enableCamera"
             muted
             playsinline
             ref="video"

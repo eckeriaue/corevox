@@ -7,19 +7,12 @@ const props = defineProps<{
   id: number
   username: string
   email: string
-  // stream: MediaStream
   enableCamera: boolean
+  rtcId: string
   enableMicrophone: boolean
 }>()
 
-const video = useTemplateRef<HTMLVideoElement>('video')
-const isLoading = ref(false)
-
-// watch(video, async () => {
-//   await nextTick()
-//   video.value!.srcObject = props.stream
-// }, {
-// })
+const isLoading = ref(true)
 
 
 </script>
@@ -40,11 +33,13 @@ const isLoading = ref(false)
             :username="props.username"
         />
     </div>
-    <span v-if="isLoading" class="loading loading-spinner loading-xl"></span>
+     <span v-if="isLoading" class="loading loading-spinner loading-xl"></span>
     <video
         autoplay
         :hidden="!props.enableCamera"
         :muted="!props.enableMicrophone"
+        :data-remote-video="props.rtcId"
+        @load-remote-stream="isLoading = false"
         playsinline
         ref="video"
     />

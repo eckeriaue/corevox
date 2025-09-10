@@ -10,23 +10,21 @@ import {
   computed,
   toRef,
   onMounted,
+onBeforeMount,
 } from 'vue'
 import RoomSidebar from './RoomSidebar.vue'
 import { socket } from '@/socket'
 import { peerConfig } from '@/lib/webrtc'
 import { Peer } from 'peerjs'
 import MyMedia from './MyMedia.vue'
+import { Presence } from 'phoenix'
 import {
   makeMyId,
-  useUsers,
   type User
 } from './users'
 
 import { sleep, parseDuration, withResolvers } from 'radashi'
 
-import {
-  tracks,
-} from './mediaDevices'
 
 const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
 
@@ -41,6 +39,8 @@ const channel = socket.channel(`rooms:${props.roomId}`, {
   token: props.token
 })
 
+const users = ref<User[]>([])
+
 channel.join().receive('ok', () => {
   console.log('Joined room')
 }).receive('error', (reason: Error) => {
@@ -51,7 +51,7 @@ channel.join().receive('ok', () => {
 
 const rtcId = makeMyId(props.roomId, props.user.id)
 
-const stream = ref<MediaStream>()
+const stream = ref<MediaStream | undefined>()
 const prepareMedia = withResolvers<MediaStream>()
 navigator.mediaDevices.getUserMedia({ video: true, audio: true, })
 .catch(() => {
@@ -64,31 +64,70 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true, })
 })
 const peer = new Peer(rtcId, peerConfig)
 
-peer.on('call', async call => {
-  await prepareMedia.promise
-  call.answer(stream.value)
-  call.on('stream', remoteStream => {
-    console.info('remoteStream', remoteStream)
-  })
-})
+
+const presence = new Presence(channel)
+
 
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
 
-const { users } = useUsers({
-  channel,
-  roomId: props.roomId,
-  userId: props.user.id,
-  async onJoin(user: User) {
-    await prepareMedia.promise
-    const call = peer.call(makeMyId(props.roomId, user.id), stream.value!)
-    call.on('stream', stream => {
-      console.info('join stream', stream)
+watch([enableCamera, enableMicrophone], ([enableCamera, enableMicrophone]) => {
+  channel.push('change_user_media', {
+    enable_camera: enableCamera,
+    enable_microphone: enableMicrophone,
+  })
+})
+
+onBeforeMount(() => {
+  presence.onSync(() => {
+    users.value = presence.list((_id, { metas }) => {
+      type Meta = {
+        id: number
+        email: string
+        enable_camera: boolean
+        enable_microphone: boolean
+        username: string
+        phx_ref: string
+      }
+      const remoteUser: Meta = metas.at(0)
+      const rtcId = makeMyId(props.roomId, remoteUser.id)
+
+      prepareMedia.promise.then(() => {
+        const call = peer.call(rtcId, stream.value!)
+        call.on('stream', remoteStream => {
+          const getId = () => `[data-remote-video=${call.peer}]`
+          const videoElement = document.querySelector(getId())
+          if (videoElement instanceof HTMLVideoElement && !videoElement.srcObject) {
+            videoElement.srcObject = remoteStream
+            videoElement.dispatchEvent(new CustomEvent('load-remote-stream', {}))
+          }
+        })
+      })
+
+      return {
+        id: remoteUser.id,
+        phx_ref: remoteUser.phx_ref,
+        rtcId,
+        email: remoteUser.email,
+        enableCamera: remoteUser.enable_camera,
+        enableMicrophone: remoteUser.enable_microphone,
+        username: remoteUser.username
+      }
     })
-    },
-  onLeave(user: User) {
-    console.info('leave', user)
-  }
+  })
+
+  peer.on('call', async call => {
+    await prepareMedia.promise
+    call.answer(stream.value)
+    call.on('stream', remoteStream => {
+      const getId = () => `[data-remote-video=${call.peer}]`
+      const videoElement = document.querySelector(getId())
+      if (videoElement instanceof HTMLVideoElement && !videoElement.srcObject) {
+        videoElement.srcObject = remoteStream
+        videoElement.dispatchEvent(new CustomEvent('load-remote-stream', {}))
+      }
+    })
+  })
 })
 
 </script>

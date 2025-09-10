@@ -4,7 +4,7 @@ import { onMounted, ref, toValue, type Ref, type MaybeRef, onUnmounted, toRaw, S
 import { makeMyId } from './makeMyId'
 import { withResolvers } from 'radashi'
 
-type Meta = {
+export type Meta = {
   id: number
   rtc_id: string
   email: string
