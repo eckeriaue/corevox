@@ -7,7 +7,7 @@ const props = defineProps<{
   id: number
   username: string
   email: string
-  stream: MediaStream
+  // stream: MediaStream
   enableCamera: boolean
   enableMicrophone: boolean
 }>()
@@ -15,11 +15,11 @@ const props = defineProps<{
 const video = useTemplateRef<HTMLVideoElement>('video')
 const isLoading = ref(false)
 
-watch(video, async () => {
-  await nextTick()
-  video.value!.srcObject = props.stream
-}, {
-})
+// watch(video, async () => {
+//   await nextTick()
+//   video.value!.srcObject = props.stream
+// }, {
+// })
 
 
 </script>

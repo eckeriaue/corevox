@@ -39,7 +39,11 @@ defmodule Corevox.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      # {:membrane_rtc_engine, "~> 0.24.0"},
+      # {:membrane_rtc_engine_webrtc, "~> 0.8.0"},
+      # {:membrane_core, "~> 1.2"},
+      # {:membrane_webrtc_plugin, "~> 0.25"},
+
       {:phoenix_pubsub, "~> 2.1"},
       {:corsica, "~> 2.1"},
       {:guardian, github: "ueberauth/guardian"},

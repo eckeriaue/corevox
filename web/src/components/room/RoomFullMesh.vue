@@ -22,7 +22,7 @@ import {
   type User
 } from './users'
 
-import { sleep, parseDuration } from 'radashi'
+import { sleep, parseDuration, withResolvers } from 'radashi'
 
 import {
   tracks,
@@ -50,35 +50,27 @@ channel.join().receive('ok', () => {
 })
 
 const rtcId = makeMyId(props.roomId, props.user.id)
-const stream = ref<MediaStream>(new MediaStream())
+
+const stream = ref<MediaStream>()
+const prepareMedia = withResolvers<MediaStream>()
+navigator.mediaDevices.getUserMedia({ video: true, audio: true, })
+.catch(() => {
+  window.location.href = '/'
+  throw new Error('receiving stream')
+}).then(prepareStream => {
+  prepareStream.getTracks().forEach(track => track.enabled = false)
+  stream.value = prepareStream
+  prepareMedia.resolve(stream.value)
+})
 const peer = new Peer(rtcId, peerConfig)
 
-async function getStream() {
-  if (stream.value.getTracks().length < 1) {
-    await Promise.race([
-      new Promise(r => tracks.addEventListener('tracks:add-microphone', r, { once: true })),
-      new Promise(r => tracks.addEventListener('tracks:add-camera', r, { once: true })),
-      sleep(parseDuration('10s')).then(() => console.error('get tracks timeout'))
-    ])
-    return getStream()
-  }
-  return Promise.resolve(stream.value)
-}
-
-await new Promise(resolve => {
-  peer.on('open', () => {
-    resolve()
-    peer.on('call', async call => {
-      call.answer(stream.value)
-      call.on('stream', async remoteStream => {
-        remoteStream.getTracks().forEach(track => {
-          // todo
-        })
-      })
-    })
+peer.on('call', async call => {
+  await prepareMedia.promise
+  call.answer(stream.value)
+  call.on('stream', remoteStream => {
+    console.info('remoteStream', remoteStream)
   })
 })
-
 
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
@@ -88,58 +80,21 @@ const { users } = useUsers({
   roomId: props.roomId,
   userId: props.user.id,
   async onJoin(user: User) {
-    await nextTick()
-    console.info('join', user)
-    if (enableCamera.value || enableMicrophone.value) {
-      const call = peer.call(user.rtcId, await getStream())
-      console.info('call!', call)
-    }
-  },
+    await prepareMedia.promise
+    const call = peer.call(makeMyId(props.roomId, user.id), stream.value!)
+    call.on('stream', stream => {
+      console.info('join stream', stream)
+    })
+    },
   onLeave(user: User) {
     console.info('leave', user)
   }
 })
 
-const me = computed<User>(() => {
-  return users.value.find(user => user.id === props.user.id) as User
-})
-
-
-watch([enableCamera, enableMicrophone], async ([enableCamera, enableMicrophone]) => {
-  if (enableCamera || enableMicrophone) {
-    if (stream.value.getTracks().length < 1) {
-      await Promise.race([
-        new Promise(r => tracks.addEventListener('tracks:add-microphone', r, { once: true })),
-        new Promise(r => tracks.addEventListener('tracks:add-camera', r, { once: true })),
-      ])
-    }
-    users.value.filter(user => user.id !== props.user.id).forEach(user => {
-      const call = peer.call(makeMyId(props.roomId, user.id), stream.value)
-      call.on('stream', remoteStream  => {
-        const index = users.value.findIndex(user => makeMyId(props.roomId, user.id) === call.peer)
-        remoteStream.getTracks().forEach(track => {
-          users.value.at(index)!.stream.addTrack(track)
-        })
-        users.value = users.value
-      })
-    })
-  }
-
-  channel.push('change_user_media', {
-    enable_camera: enableCamera,
-    enable_microphone: enableMicrophone,
-    user_id: props.user.id
-  }).receive('ok', () => {
-    console.log('Media changed successfully')
-  }).receive('error', (reason: Error) => {
-    console.error('Failed to change media', reason)
-  })
-})
-
-
 </script>
 
 <template>
+
 <room-sidebar
     :users
     v-model:enable-camera="enableCamera"

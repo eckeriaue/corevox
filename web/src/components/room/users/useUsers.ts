@@ -1,7 +1,8 @@
 import type { Channel } from 'phoenix'
 import type { User } from './User'
-import { onMounted, ref, toValue, type Ref, type MaybeRef, onUnmounted } from 'vue'
+import { onMounted, ref, toValue, type Ref, type MaybeRef, onUnmounted, toRaw, Suspense } from 'vue'
 import { makeMyId } from './makeMyId'
+import { withResolvers } from 'radashi'
 
 type Meta = {
   id: number
@@ -33,12 +34,13 @@ async function getUsers(channel: Channel): Promise<User[]> {
           // todo: use makeMyId
           rtcId: remoteUser.rtc_id,
           email: remoteUser.email,
-          stream: new MediaStream(),
+          // stream: new MediaStream(),
           enableCamera: remoteUser.enable_camera || false,
           enableMicrophone: remoteUser.enable_microphone || false,
           username: remoteUser.username,
         } satisfies User
       })
+      console.info('users', users)
       resolve(users)
     })
 
@@ -51,11 +53,13 @@ export function useUsers({
   channel,
   onJoin = (..._args: never[]) => null,
   onLeave = (..._args: never[]) => null,
+  // onLoad = (..._args: never[]) => null,
 }: {
   roomId: MaybeRef<string>,
   userId: MaybeRef<number>,
   channel: Channel,
   onJoin?(user: User): void,
+  // onLoad?(users: User[]): void,
   onLeave?(user: User): void,
 }) {
 
@@ -85,14 +89,16 @@ export function useUsers({
             username: remoteUser.username,
             email: remoteUser.email,
           }
-          users.value.push(user)
+          users.value = [user, ...users.value]
           onJoin(user)
       })
     }
   }
 
   onMounted(async () => {
+    console.info('first users', users.value)
     users.value = await getUsers(channel)
+    console.info('loaded users', users.value)
     channel.on('presence_diff', listenDiffs)
   })
 
@@ -100,5 +106,7 @@ export function useUsers({
     channel.off('presence_diff', listenDiffs)
   })
 
-  return { users }
+  return {
+    users,
+  }
 }

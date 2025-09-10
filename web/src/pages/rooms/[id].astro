@@ -1,22 +1,19 @@
 ---
 import RoomLayout from '@/layouts/RoomLayout.astro'
-// @todo: select more topology
 import RoomFullMesh from '@/components/room/RoomFullMesh.vue'
 
 const { id: roomId } = Astro.params
 const me = await Astro.session?.get('me')
 
 if (!me || !roomId) {
-    return Astro.redirect('/')
+  return Astro.redirect('/')
 }
 ---
 <RoomLayout>
-    <div>
-        <RoomFullMesh
-            client:only
-            token={me.token}
-            user={me.user}
-            roomId={roomId}
-        />
-    </div>
+    <RoomFullMesh
+      client:only="vue"
+      token={me.token}
+      user={me.user}
+      roomId={roomId}
+    />
 </RoomLayout>

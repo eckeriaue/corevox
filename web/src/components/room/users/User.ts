@@ -3,7 +3,7 @@ export type User = {
   rtcId: string
   username: string
   email: string
-  stream: MediaStream
+  // stream: MediaStream
   enableMicrophone: boolean
   enableCamera: boolean
 }
