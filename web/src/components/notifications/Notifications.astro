@@ -13,7 +13,7 @@ import { socket } from '@/socket'
 
 // const notificationTemplate = document.getElementById('notification-template')
 
-const notifications = socket.channel('notifications:news')
+const notifications = socket!.channel('notifications:news')
 notifications.join().receive('ok', () => {
     console.log('Joined successfully notifications')
 }).receive('error', (reason: Error) => {

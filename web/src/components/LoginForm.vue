@@ -8,11 +8,11 @@ import { actions } from 'astro:actions'
 import { debounce } from 'radashi'
 import { socket } from '@/socket'
 
-const channel = socket.channel('login:formvalidation')
+const channel = socket && socket.channel('login:formvalidation')
 const isLoading = ref(false)
 const isValid = ref(false)
 
-channel.join().receive('ok', () => {
+channel && channel.join().receive('ok', () => {
   console.log('Channel joined')
 }).receive('error', () => {
   toast('Невозможно подключиться к серверу')
@@ -35,7 +35,7 @@ const form = ref(defaultForm())
 const schema = z.object({
   email: z.string().email().min(2).max(100).refine(async data => {
     return new Promise(resolve => {
-      channel.push('has_email', { value: data })
+      channel && channel.push('has_email', { value: data })
         .receive('ok', (payload) => {
           resolve(payload.has_user)
         })
@@ -69,7 +69,7 @@ const disabled = computed(() => isLoading.value || !isValid.value)
 function submit() {
   if (disabled.value) return
   isLoading.value = true
-  channel.push('login', structuredClone(toRaw(unref(form))))
+  channel && channel.push('login', structuredClone(toRaw(unref(form))))
     .receive('ok', async ({ token, user }: { token: string, user: object }) => {
       const { data } = await actions.signin({ token, user, remember: unref(form).remember_me })
       window.location.href = data.redirect
@@ -83,7 +83,7 @@ function submit() {
 onMounted(validate)
 
 onUnmounted(() => {
-  channel.leave('login')
+  channel && channel.leave()
 })
 
 </script>

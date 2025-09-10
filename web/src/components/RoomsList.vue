@@ -17,9 +17,9 @@ const CreateRoomButton = defineAsyncComponent(() => import('@/components/createR
 const status = ref<'loading' | 'loaded' | 'error'>('loading')
 const rooms = ref<Room[]>([])
 
-const channel = socket.channel('rooms:lobby')
+const channel = socket && socket.channel('rooms:lobby')
 
-channel.join().receive('ok', (payload: { rooms: Room[] }) => {
+channel && channel.join().receive('ok', (payload: { rooms: Room[] }) => {
   rooms.value = payload.rooms
   status.value = 'loaded'
 }).receive('error', (reason: Error) => {
@@ -27,12 +27,12 @@ channel.join().receive('ok', (payload: { rooms: Room[] }) => {
   console.error('Failed to join', reason)
 })
 
-channel.on('room_created', ({ room }: { room: Room }) => {
+channel && channel.on('room_created', ({ room }: { room: Room }) => {
   rooms.value.unshift(room)
 })
 
 onUnmounted(() => {
-  channel.leave()
+  channel && channel.leave()
 })
 
 </script>
@@ -40,7 +40,7 @@ onUnmounted(() => {
 <template>
 <section  style="height:calc(100dvh - 64px)">
     <div v-if="props.ownerId" class="mt-16 mx-auto w-fit">
-        <create-room-button :ownerId="props.ownerId" :channel />
+        <create-room-button :ownerId="props.ownerId" :channel="channel!" />
     </div>
     <div class="flex items-center justify-center">
         <div

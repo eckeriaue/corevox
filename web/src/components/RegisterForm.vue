@@ -10,14 +10,14 @@ import { actions } from 'astro:actions'
 
 const formStatus = ref('ready')
 
-const channel = socket.channel('register:formvalidation', {})
-channel.join().receive('ok', () => {
+const channel = socket && socket.channel('register:formvalidation', {})
+channel && channel.join().receive('ok', () => {
     console.log('Joined successfully')
 })
 
 const checkUniqueness = (field, value) => {
   return new Promise((resolve) => {
-    channel.push(`check_${field}`, { value })
+    channel && channel.push(`check_${field}`, { value })
       .receive('ok', (resp) => {
         resolve(resp.unique)
       })
@@ -89,7 +89,7 @@ const validate = debounce({ delay: 100 }, async () => {
 function saveMe() {
   formStatus.value = 'loading'
   const formData = structuredClone(toRaw(form))
-  channel.push('register_me', formData).receive('ok', async ({ user, token }) => {
+  channel && channel.push('register_me', formData).receive('ok', async ({ user, token }) => {
     formStatus.value = 'ready'
     const {
       data: { redirect = '/'},
@@ -109,7 +109,7 @@ function saveMe() {
 onMounted(validate)
 
 onUnmounted(() => {
-  channel.leave()
+  channel && channel.leave()
 })
 
 </script>

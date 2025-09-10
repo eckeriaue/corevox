@@ -28,7 +28,7 @@ const props = defineProps<{
 }>()
 
 
-const channel = socket.channel(`rooms:${props.roomId}`, {
+const channel = socket!.channel(`rooms:${props.roomId}`, {
   token: props.token
 })
 
