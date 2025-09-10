@@ -1,6 +1,6 @@
 import { Socket } from 'phoenix'
 
-export const socket = typeof window !== 'undefined' ? new Socket(new URL('/socket', `wss://${globalThis.location.host}`).toString()) : null
+export const socket = new Socket(import.meta.env.PUBLIC_APP_SOCKET_URL)
 if (socket) {
   socket.connect()
 }
