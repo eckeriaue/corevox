@@ -14,7 +14,6 @@ export const signin = defineAction({
     await (saveMe || Promise.resolve()).catch((error) => {
       console.error(error)
     })
-    const redirectUrl = new URL('/', context.url.origin).toString()
-    return { redirect: redirectUrl }
+    return { redirect: '/' }
   }
 })

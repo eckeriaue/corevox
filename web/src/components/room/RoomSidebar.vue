@@ -9,12 +9,22 @@ import {
   SidebarMenuItem,
   SidebarFooter
 } from "@/components/ui/sidebar"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
 import type { User } from './users'
 
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
 const props = defineProps<{
   users: User[]
+}>()
+
+const emit = defineEmits<{
+  'stream-screen': []
 }>()
 
 const enableCamera = defineModel<boolean>('enableCamera', { default: false })
@@ -32,11 +42,6 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
       <SidebarGroup>
         <SidebarGroupContent>
           <SidebarMenu>
-              <!-- <SidebarMenuItem>
-                <SidebarMenuButton>
-                    <span>{{ me.username }}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem> -->
               <SidebarMenuItem v-for="user in props.users" :key="user.id">
                 <SidebarMenuButton>
                     <span>{{ user.username }}</span>
@@ -48,8 +53,7 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
     </SidebarContent>
     <SidebarFooter class="border-t border-base-300 bg-base-100">
         <SidebarMenuItem>
-            <section class="flex items-center gap-x-4 w-full">
-                <!-- <span>{{ props.me.username }}</span> -->
+            <section class="flex items-center gap-x-4 w-full justify-between">
                 <nav>
                     <ul class="flex gap-x-2">
                         <li>
@@ -70,16 +74,27 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
                                     <span class="ph" :class="{ 'ph-video-camera': enableCamera, 'ph-video-camera-slash': !enableCamera }" />
                                 </button>
                         </li>
-                        <li>
-                            <button
-                                class="btn btn-ghost btn-sm btn-circle"
-                                type="button"
-                            >
-                                    <span class="ph ph-monitor-play" />
-                                </button>
-                        </li>
                     </ul>
                 </nav>
+
+
+                <div>
+                    <dropdown-menu>
+                        <dropdown-menu-trigger as-child>
+                            <button type="button" class="btn btn-ghost btn-sm btn-circle">
+                                <span class="ph ph-dots-nine" />
+                            </button>
+                        </dropdown-menu-trigger>
+
+                        <dropdown-menu-content>
+                            <dropdown-menu-item @select="emit('stream-screen')">
+                                <span class="ph ph-monitor-play" />
+                                <span class="font-medium text-xs">Транслировать экран</span>
+                            </dropdown-menu-item>
+                        </dropdown-menu-content>
+                    </dropdown-menu>
+                </div>
+
             </section>
         </SidebarMenuItem>
     </SidebarFooter>

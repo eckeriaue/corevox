@@ -32,6 +32,7 @@ const channel = socket.channel(`rooms:${props.roomId}`, {
   token: props.token
 })
 
+const screens = ref([])
 const users = ref<User[]>([])
 
 channel.join().receive('ok', () => {
@@ -46,7 +47,11 @@ const rtcId = makeMyId(props.roomId, props.user.id)
 
 const stream = ref<MediaStream | undefined>()
 const prepareMedia = withResolvers<MediaStream>()
+const screenStream = ref<MediaStream | undefined>()
 
+watch(screenStream, screenStream => {
+  if (!screenStream) return
+})
 
 navigator.mediaDevices.getUserMedia({
   video: {
@@ -71,6 +76,10 @@ const presence = new Presence(channel)
 
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
+
+async function prepareScreen() {
+  screenStream.value = await navigator.mediaDevices.getDisplayMedia()
+}
 
 watch([enableCamera, enableMicrophone], ([enableCamera, enableMicrophone]) => {
   channel.push('change_user_media', {
@@ -139,6 +148,7 @@ onBeforeMount(() => {
     :users
     v-model:enable-camera="enableCamera"
     v-model:enable-microphone="enableMicrophone"
+    @stream-screen="prepareScreen"
 >
 
     <ul class="grid grid-cols-3 gap-4 w-full">
