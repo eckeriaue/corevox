@@ -9,7 +9,7 @@ import vue from '@astrojs/vue'
 export default defineConfig({
   output: 'server',
   adapter: node({
-    mode: 'standalone'
+    mode: 'standalone',
   }),
   devToolbar: {
     enabled: import.meta.env.DEV
