@@ -46,7 +46,15 @@ const rtcId = makeMyId(props.roomId, props.user.id)
 
 const stream = ref<MediaStream | undefined>()
 const prepareMedia = withResolvers<MediaStream>()
-navigator.mediaDevices.getUserMedia({ video: true, audio: true, })
+
+
+navigator.mediaDevices.getUserMedia({
+  video: {
+    width: { min: 190, ideal: 320 },
+    height: { min: 120, ideal: 200 },
+  },
+  audio: true,
+})
 .catch(() => {
   window.location.href = '/'
   throw new Error('receiving stream')

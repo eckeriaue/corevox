@@ -48,8 +48,8 @@ const { stop } = watch([video, stream], ([video, stream]) => {
 <template>
     <div
         :class="{
-          'ring-base-300': !enableMicrophone,
-          'ring-primary': enableMicrophone,
+        'ring-base-300': true,
+        'ring-primary': false,
         }"
         class="relative ring-2 bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
         style="aspect-ratio: 16 / 10; object-fit: cover; object-position: center;"
