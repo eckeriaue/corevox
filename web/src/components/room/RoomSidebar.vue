@@ -108,7 +108,7 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
           </li>
       </ul>
   </div>
-  <div class="p-4 grow">
+  <div class="p-4 grow relative">
       <slot />
   </div>
 </SidebarProvider>
