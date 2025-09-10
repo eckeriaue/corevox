@@ -60,8 +60,10 @@ services:
       - PUBLIC_TURN_REALM=${PUBLIC_TURN_REALM}
       - PUBLIC_STUN_SERVER_URL=${PUBLIC_STUN_SERVER_URL}
       - PUBLIC_TURN_SERVER_URL=${PUBLIC_TURN_SERVER_URL}
+      - HOST=0.0.0.0
+      - PORT=4321
 
-    command: node ./dist/server/entry.mjs --host 0.0.0.0
+    command: node ./dist/server/entry.mjs
 
   corevox_signal_server:
     container_name: corevox_signal_server
