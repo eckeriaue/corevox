@@ -6,4 +6,4 @@ RUN npm install
 COPY . .
 RUN npm run build
 EXPOSE 4321
-CMD ["node", "--env-file=.env", "./dist/server/entry.mjs"]
+CMD ["node", "./dist/server/entry.mjs"]
