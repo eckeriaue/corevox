@@ -8,7 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "start": "node --env-file=./.env ./dist/server/entry.mjs"
+    "start": "node --env-file=/app/.env ./dist/server/entry.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",

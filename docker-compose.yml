@@ -34,6 +34,9 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile
+    volumes:
+      - /app/node_modules
+      - ./.env:/app/.env
     ports:
       - "4321:4321"
     depends_on:
