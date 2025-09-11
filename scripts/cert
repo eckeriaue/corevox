@@ -1,0 +1,5 @@
+#!/usr/bin/env fish
+docker compose run --rm certbot certonly \
+  --webroot -w /var/www/certbot \
+  -d puth_your_email.com -d www.puth_your_email.com \
+      --email puth_your_email@gmail.com --agree-tos --no-eff-email
