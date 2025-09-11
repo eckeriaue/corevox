@@ -43,6 +43,7 @@ services:
       - corevox_app
     volumes:
       - /app/node_modules
+      - ./.env:/app/.env
       # - ./web:/app
     env_file: ./.env
 
