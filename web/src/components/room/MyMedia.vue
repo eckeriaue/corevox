@@ -56,8 +56,12 @@ const { stop } = watch([video, stream], ([video, stream]) => {
           'relative': !isFullscreen,
           'absolute top-0 left-0 w-[calc(100%_-_var(--spacing)_*_8)] m-4': isFullscreen
         }"
-        class="ring-2 bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
-        style="object-fit: cover; object-position: center; box-shadow: 2px 2px 0px 0px var(--color-neutral);"
+        class="ring-2 bg-base-300 border border-base-300 rounded-2xl flex items-center justify-center overflow-hidden"
+        style="
+            object-fit: cover;
+            object-position: center;
+            box-shadow: 2px 2px 0px 0px var(--color-neutral), 1px 1px 0 0 inset rgba(255,255,255,.1);
+        "
         :style="!isFullscreen ? {
           aspectRatio: '16 / 10',
         } : {
