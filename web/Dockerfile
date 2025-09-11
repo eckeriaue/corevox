@@ -4,6 +4,5 @@ COPY package*.json ./
 RUN npm cache clean --force
 RUN npm install
 COPY . .
-RUN npm run build
 EXPOSE 4321
-CMD ["node", "--env-file=/app/.env", "./dist/server/entry.mjs"]
+CMD ["sh", "-c", "npm run build && node ./dist/server/entry.mjs"]
