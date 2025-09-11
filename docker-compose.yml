@@ -57,7 +57,7 @@ services:
       - PUBLIC_TURN_REALM=${PUBLIC_TURN_REALM}
       - PUBLIC_STUN_SERVER_URL=${PUBLIC_STUN_SERVER_URL}
       - PUBLIC_TURN_SERVER_URL=${PUBLIC_TURN_SERVER_URL}
-    command: sh -c "npm run build && npm run preview"
+    command: sh -c "npm run build && npm run start"
 
 
   corevox_signal_server:
