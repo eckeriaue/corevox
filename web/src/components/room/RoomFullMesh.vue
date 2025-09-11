@@ -8,7 +8,7 @@ import {
 import RoomSidebar from './RoomSidebar.vue'
 import { socket } from '@/socket'
 import { peerConfig } from '@/lib/webrtc'
-import { Peer } from 'peerjs'
+import { type MediaConnection, Peer } from 'peerjs'
 import MyMedia from './MyMedia.vue'
 import { Presence } from 'phoenix'
 import {
@@ -18,7 +18,7 @@ import {
 
 import { withResolvers } from 'radashi'
 
-
+const ScreenMedia = defineAsyncComponent(() => import('./ScreenMedia.vue'))
 const RemoteMedia = defineAsyncComponent(() => import('./RemoteMedia.vue'))
 
 const props = defineProps<{
@@ -32,7 +32,7 @@ const channel = socket!.channel(`rooms:${props.roomId}`, {
   token: props.token
 })
 
-const screens = ref([])
+const screens = ref<{ call: MediaConnection, rtcId: string, stream: MediaStream }[]>([])
 const users = ref<User[]>([])
 
 channel.join().receive('ok', () => {
@@ -69,6 +69,7 @@ navigator.mediaDevices.getUserMedia({
   prepareMedia.resolve(stream.value)
 })
 const peer = new Peer(rtcId, peerConfig)
+const screenPeer = new Peer(`screen-${rtcId}`, peerConfig)
 
 
 const presence = new Presence(channel)
@@ -77,8 +78,15 @@ const presence = new Presence(channel)
 const enableCamera = ref(false)
 const enableMicrophone = ref(false)
 
+async function callStream(stream: MediaStream) {
+  users.value.filter(user => user.id !== props.user.id).forEach(user => {
+    screenPeer.call(`screen-${user.rtcId}`, stream)
+  })
+}
+
 async function prepareScreen() {
   screenStream.value = await navigator.mediaDevices.getDisplayMedia()
+  callStream(screenStream.value)
 }
 
 watch([enableCamera, enableMicrophone], ([enableCamera, enableMicrophone]) => {
@@ -104,7 +112,7 @@ onBeforeMount(() => {
 
       prepareMedia.promise.then(() => {
         const call = peer.call(rtcId, stream.value!)
-        call.on('stream', remoteStream => {
+        call && call.on('stream', remoteStream => {
           const getId = () => `[data-remote-video=${call.peer}]`
           const videoElement = document.querySelector(getId())
           if (videoElement instanceof HTMLVideoElement && !videoElement.srcObject) {
@@ -112,6 +120,9 @@ onBeforeMount(() => {
             videoElement.dispatchEvent(new CustomEvent('load-remote-stream', {}))
           }
         })
+        if (screenStream.value instanceof MediaStream) {
+          screenPeer.call(`screen-${rtcId}`, screenStream.value)
+        }
       })
 
       return {
@@ -124,6 +135,22 @@ onBeforeMount(() => {
         username: remoteUser.username
       }
     })
+  })
+
+  screenPeer.on('call', call => {
+    call.answer()
+    call.on('close', () => {
+      const closedScreen = screens.value.findIndex(screen => screen.rtcId === call.peer)
+      screens.value = screens.value.toSpliced(closedScreen, 1)
+    })
+    if (screens.value.findIndex(screen => screen.rtcId === call.peer) > -1) {
+      call.on('stream', screenRemoteStream => {
+        screens.value = [
+          ...screens.value,
+          { call, rtcId: call.peer, stream: screenRemoteStream }
+        ]
+      })
+    }
   })
 
   peer.on('call', async call => {
@@ -152,6 +179,19 @@ onBeforeMount(() => {
 >
 
     <ul class="grid grid-cols-3 gap-4 w-full">
+
+        <screen-media
+            v-if="screenStream"
+            :stream="screenStream"
+            :rtc-id="rtcId"
+        />
+
+        <screen-media
+            v-for="screen in screens"
+            :key="screen.rtcId"
+            :="screen"
+        />
+
         <my-media
             :username="user.username"
             v-model:stream="stream"
@@ -159,6 +199,7 @@ onBeforeMount(() => {
             v-model:enable-camera="enableCamera"
             v-model:enable-microphone="enableMicrophone"
         />
+
         <remote-media
             v-for="user in users.filter(user => user.id !== props.user.id)"
             :key="user.id"

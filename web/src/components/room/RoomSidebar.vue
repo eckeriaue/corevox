@@ -82,14 +82,14 @@ const enableMic = defineModel<boolean>('enableMicrophone', { default: false })
                     <dropdown-menu>
                         <dropdown-menu-trigger as-child>
                             <button type="button" class="btn btn-ghost btn-sm btn-circle">
-                                <span class="ph ph-dots-nine" />
+                                <span class="ph ph-dots-nine text-xl" />
                             </button>
                         </dropdown-menu-trigger>
 
                         <dropdown-menu-content>
                             <dropdown-menu-item @select="emit('stream-screen')">
                                 <span class="ph ph-monitor-play" />
-                                <span class="font-medium text-xs">Транслировать экран</span>
+                                <span class="font-medium text-xs">Транслировать экран (включить/отключить)</span>
                             </dropdown-menu-item>
                         </dropdown-menu-content>
                     </dropdown-menu>
