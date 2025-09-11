@@ -87,6 +87,11 @@ services:
       - "3478:3478/tcp"
       - "49160-49200:49160-49200/udp"
     env_file: ./.env
+    environment:
+      - PUBLIC_TURN_USER=${PUBLIC_TURN_USER}
+      - PUBLIC_TURN_PASSWORD=${PUBLIC_TURN_PASSWORD}
+      - PUBLIC_TURN_REALM=${PUBLIC_TURN_REALM}
+      - COTURN_CLI_PASSWORD=${COTURN_CLI_PASSWORD}
     command: >
       turnserver
         -a
