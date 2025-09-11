@@ -23,7 +23,7 @@ const isFullscreen = ref(false)
     :class="{
       'ring-base-300': true,
       'ring-primary': false,
-      'relative -z-10': !isFullscreen,
+      'relative': !isFullscreen,
       'absolute top-0 left-0 w-[calc(100%_-_var(--spacing)_*_8)] m-4': isFullscreen
     }"
     class="ring-2 bg-base-300 rounded-2xl flex items-center justify-center overflow-hidden"

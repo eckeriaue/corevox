@@ -2,8 +2,10 @@
 import {
   defineAsyncComponent,
   watch,
+  toRaw,
   ref,
   onBeforeMount,
+nextTick,
 } from 'vue'
 import RoomSidebar from './RoomSidebar.vue'
 import { socket } from '@/socket'
@@ -137,13 +139,14 @@ onBeforeMount(() => {
     })
   })
 
-  screenPeer.on('call', call => {
+  screenPeer.on('call', async call => {
     call.answer()
     call.on('close', () => {
       const closedScreen = screens.value.findIndex(screen => screen.rtcId === call.peer)
       screens.value = screens.value.toSpliced(closedScreen, 1)
     })
-    if (screens.value.findIndex(screen => screen.rtcId === call.peer) > -1) {
+    await nextTick()
+    if (screens.value.findIndex(screen => screen.rtcId === call.peer) === -1) {
       call.on('stream', screenRemoteStream => {
         screens.value = [
           ...screens.value,
