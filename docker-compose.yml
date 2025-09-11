@@ -64,7 +64,7 @@ services:
       - PUBLIC_STUN_SERVER_URL=${PUBLIC_STUN_SERVER_URL}
       - PUBLIC_TURN_SERVER_URL=${PUBLIC_TURN_SERVER_URL}
 
-    command: node --env-file=.env ./dist/server/entry.mjs
+    command: node --env-file=/app/.env ./dist/server/entry.mjs
 
   corevox_signal_server:
     container_name: corevox_signal_server
