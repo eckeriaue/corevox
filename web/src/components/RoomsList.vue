@@ -54,7 +54,7 @@ onUnmounted(() => {
             v-else-if="status === 'loaded'"
             class="min-w-md mt-4"
         >
-            <ul v-if="rooms.length > 0" class="list bg-base-100 rounded-box shadow-md">
+            <ul v-if="rooms.length > 0" class="list bg-base-100 rounded-box" style="box-shadow: 2px 2px 0 0 var(--color-neutral);">
 
               <li v-for="room in rooms" :key="room.id" class="list-row">
                 <div></div>
