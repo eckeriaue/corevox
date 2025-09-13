@@ -51,19 +51,12 @@ const stream = ref<MediaStream | undefined>()
 const prepareMedia = withResolvers<MediaStream>()
 const screenStream = ref<MediaStream | undefined>()
 
-watch(screenStream, screenStream => {
-  if (!screenStream) return
-})
-
 navigator.mediaDevices.getUserMedia({
-  video: {
-    width: { min: 190, ideal: 320 },
-    height: { min: 120, ideal: 200 },
-  },
+  video: true,
   audio: true,
 })
 .catch(() => {
-  window.location.href = '/'
+  setTimeout(() => window.location.href = '/', 1000)
   throw new Error('receiving stream')
 }).then(prepareStream => {
   prepareStream.getTracks().forEach(track => track.enabled = false)
