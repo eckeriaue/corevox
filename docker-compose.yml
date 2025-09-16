@@ -2,17 +2,17 @@ name: corevox
 
 services:
 
-  corevox_app:
+  corevox_server:
     container_name: ${PUBLIC_APP_NAME}
     restart: always
     build:
-      context: ./app
+      context: ./server
       dockerfile: Dockerfile.dev
     depends_on:
       - corevox_postgres
       - corevox_coturn
     volumes:
-      - ./app:/app
+      - ./server:/app
       - /app/_build
       - /app/deps
     ports:
@@ -42,7 +42,7 @@ services:
     depends_on:
       - corevox_postgres
       - corevox_coturn
-      - corevox_app
+      - corevox_server
     env_file: ./.env
     environment:
       - NODE_ENV=production
@@ -90,7 +90,7 @@ services:
     depends_on:
       - corevox_web
       - corevox_signal_server
-      - corevox_app
+      - corevox_server
 
   certbot:
     image: certbot/certbot

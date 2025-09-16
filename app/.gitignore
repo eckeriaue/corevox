@@ -1,27 +1,45 @@
-# The directory Mix will write compiled artifacts to.
-/_build/
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
 
-# If you run "mix test --cover", coverage assets end up here.
-/cover/
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
 
-# The directory Mix downloads your dependencies sources to.
-/deps/
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
 
-# Where 3rd-party dependencies like ExDoc output generated docs.
-/doc/
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
 
-# Ignore .fetch files in case you like to edit your project deps locally.
-/.fetch
+# Symbolication related
+app.*.symbols
 
-# If the VM crashes, it generates a dump, let's ignore it too.
-erl_crash.dump
+# Obfuscation related
+app.*.map.json
 
-# Also ignore archive artifacts (built via "mix archive.build").
-*.ez
-
-# Temporary files, for example, from tests.
-/tmp/
-
-# Ignore package tarball (built via "mix hex.build").
-corevox-*.tar
-
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
