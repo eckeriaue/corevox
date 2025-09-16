@@ -1,11 +1,14 @@
 @import "tailwindcss";
 @import "./ubuntu.css";
-/*@import "tw-animate-css";*/
+@import "./m3.css";
+
+body {
+  font-family: "Ubuntu", sans-serif;
+}
+
 
 @custom-variant dark (&:is(.dark *));
-@plugin "daisyui" {
-   theme: dracula;
-};
+
 
 @utility btn {
   --size: calc(var(--spacing) * 7);

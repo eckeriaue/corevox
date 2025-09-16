@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",
+    "@astrojs/svelte": "^7.1.1",
     "@astrojs/vue": "^5.1.0",
     "@barba/core": "^2.10.3",
     "@tailwindcss/vite": "^4.1.12",
@@ -21,19 +22,21 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "lucide-vue-next": "^0.542.0",
+    "m3-svelte": "^5.7.2",
     "peerjs": "^1.5.5",
     "phoenix": "^1.8.1",
     "radashi": "^12.6.2",
     "reka-ui": "^2.5.0",
+    "svelte": "^5.38.10",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12",
     "tw-animate-css": "^1.3.8",
+    "typescript": "^5.9.2",
     "vue": "^3.5.21",
     "vue-sonner": "^2.0.8",
     "zod": "^4.1.5"
   },
   "devDependencies": {
-    "@types/phoenix": "^1.6.6",
-    "daisyui": "^5.1.6"
+    "@types/phoenix": "^1.6.6"
   }
 }

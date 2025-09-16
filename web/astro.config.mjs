@@ -5,6 +5,8 @@ import node from '@astrojs/node'
 
 import vue from '@astrojs/vue'
 
+import svelte from '@astrojs/svelte'
+
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
@@ -24,5 +26,5 @@ export default defineConfig({
     })]
   },
 
-  integrations: [vue({ appEntrypoint: '/src/pages/_app' })]
+  integrations: [vue({ appEntrypoint: '/src/pages/_app' }), svelte()]
 })
